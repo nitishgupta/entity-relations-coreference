@@ -3,12 +3,10 @@ package edu.illinois.cs.cogcomp.ace04;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
-import edu.illinois.cs.cogcomp.nlp.tokenizer.Tokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.CcgTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.AceFileProcessor;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.ReadACEAnnotation;
-import edu.illinois.cs.cogcomp.reader.util.EventConstants;
 
 import java.io.File;
 import java.util.List;
@@ -23,8 +21,8 @@ public class reader {
 
     public static void testProcessDocument()
     {
-
-        AceFileProcessor proc = new AceFileProcessor( new CcgTextAnnotationBuilder( new IllinoisTokenizer() ) );
+        ReadACEAnnotation.is2004mode = true;
+        AceFileProcessor proc = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
 
         File file = new File(TEST_DIR + TEST_FILE);
         if(file.exists())
@@ -34,14 +32,9 @@ public class reader {
 
         List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
 
-
-
         for ( TextAnnotation ta : taList )
         {
             System.out.println(ta.getAvailableViews());
         }
     }
-
-
-
 }
