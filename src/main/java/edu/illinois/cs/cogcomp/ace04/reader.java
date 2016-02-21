@@ -15,9 +15,8 @@ import java.util.List;
  * Created by nitishgupta on 2/19/16.
  */
 public class reader {
-    private static final String TEST_DIR="data/ace04/data/English/nwire/";
+    private static final String TEST_DIR="data/ace04/data/English/nw/";
     private static final String TEST_FILE="APW20001211.1441.0436.apf.xml";
-
 
     public static void testProcessDocument()
     {
