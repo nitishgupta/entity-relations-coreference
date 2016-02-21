@@ -1,3 +1,4 @@
 M2REPO : http://cogcomp.cs.illinois.edu/m2repo/edu/illinois/cs/cogcomp/
 compile - mvn compile
 dependency copy - mvn dependency:copy-dependencies
+GITLAB - https://gitlab-beta.engr.illinois.edu/groups/cogcomp
