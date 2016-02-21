@@ -1,0 +1,8 @@
+Each Document would have ONE TextAnnotation
+
+Each TextAnnotation can have multiple VIEWS - eg. POS, TOKENS, 
+
+Each VIEW will have Constituents. (different views can have different constituents)
+
+Each constituent will have certain properties.
+
