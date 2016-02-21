@@ -4,7 +4,7 @@ package edu.illinois.cs.cogcomp.ace04;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
-import edu.illinois.cs.cogcomp.features.pos;
+import edu.illinois.cs.cogcomp.features.Pos;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.CcgTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
@@ -13,12 +13,11 @@ import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.ReadACEAnnotation;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Created by nitishgupta on 2/19/16.
  */
-public class reader {
+public class Reader {
     private static final String TEST_DIR="data/ace04/data/English/nw/";
     private static final String TEST_FILE="APW20001211.1441.0436.apf.xml";
 
@@ -44,8 +43,8 @@ public class reader {
 
 
 
-        pos.addPOS(ta);
-        pos.addShallowParse(ta);
+        Pos.addPOS(ta);
+        Pos.addShallowParse(ta);
         System.out.println(ta.getAvailableViews());
 
         View view = ta.getView("SHALLOW_PARSE");

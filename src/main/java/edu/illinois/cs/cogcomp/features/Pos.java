@@ -13,7 +13,7 @@ import edu.illinois.cs.cogcomp.nlp.util.SimpleCachingPipeline;
 /**
  * Created by nitishgupta on 2/21/16.
  */
-public class pos {
+public class Pos {
 
     private static AnnotatorService prep;
 
