@@ -14,9 +14,7 @@ public class Main {
     public static void main(String [] args) {
         ConfigSystem.initialize();
 
-	System.out.println("asdasd");
-        System.out.println(Ace05Reader.TEST_FILE);
-        Ace05Reader.testProcessDocument(Ace05Reader.TEST_DIR, Ace05Reader.TEST_FILE);
-        //Ace04Reader.testProcessDocument(Ace04Reader.TEST_DIR, Ace04Reader.TEST_FILE);
+        new Ace05Reader().testProcessDocument(Ace05Reader.TEST_DIR, Ace05Reader.TEST_FILE);
+        new Ace04Reader().testProcessDocument(Ace04Reader.TEST_DIR, Ace04Reader.TEST_FILE);
     }
 }
