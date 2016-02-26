@@ -1,5 +1,4 @@
-package edu.illinois.cs.cogcomp.ace04;
-
+package edu.illinois.cs.cogcomp.reader;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
@@ -15,16 +14,18 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Created by nitishgupta on 2/19/16.
+ * Created by nitishgupta on 2/25/16.
  */
-public class Reader {
-    private static final String TEST_DIR="data/ace04/data/English/nw/";
-    private static final String TEST_FILE="APW20001211.1441.0436.apf.xml";
+public class Ace04Reader {
 
-    public static void testProcessDocument()
+    public static final String TEST_DIR="data/ace04/data/English/nw/";
+    public static final String TEST_FILE="nw/APW20001211.1441.0436.apf.xml";
+
+    public static void testProcessDocument(String TEST_DIR, String TEST_FILE)
     {
         ReadACEAnnotation.is2004mode = true;
         AceFileProcessor proc = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
+
 
         File file = new File(TEST_DIR + TEST_FILE);
         if(file.exists())
