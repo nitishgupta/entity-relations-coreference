@@ -22,39 +22,27 @@ public class Pos {
         ResourceManager annotatorServiceRm = new AnnotatorServiceConfigurator().getConfig(pipelineRm);
 
         try {
-            prep = (SimpleCachingPipeline) IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
+            prep = IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
         } catch (Exception e){
             e.printStackTrace();
         }
-
-
 
         try{
             prep.addView(ta, ViewNames.SHALLOW_PARSE);
         } catch (Exception e){
             e.printStackTrace();
         }
-
-
-
-
-
-
     }
-
-
 
     public static void addPOS(TextAnnotation ta) {
         ResourceManager pipelineRm = new PipelineConfig().getDefaultConfig();
         ResourceManager annotatorServiceRm = new AnnotatorServiceConfigurator().getConfig(pipelineRm);
 
         try {
-            prep = (SimpleCachingPipeline) IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
+            prep = IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
         } catch (Exception e){
             e.printStackTrace();
         }
-
-
 
         try{
             prep.addView(ta, ViewNames.POS);
@@ -62,13 +50,5 @@ public class Pos {
             e.printStackTrace();
         }
 
-
-
-
-
-
     }
-
-
-
 }
