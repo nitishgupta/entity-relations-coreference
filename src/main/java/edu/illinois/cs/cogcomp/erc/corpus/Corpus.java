@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.corpus;
+package edu.illinois.cs.cogcomp.erc.corpus;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;

@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.config;
+package edu.illinois.cs.cogcomp.erc.config;
 
 /**
  * Created by nitishgupta on 2/25/16.

@@ -1,10 +1,9 @@
-package edu.illinois.cs.cogcomp.main;
+package edu.illinois.cs.cogcomp.erc.main;
 
 
-import edu.illinois.cs.cogcomp.config.ConfigSystem;
-import edu.illinois.cs.cogcomp.config.Parameters;
-import edu.illinois.cs.cogcomp.reader.Ace04Reader;
-import edu.illinois.cs.cogcomp.reader.Ace05Reader;
+import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
+import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
+import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
 
 /**
  * Created by nitishgupta on 2/19/16.
