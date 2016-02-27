@@ -2,6 +2,7 @@ package edu.illinois.cs.cogcomp.erc.main;
 
 
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
+import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
 import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
 
@@ -13,7 +14,16 @@ public class Main {
     public static void main(String [] args) {
         ConfigSystem.initialize();
 
-        new Ace05Reader().testProcessDocument(Ace05Reader.TEST_DIR, Ace05Reader.TEST_FILE);
-        new Ace04Reader().testProcessDocument(Ace04Reader.TEST_DIR, Ace04Reader.TEST_FILE);
+
+        //Ace05Reader ace05 = new Ace05Reader();
+        //ace05.readCorpus_and_WriteSerialized();
+
+        Ace04Reader ace04 = new Ace04Reader();
+        ace04.readCorpus_and_WriteSerialized();
+
+//        System.out.print("Asd");
+
+
+
     }
 }

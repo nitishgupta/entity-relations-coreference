@@ -15,7 +15,7 @@ public class ConfigSystem {
     /**
      * THIS FUNCTION ASSUMES THAT THE DATASET HAS BEEN READ
      *
-     * @param configFile : Configuration File for LSH
+     * @param cF : Configuration File for LSH
      * @throws Exception
      */
     public static void initialize(String cF) {
@@ -59,6 +59,16 @@ public class ConfigSystem {
         if(props.containsKey("ACE04_FILELIST")){
             Parameters.ACE04_FILELIST = props.getProperty("ACE04_FILELIST");
             System.out.println("ACE04_FILELIST : " + Parameters.ACE04_FILELIST);
+        }
+
+        if(props.containsKey("ACE04_SERIALIZED_DOCS")){
+            Parameters.ACE04_SERIALIZED_DOCS = props.getProperty("ACE04_SERIALIZED_DOCS");
+            System.out.println("ACE04_SERIALIZED_DOCS : " + Parameters.ACE04_SERIALIZED_DOCS);
+        }
+
+        if(props.containsKey("ACE05_SERIALIZED_DOCS")){
+            Parameters.ACE05_SERIALIZED_DOCS = props.getProperty("ACE05_SERIALIZED_DOCS");
+            System.out.println("ACE05_SERIALIZED_DOCS : " + Parameters.ACE05_SERIALIZED_DOCS);
         }
 
     }
