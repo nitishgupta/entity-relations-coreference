@@ -2,7 +2,7 @@
 #mvn dependency:copy-dependencies
 mvn compile
 
-DEFAULT_PACKAGE="edu.illinois.cs.cogcomp"
+DEFAULT_PACKAGE="edu.illinois.cs.cogcomp.erc"
 PACKAGE="main"
 MAINCLASS="Main"
 CP="./:./target/classes/:./target/dependency/*:./config/:target/dependency/*"

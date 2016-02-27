@@ -11,7 +11,7 @@ import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
 /**
  * Created by nitishgupta on 2/21/16.
  */
-public class Pos {
+public class pipeline {
 
     private static AnnotatorService prep;
 
