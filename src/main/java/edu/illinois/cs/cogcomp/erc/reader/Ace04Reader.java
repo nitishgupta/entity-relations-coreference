@@ -1,11 +1,13 @@
-package edu.illinois.cs.cogcomp.reader;
+package edu.illinois.cs.cogcomp.erc.reader;
 
+import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.ReadACEAnnotation;
 
 /**
  * Created by nitishgupta on 2/25/16.
  */
 public class Ace04Reader extends DocumentReader {
+    protected final String baseDir = Parameters.ACE04_DATA_DIR;
 
     public static final String TEST_DIR="data/ace04/data/English/nw/";
     public static final String TEST_FILE="APW20001211.1441.0436.apf.xml";

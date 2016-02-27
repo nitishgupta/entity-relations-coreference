@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.config;
+package edu.illinois.cs.cogcomp.erc.config;
 
 import edu.illinois.cs.cogcomp.annotation.AnnotatorServiceConfigurator;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.Configurator;

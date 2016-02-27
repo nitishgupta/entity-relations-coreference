@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.config;
+package edu.illinois.cs.cogcomp.erc.config;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

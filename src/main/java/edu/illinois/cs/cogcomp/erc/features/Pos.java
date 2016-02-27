@@ -1,14 +1,12 @@
-package edu.illinois.cs.cogcomp.features;
+package edu.illinois.cs.cogcomp.erc.features;
 
 import edu.illinois.cs.cogcomp.annotation.AnnotatorService;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorServiceConfigurator;
-import edu.illinois.cs.cogcomp.config.PipelineConfig;
+import edu.illinois.cs.cogcomp.erc.config.PipelineConfig;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
-import edu.illinois.cs.cogcomp.nlp.common.PipelineConfigurator;
 import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
-import edu.illinois.cs.cogcomp.nlp.util.SimpleCachingPipeline;
 
 /**
  * Created by nitishgupta on 2/21/16.
