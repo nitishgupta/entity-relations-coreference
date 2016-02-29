@@ -4,10 +4,12 @@ import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation
 import edu.illinois.cs.cogcomp.erc.features.pipeline;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocumentAnnotation;
 
+import java.io.Serializable;
+
 /**
  * Created by Bhargav Mangipudi on 2/26/16.
  */
-public class Document {
+public class Document implements Serializable {
     TextAnnotation ta;
     ACEDocumentAnnotation aceAnnotation;
     boolean is2004;
