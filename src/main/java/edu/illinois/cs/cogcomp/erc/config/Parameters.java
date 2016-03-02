@@ -16,6 +16,8 @@ public class Parameters {
     public static String ACE04_SERIALIZED_DOCS;
     public static String ACE05_SERIALIZED_DOCS;
 
+    public static boolean isDebug = false;
+
 
 
 }

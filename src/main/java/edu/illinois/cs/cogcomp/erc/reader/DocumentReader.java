@@ -2,6 +2,7 @@ package edu.illinois.cs.cogcomp.erc.reader;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.io.LineIO;
+import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.util.Utils;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
@@ -24,7 +25,7 @@ public abstract class DocumentReader {
     protected String serializedDocDir;
     protected boolean is2004;
 
-    public boolean isDebug = false;
+
 
     protected static AceFileProcessor fileProcessor = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
 
@@ -56,8 +57,8 @@ public abstract class DocumentReader {
 
             return newDoc;
         } catch (Exception ex) {
-            if (isDebug) System.err.println("Failed to parse document - " + fullFileName);
-            if (isDebug) ex.printStackTrace(System.err);
+            if (Parameters.isDebug) System.err.println("Failed to parse document - " + fullFileName);
+            if (Parameters.isDebug) ex.printStackTrace(System.err);
         }
 
         return null;
@@ -74,7 +75,7 @@ public abstract class DocumentReader {
 
             return documents;
         } catch (FileNotFoundException ex) {
-            if (isDebug) System.err.println("Cannot find file list! at " + this.filelistPath);
+            if (Parameters.isDebug) System.err.println("Cannot find file list! at " + this.filelistPath);
         }
 
         return null;
