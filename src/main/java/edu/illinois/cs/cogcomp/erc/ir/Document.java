@@ -11,13 +11,13 @@ import java.util.List;
  * Created by Bhargav Mangipudi on 2/26/16.
  */
 public class Document implements Serializable {
-    List<TextAnnotation> taList;
+    TextAnnotation ta;
     ACEDocumentAnnotation aceAnnotation;
     boolean is2004;
     String filename;
 
-    public Document(List<TextAnnotation> taList, ACEDocumentAnnotation aceAnnotation, boolean is2004, String filename) {
-        this.taList = taList;
+    public Document(TextAnnotation ta, ACEDocumentAnnotation aceAnnotation, boolean is2004, String filename) {
+        this.ta = ta;
         this.aceAnnotation = aceAnnotation;
         this.is2004 = is2004;
         this.filename = filename;
@@ -27,14 +27,12 @@ public class Document implements Serializable {
     }
 
     public void addPipeLineViews() {
-        for (TextAnnotation ta : this.taList) {
-            pipeline.addShallowParse(ta);
-            pipeline.addPOS(ta);
-        }
+        pipeline.addShallowParse(ta);
+        pipeline.addPOS(ta);
     }
 
-    public List<TextAnnotation> getTA() {
-        return this.taList;
+    public TextAnnotation getTA() {
+        return this.ta;
     }
 
     public ACEDocumentAnnotation getAceAnnotation() {
