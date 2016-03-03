@@ -49,8 +49,9 @@ public abstract class DocumentReader {
 
         try {
             ACEDocument doc = fileProcessor.processAceEntry(new File(this.baseDir + prefix + "/"), fullFileName);
-            TextAnnotation ta = AceFileProcessor.populateTextAnnotation(doc).get(0);
-            Document newDoc = new Document(ta, doc.aceAnnotation, is2004, fileName);
+            List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
+            assert !taList.isEmpty();
+            Document newDoc = new Document(taList, doc.aceAnnotation, is2004, fileName);
 
             // Write document to cache
             Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);
