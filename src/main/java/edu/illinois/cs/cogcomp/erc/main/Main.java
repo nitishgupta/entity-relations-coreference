@@ -5,6 +5,7 @@ import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
 import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
+import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 
 import java.util.List;
 
@@ -25,5 +26,6 @@ public class Main {
         List<Document> ace05Corpus = ace05.readCorpus();
 
         System.out.println("Number of ACE05 documents read - " + ace05Corpus.size());
+
     }
 }

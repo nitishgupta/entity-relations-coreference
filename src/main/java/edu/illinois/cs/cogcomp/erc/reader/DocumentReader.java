@@ -49,13 +49,17 @@ public abstract class DocumentReader {
 
         try {
             ACEDocument doc = fileProcessor.processAceEntry(new File(this.baseDir + prefix + "/"), fullFileName);
-            TextAnnotation ta = AceFileProcessor.populateTextAnnotation(doc).get(0);
-            Document newDoc = new Document(ta, doc.aceAnnotation, is2004, fileName);
+            List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
 
-            // Write document to cache
-            Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);
+            if (taList.size() == 1) {
+                Document newDoc = new Document(taList.get(0), doc.aceAnnotation, is2004, fileName);
 
-            return newDoc;
+                // Write document to cache
+                Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);
+                return newDoc;
+            }
+
+            return null;
         } catch (Exception ex) {
             if (Parameters.isDebug) System.err.println("Failed to parse document - " + fullFileName);
             if (Parameters.isDebug) ex.printStackTrace(System.err);
