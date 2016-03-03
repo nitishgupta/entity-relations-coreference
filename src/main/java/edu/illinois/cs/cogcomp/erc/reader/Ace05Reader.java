@@ -9,6 +9,7 @@ public class Ace05Reader extends DocumentReader {
 
     public Ace05Reader() {
         super();
+
         this.is2004 = false;
         this.baseDir = Parameters.ACE05_DATA_DIR;
         this.filelistPath = Parameters.ACE05_FILELIST;
