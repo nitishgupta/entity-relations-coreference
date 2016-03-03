@@ -13,38 +13,35 @@ import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
  */
 public class pipeline {
 
-    private static AnnotatorService prep;
+    private static AnnotatorService prep = getAnnotatorServiceInstance();
 
-    public static void addShallowParse(TextAnnotation ta) {
-        ResourceManager pipelineRm = new PipelineConfig().getDefaultConfig();
-        ResourceManager annotatorServiceRm = new AnnotatorServiceConfigurator().getConfig(pipelineRm);
+    private static AnnotatorService getAnnotatorServiceInstance() {
+        if (prep == null) {
+            ResourceManager pipelineRm = new PipelineConfig().getDefaultConfig();
+            ResourceManager annotatorServiceRm = new AnnotatorServiceConfigurator().getConfig(pipelineRm);
 
-        try {
-            prep = IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
-        } catch (Exception e){
-            e.printStackTrace();
+            try {
+                prep = IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        try{
+        return prep;
+    }
+
+    public static void addShallowParse(TextAnnotation ta) {
+        try {
             prep.addView(ta, ViewNames.SHALLOW_PARSE);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void addPOS(TextAnnotation ta) {
-        ResourceManager pipelineRm = new PipelineConfig().getDefaultConfig();
-        ResourceManager annotatorServiceRm = new AnnotatorServiceConfigurator().getConfig(pipelineRm);
-
         try {
-            prep = IllinoisPipelineFactory.buildPipeline(annotatorServiceRm);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        try{
             prep.addView(ta, ViewNames.POS);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
