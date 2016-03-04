@@ -10,10 +10,19 @@ import java.io.*;
  */
 public class Utils {
 
+    /**
+     * @param filename : filename from filelist - eg. nw/filename.apf.xml
+     * @return corpustype folder name : eg nw
+     */
     public static String getCorpusTypeFromFilename(String filename) {
         return filename.substring(0, filename.indexOf('/'));
     }
 
+    /**
+     *
+     * @param filename : filename from filelist - eg. nw/filename.apf.xml
+     * @return serializedFileName : eg. nw_filename.ser
+     */
     public static String getCacheFilenameForDocument(String filename) {
         return filename.replace("/", "_").substring(0, filename.indexOf(".apf.xml")) + ".ser";
     }

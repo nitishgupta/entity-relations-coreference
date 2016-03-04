@@ -11,6 +11,8 @@ import java.util.List;
  * Created by Bhargav Mangipudi on 2/26/16.
  */
 public class Document implements Serializable {
+    static final long serialVersionUID = 6L;
+
     TextAnnotation ta;
     ACEDocumentAnnotation aceAnnotation;
     boolean is2004;
