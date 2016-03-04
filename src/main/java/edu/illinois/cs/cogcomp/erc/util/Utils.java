@@ -1,9 +1,13 @@
 package edu.illinois.cs.cogcomp.erc.util;
 
+import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Bhargav Mangipudi on 2/26/16.
@@ -65,5 +69,25 @@ public class Utils {
         }
 
         return null;
+    }
+
+    public static void countCorpusTypeDocs(Corpus corpus){
+        List<Document> docs = corpus.getDocs();
+        Map<String, Integer> corpusTypeCount = new HashMap<String, Integer>();
+
+        for(Document doc : docs){
+            String filename = doc.getFilename();
+            String corpusType = Utils.getCorpusTypeFromFilename(filename);
+
+            if(!corpusTypeCount.containsKey(corpusType))
+                corpusTypeCount.put(corpusType, 0);
+
+            int count = corpusTypeCount.get(corpusType);
+            corpusTypeCount.put(corpusType, count+1);
+        }
+
+        for(String corpusType : corpusTypeCount.keySet())
+            System.out.println(corpusType + " : " + corpusTypeCount.get(corpusType));
+
     }
 }

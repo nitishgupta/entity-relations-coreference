@@ -40,4 +40,8 @@ public class Document implements Serializable {
     public ACEDocumentAnnotation getAceAnnotation() {
         return this.aceAnnotation;
     }
+
+    public String getFilename(){
+        return filename;
+    }
 }
