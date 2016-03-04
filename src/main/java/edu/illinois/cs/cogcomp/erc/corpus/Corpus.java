@@ -18,6 +18,24 @@ public class Corpus implements Serializable{
     boolean isACE04;
     //Map<ACEDocument, TextAnnotation> docs;
 
+    public Corpus(List<Document> docs, boolean isACE04){
+        this.docs = docs;
+        this.isACE04 = isACE04;
+    }
+
+    public List<Document> getDocs(){
+        if(docs!=null)
+            return docs;
+        else {
+            System.out.println("List of Documents is NULL");
+            return null;
+        }
+    }
+
+    public boolean checkisACE2004(){
+        return isACE04;
+    }
+
 
 
 

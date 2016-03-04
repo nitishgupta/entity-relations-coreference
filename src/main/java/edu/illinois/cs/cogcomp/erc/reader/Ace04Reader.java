@@ -15,4 +15,8 @@ public class Ace04Reader extends DocumentReader {
         this.filelistPath = Parameters.ACE04_FILELIST;
         this.serializedDocDir = Parameters.ACE04_SERIALIZED_DOCS;
     }
+
+    public boolean checkis2004(){
+        return this.is2004;
+    }
 }
