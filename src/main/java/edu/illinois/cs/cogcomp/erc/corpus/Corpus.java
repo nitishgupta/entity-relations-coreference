@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class Corpus implements Serializable{
     static final long serialVersionUID = 1L;
+
     List<Document> docs;
     boolean isACE04;
     //Map<ACEDocument, TextAnnotation> docs;

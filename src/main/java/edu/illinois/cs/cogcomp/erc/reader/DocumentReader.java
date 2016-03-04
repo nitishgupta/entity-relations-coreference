@@ -25,7 +25,9 @@ public abstract class DocumentReader {
     protected String serializedDocDir;
     protected boolean is2004;
 
+    public DocumentReader(){
 
+    }
 
     protected static AceFileProcessor fileProcessor = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
 
@@ -41,6 +43,7 @@ public abstract class DocumentReader {
         // Read document from dataset
         ReadACEAnnotation.is2004mode = this.is2004;
 
+        // Extract nw from nw/filename.apf.xml
         String prefix = Utils.getCorpusTypeFromFilename(fileName);
         String fullFileName = this.baseDir + fileName;
 
@@ -68,6 +71,11 @@ public abstract class DocumentReader {
         return null;
     }
 
+    /**
+     * filelistPath - filenames are as folder/filename - eg. nw/filename.xml
+     *
+     * @return
+     */
     public List<Document> readCorpus() {
         try {
             List<Document> documents = new ArrayList<>();
