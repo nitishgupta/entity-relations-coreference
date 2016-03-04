@@ -45,30 +45,29 @@ public abstract class DocumentReader {
 
         // Extract nw from nw/filename.apf.xml
         String prefix = Utils.getCorpusTypeFromFilename(fileName);
-        String fullFileName = this.baseDir + fileName;
+        String fullfilepath = this.baseDir + fileName;
 
-        if (!new File(fullFileName).exists())
-            System.out.println("Document File not found! - " + fullFileName);
+        if (!new File(fullfilepath).exists())
+            System.out.println("Document File not found! - " + fullfilepath);
 
+        Document newDoc = null;
         try {
-            ACEDocument doc = fileProcessor.processAceEntry(new File(this.baseDir + prefix + "/"), fullFileName);
+            ACEDocument doc = fileProcessor.processAceEntry(new File(this.baseDir + prefix + "/"), fullfilepath);
             List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
 
             if (taList.size() == 1) {
-                Document newDoc = new Document(taList.get(0), doc.aceAnnotation, is2004, fileName);
-
+                newDoc = new Document(taList.get(0), doc.aceAnnotation, is2004, fileName);
                 // Write document to cache
                 Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);
-                return newDoc;
             }
-
-            return null;
+            else
+                newDoc = null;
         } catch (Exception ex) {
-            if (Parameters.isDebug) System.err.println("Failed to parse document - " + fullFileName);
+            if (Parameters.isDebug) System.err.println("Failed to parse document - " + fullfilepath);
             if (Parameters.isDebug) ex.printStackTrace(System.err);
         }
 
-        return null;
+        return newDoc;
     }
 
     /**
@@ -91,5 +90,16 @@ public abstract class DocumentReader {
         }
 
         return null;
+    }
+
+    public static void readDocumentTester(String directory, String filename){
+        AceFileProcessor fileProcessor = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
+        ReadACEAnnotation.is2004mode = true;
+
+        ACEDocument doc = fileProcessor.processAceEntry(new File(directory), filename);
+        List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
+        System.out.println("Number of TAS : " + taList.size());
+
+
     }
 }
