@@ -11,7 +11,7 @@ import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
 /**
  * Created by nitishgupta on 2/21/16.
  */
-public class pipeline {
+public class PipelineFeatures {
 
     private static AnnotatorService prep = getAnnotatorServiceInstance();
 
