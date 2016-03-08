@@ -1,11 +1,10 @@
 package edu.illinois.cs.cogcomp.erc.ir;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-import edu.illinois.cs.cogcomp.erc.features.pipeline;
+import edu.illinois.cs.cogcomp.erc.features.PipelineFeatures;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocumentAnnotation;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Created by Bhargav Mangipudi on 2/26/16.
@@ -29,8 +28,8 @@ public class Document implements Serializable {
     }
 
     public void addPipeLineViews() {
-        pipeline.addShallowParse(ta);
-        pipeline.addPOS(ta);
+        PipelineFeatures.addShallowParse(ta);
+        PipelineFeatures.addPOS(ta);
     }
 
     public TextAnnotation getTA() {
