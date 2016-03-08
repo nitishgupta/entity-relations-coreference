@@ -1,12 +1,12 @@
 package edu.illinois.cs.cogcomp.erc.ir;
 
+import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,50 +16,60 @@ import java.util.Map;
  */
 public class DocUtils {
 
+    public static void addNERCoarseBIOView(Document doc) {
+        DocUtils.addBIOView(doc, Corpus.NER_GOLD_COARSE_VIEW, Corpus.NER_GOLD_BIO_VIEW);
+    }
 
-
-    public static void addNERBIOView(Document doc){
+    /**
+     * Adds a BIO (Begin, Inside, Outside) representation view for an input SpanLabel View.
+     * @param doc Document to be annotated.
+     * @param inputViewName Name of the source view. (eg. NER_ACE_COARSE)
+     * @param outputViewName Name for the output view. (eg. NER_GOLD_COARSE_BIO)
+     */
+    public static void addBIOView(Document doc, String inputViewName, String outputViewName){
         TextAnnotation ta = doc.getTA();
 
-        View ner_coarse = ta.getView(Corpus.NER_GOLD_COARSE_VIEW);
-        View tokens = ta.getView(Corpus.TOKENS_VIEW);
-        View ner_bio = new View(Corpus.NER_GOLD_BIO_VIEW, DocUtils.class.getCanonicalName(), ta, 1.0D);
+        View inputView = ta.getView(inputViewName);
+
+        View tokens = ta.getView(ViewNames.TOKENS);
+        View bioView = new TokenLabelView(outputViewName, DocUtils.class.getCanonicalName(), ta, 1.0D);
 
         Map<Integer, Integer> start_end = new HashMap<Integer, Integer>();
-        for(Constituent c : ner_coarse.getConstituents()){
-            start_end.put(c.getStartSpan(), c.getEndSpan()-1);
+        for (Constituent c : inputView.getConstituents()) {
+            start_end.put(c.getStartSpan(), c.getEndSpan() - 1);
         }
 
         List<Constituent> tokens_constituents = tokens.getConstituents();
 
         int i = 0;
-        while(i < tokens_constituents.size()){
+        while (i < tokens_constituents.size()) {
             Constituent token = tokens_constituents.get(i);
-            Constituent c_bio = null;
+            Constituent c_bio;
+
             // Either token i is start of NER type or OUTSIDE
-            if(start_end.containsKey(i)){
+            if(start_end.containsKey(i)) {
                 int end = start_end.get(i);
-                List<Constituent> cons = ner_coarse.getConstituentsCoveringToken(i);
+                List<Constituent> cons = inputView.getConstituentsCoveringToken(i);
                 String label = cons.get(0).getLabel();
-                c_bio = token.cloneForNewViewWithDestinationLabel(Corpus.NER_GOLD_BIO_VIEW, "B-"+label);
-                ner_bio.addConstituent(c_bio);
+
+                c_bio = token.cloneForNewViewWithDestinationLabel(outputViewName, "B-"+label);
+                bioView.addConstituent(c_bio);
                 i++;
-                while(i<=end){
+
+                while (i <= end) {
                     token = tokens_constituents.get(i);
-                    c_bio = token.cloneForNewViewWithDestinationLabel(Corpus.NER_GOLD_BIO_VIEW, "I-" + label);
-                    ner_bio.addConstituent(c_bio);
+                    c_bio = token.cloneForNewViewWithDestinationLabel(outputViewName, "I-" + label);
+                    bioView.addConstituent(c_bio);
                     i++;
                 }
-
             }
-
-            else{
-                c_bio = token.cloneForNewViewWithDestinationLabel(Corpus.NER_GOLD_BIO_VIEW, "O");
-                ner_bio.addConstituent(c_bio);
+            else {
+                c_bio = token.cloneForNewViewWithDestinationLabel(outputViewName, "O");
+                bioView.addConstituent(c_bio);
                 i++;
             }
         }
 
-        ta.addView(Corpus.NER_GOLD_BIO_VIEW, ner_bio);
+        ta.addView(outputViewName, bioView);
     }
 }
