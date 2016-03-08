@@ -23,10 +23,10 @@ public class Main {
 
     public static void main(String [] args) {
         ConfigSystem.initialize();
+
         Corpus ace05 = Utils.readSerializedCorpus(Parameters.ACE05_SERIALIZED_CORPUS);
         Document doc = ace05.getDoc(200);
         TextAnnotation ta = doc.getTA();
-
         System.out.println(ta.getAvailableViews());
 
         View ner =  ta.getView(Corpus.NER_GOLD_COARSE_VIEW);
