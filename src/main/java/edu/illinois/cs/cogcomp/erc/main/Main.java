@@ -1,9 +1,11 @@
 package edu.illinois.cs.cogcomp.erc.main;
 
 
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
+import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
 import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
@@ -21,28 +23,44 @@ public class Main {
 
     public static void main(String [] args) {
         ConfigSystem.initialize();
+        Corpus ace05 = Utils.readSerializedCorpus(Parameters.ACE05_SERIALIZED_CORPUS);
+        Document doc = ace05.getDoc(200);
+        TextAnnotation ta = doc.getTA();
 
-//        Ace04Reader ace04reader = new Ace04Reader();
-//        List<Document> ace04docs = ace04reader.readCorpus();
-//        Corpus ace04 = new Corpus(ace04docs, ace04reader.checkis2004());
-//
-//        System.out.println("Number of ACE04 documents read - " + ace04docs.size());
-//
-//        Ace05Reader ace05reader = new Ace05Reader();
-//        List<Document> ace05docs = ace05reader.readCorpus();
-//        Corpus ace05 = new Corpus(ace05docs, ace05reader.checkis2004());
-//
-//        System.out.println("Number of ACE05 documents read - " + ace05docs.size());
-//
-//        System.out.println("Ace04 Stats : ");
-//        Utils.countCorpusTypeDocs(ace04);
-//
-//        System.out.println("Ace05 Stats : ");
-//        Utils.countCorpusTypeDocs(ace05);
+        System.out.println(ta.getAvailableViews());
 
-        Ace04Reader.readDocumentTester(Parameters.ACE04_DATA_DIR + "bn/", Parameters.ACE04_DATA_DIR + "bn/" + "ABC20001103.1830.1134.apf.xml");
+        View ner =  ta.getView(Corpus.NER_GOLD_COARSE_VIEW);
+        TokenLabelView token = (TokenLabelView) ta.getView(Corpus.TOKENS_VIEW);
+        Utils.printTAConstitutents(ner.getConstituents());
+
+
+        System.out.println("\n " + doc.getFilename());
+
+        DocUtils.addNERBIOView(doc);
+        View ner_bio = doc.getTA().getView(Corpus.NER_GOLD_BIO_VIEW);
+        Utils.printTAConstitutents(ner_bio.getConstituents());
+
+
+
+
 
 
 
     }
+
+    /**
+               To read corpus from directory and write serialized docs
+     //        Ace05Reader ace05reader = new Ace05Reader();
+     //        List<Document> ace05docs = ace05reader.readCorpus();
+     //        Corpus ace05 = new Corpus(ace05docs, ace05reader.checkis2004());
+     //
+     //        System.out.println("Number of ACE05 documents read - " + ace05docs.size());
+     //
+     //        System.out.println("Ace05 Stats : ");
+     //        Utils.countCorpusTypeDocs(ace05);
+     */
+
+
+
+
 }

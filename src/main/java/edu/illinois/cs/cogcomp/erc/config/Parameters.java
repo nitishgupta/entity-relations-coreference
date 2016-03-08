@@ -18,6 +18,12 @@ public class Parameters {
 
     public static boolean isDebug = false;
 
+    public static String ACE05_SERIALIZED_CORPUS = "index/ace05/corpus.ser";
+    public static String ACE04_SERIALIZED_CORPUS = "index/ace04/corpus.ser";
+
+
+
+
 
 
 }

@@ -10,6 +10,7 @@ import edu.illinois.cs.cogcomp.nlp.utility.CcgTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.AceFileProcessor;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.ReadACEAnnotation;
+import edu.illinois.cs.cogcomp.reader.commondatastructure.AnnotatedText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,6 +54,8 @@ public abstract class DocumentReader {
         Document newDoc = null;
         try {
             ACEDocument doc = fileProcessor.processAceEntry(new File(this.baseDir + prefix + "/"), fullfilepath);
+
+
             List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
 
             if (taList.size() == 1) {
@@ -97,6 +100,17 @@ public abstract class DocumentReader {
         ReadACEAnnotation.is2004mode = true;
 
         ACEDocument doc = fileProcessor.processAceEntry(new File(directory), filename);
+        List<AnnotatedText> ATList = doc.taList;
+        System.out.println("ATList : " + ATList.size());
+
+        System.out.println("content : " + doc.orginalContent);
+        System.out.println("Entities : " + doc.aceAnnotation.entityList.size());
+        System.out.println("Relations : " + doc.aceAnnotation.relationList.size());
+        System.out.println("timeEx : " + doc.aceAnnotation.timeExList.size());
+        System.out.println("paraList : " + doc.paragraphs);
+
+
+
         List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
         System.out.println("Number of TAS : " + taList.size());
 
