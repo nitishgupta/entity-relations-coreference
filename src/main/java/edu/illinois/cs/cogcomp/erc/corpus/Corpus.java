@@ -5,6 +5,7 @@ import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,17 @@ import java.util.Map;
 public class Corpus implements Serializable{
     static final long serialVersionUID = 1L;
 
-    List<Document> docs;
-    boolean isACE04;
+    private List<Document> docs;
+    private boolean isACE04;
+    public static final String NER_GOLD_COARSE_VIEW = "NER_ACE_COARSE";
+    public static final String NER_GOLD_BIO_VIEW = "NER_GOLD_BIO_VIEW";
+    public static final String TOKENS_VIEW = "TOKENS";
+    public static final String SENTENCE_VIEW = "SENTENCE";
+    public static final String SHALLOW_PARSE_VIEW = "SHALLOW_PARSE";
+    public static final String POS_VIEW = "POS";
+
+
+
     //Map<ACEDocument, TextAnnotation> docs;
 
     public Corpus(List<Document> docs, boolean isACE04){
@@ -25,12 +35,22 @@ public class Corpus implements Serializable{
 
     public List<Document> getDocs(){
         if(docs!=null)
-            return docs;
+            return Collections.unmodifiableList(docs);
         else {
             System.out.println("List of Documents is NULL");
             return null;
         }
     }
+
+    public Document getDoc(int index){
+        if(index >= docs.size()){
+            System.err.println("Given doc index out of bounds : " + index);
+            System.exit(0);
+        }
+        return docs.get(index);
+    }
+
+
 
     public boolean checkisACE2004(){
         return isACE04;
