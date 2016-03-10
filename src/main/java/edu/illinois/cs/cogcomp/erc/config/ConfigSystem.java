@@ -56,6 +56,20 @@ public class ConfigSystem {
             System.out.println("ACE05_FILELIST : " + Parameters.ACE05_FILELIST);
         }
 
+        if(props.containsKey("ACE05_TRAIN_FILELIST")){
+            Parameters.ACE05_TRAIN_FILELIST = props.getProperty("ACE05_TRAIN_FILELIST");
+            System.out.println("ACE05_TRAIN_FILELIST : " + Parameters.ACE05_TRAIN_FILELIST);
+        }
+        if(props.containsKey("ACE05_DEV_FILELIST")){
+            Parameters.ACE05_DEV_FILELIST = props.getProperty("ACE05_DEV_FILELIST");
+            System.out.println("ACE05_DEV_FILELIST : " + Parameters.ACE05_DEV_FILELIST);
+        }
+        if(props.containsKey("ACE05_TEST_FILELIST")){
+            Parameters.ACE05_TEST_FILELIST = props.getProperty("ACE05_TEST_FILELIST");
+            System.out.println("ACE05_TEST_FILELIST : " + Parameters.ACE05_TEST_FILELIST);
+        }
+
+
         if(props.containsKey("ACE04_FILELIST")){
             Parameters.ACE04_FILELIST = props.getProperty("ACE04_FILELIST");
             System.out.println("ACE04_FILELIST : " + Parameters.ACE04_FILELIST);

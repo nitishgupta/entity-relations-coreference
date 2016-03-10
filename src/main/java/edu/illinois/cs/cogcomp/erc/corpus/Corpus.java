@@ -4,7 +4,8 @@ import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 
-import java.io.Serializable;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +26,20 @@ public class Corpus implements Serializable{
     public static final String POS_VIEW = "POS";
 
 
-
-    //Map<ACEDocument, TextAnnotation> docs;
-
+    /*
+    Have included a method to shuffle docs when storing because
+        0. The docs are read in the order of the folder. When training want to present docs of different folders in a random fashion
+        1. Do not want to shuffle everytime when returning.
+     */
     public Corpus(List<Document> docs, boolean isACE04){
+        Collections.shuffle(docs);
         this.docs = docs;
         this.isACE04 = isACE04;
     }
 
     public List<Document> getDocs(){
         if(docs!=null)
-            return Collections.unmodifiableList(docs);
+            return docs;
         else {
             System.out.println("List of Documents is NULL");
             return null;
