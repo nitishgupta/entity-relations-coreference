@@ -8,8 +8,16 @@ import java.util.List;
 
 /**
  * Created by Bhargav Mangipudi on 3/7/16.
+ *
+ * The sequence instance is one input sentence. For NER it is a list of constituents from the NER_GOLD_BIO_VIEW for a sentence
+ * Hence from each part of the sequence (token) the surface form (along with other data) can be extracted
+ * TODO : Think about how to encode POS data in this. One way is to make a similar list of constituents from the POS view.
+ * OR to save space, we can make a same sized list of POS tags for the sentence.
+ *
+ *
  */
 public class SequenceInstance implements IInstance {
+
     List<Constituent> constituents;
     final int hashCode;
 

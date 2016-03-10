@@ -60,6 +60,8 @@ public class Corpus implements Serializable{
         return isACE04;
     }
 
+    public int numDocs(){   return docs.size(); }
+
 
 
 

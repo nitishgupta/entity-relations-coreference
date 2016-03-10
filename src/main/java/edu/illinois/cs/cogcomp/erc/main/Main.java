@@ -8,7 +8,10 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
+import edu.illinois.cs.cogcomp.erc.sl.ner.MainClass;
 import edu.illinois.cs.cogcomp.erc.util.Utils;
+import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 import javax.xml.soap.Text;
 import java.io.File;
@@ -27,6 +30,11 @@ public class Main {
         Corpus ace05train = corpora.get(1);
         Corpus ace05dev = corpora.get(2);
         Corpus ace05test = corpora.get(3);
+
+        Lexiconer lm = new Lexiconer();
+        lm.setAllowNewFeatures(true);
+        SLProblem sp = MainClass.readStructuredData(ace05, lm);
+
 
 
 
