@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.features;
+package edu.illinois.cs.cogcomp.erc.util;
 
 import edu.illinois.cs.cogcomp.annotation.AnnotatorService;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorServiceConfigurator;
@@ -11,7 +11,7 @@ import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
 /**
  * Created by nitishgupta on 2/21/16.
  */
-public class PipelineFeatures {
+public class PipelineService {
 
     private static AnnotatorService prep = getAnnotatorServiceInstance();
 
