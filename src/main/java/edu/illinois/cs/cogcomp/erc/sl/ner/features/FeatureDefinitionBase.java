@@ -20,5 +20,5 @@ public abstract class FeatureDefinitionBase {
 
     // Size or number of features
     // Value depends on the size of lexiconer and is to be used only after adding all features
-    public abstract int featureSize();
+    public abstract int getFeatureSize();
 }

@@ -21,7 +21,7 @@ public class PriorFeatures extends FeatureDefinitionBase {
     }
 
     @Override
-    public int featureSize() {
+    public int getFeatureSize() {
         return this.lexiconer.getNumOfLabels();
     }
 }

@@ -34,7 +34,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
     }
 
     @Override
-    public int featureSize() {
+    public int getFeatureSize() {
         return this.lexiconer.getNumOfFeature() * this.lexiconer.getNumOfLabels();
     }
 }

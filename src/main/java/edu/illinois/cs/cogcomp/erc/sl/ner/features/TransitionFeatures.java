@@ -27,7 +27,7 @@ public class TransitionFeatures extends FeatureDefinitionBase {
     }
 
     @Override
-    public int featureSize() {
+    public int getFeatureSize() {
         return this.lexiconer.getNumOfLabels() * this.lexiconer.getNumOfLabels();
     }
 }
