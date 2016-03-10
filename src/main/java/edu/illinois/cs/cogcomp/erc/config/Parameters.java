@@ -17,11 +17,10 @@ public class Parameters {
     public static String ACE05_DEV_FILELIST;
     public static String ACE05_TEST_FILELIST;
 
-
-
-
     public static String ACE04_SERIALIZED_DOCS;
     public static String ACE05_SERIALIZED_DOCS;
+
+    public static String SL_PARAMETER_CONFIG_FILE;
 
     public static boolean isDebug = false;
 
@@ -31,10 +30,4 @@ public class Parameters {
     public static double train_perc = 0.75;
     public static double dev_perc = 0.15;
     public static double test_perc = 0.1;
-
-
-
-
-
-
 }
