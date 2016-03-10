@@ -14,7 +14,7 @@ public class Test {
 
     public static void testNER(Corpus testData, String modelPath) throws Exception {
         SLModel model = SLModel.loadModel(modelPath);
-        SLProblem slProblem = null; // Nitish's method plug
+        SLProblem slProblem = MainClass.readStructuredData(testData, model.lm);
 
         TestDiscrete testDiscreteRaw = new TestDiscrete();
         TestDiscrete testDiscreteFormatted = new TestDiscrete();
@@ -35,10 +35,10 @@ public class Test {
             }
         }
 
-        System.out.print("Raw Performance Metrics");
+        System.out.println("Raw Performance Metrics");
         testDiscreteRaw.printPerformance(System.out);
 
-        System.out.print("Formatted Performance Metrics");
+        System.out.println("Formatted Performance Metrics");
         testDiscreteFormatted.printPerformance(System.out);
     }
 }

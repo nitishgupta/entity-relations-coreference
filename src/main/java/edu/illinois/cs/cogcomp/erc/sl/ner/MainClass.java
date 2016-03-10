@@ -3,6 +3,7 @@ package edu.illinois.cs.cogcomp.erc.sl.ner;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
+import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -80,8 +81,14 @@ public class MainClass {
         ConfigSystem.initialize();
 
         try {
-            SLParameters para = new SLParameters();
-            para.loadConfigFile(Parameters.SL_PARAMETER_CONFIG_FILE);
+            List<Corpus> corpora  = CorpusUtils.readACE05CompleteTrainDevTestCorpora();
+            Corpus ace05 = corpora.get(0);
+            Corpus ace05train = corpora.get(1);
+            Corpus ace05dev = corpora.get(2);
+            Corpus ace05test = corpora.get(3);
+
+            Train.trainNER(ace05train, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel");
+            Test.testNER(ace05test, "testModel");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

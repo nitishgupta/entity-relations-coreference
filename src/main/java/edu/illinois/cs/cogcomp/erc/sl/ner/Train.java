@@ -40,13 +40,10 @@ public class Train {
         SLModel model = new SLModel();
         model.lm = new Lexiconer();
 
-        SLProblem slProblem = null; // Nitish's method plug
+        SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm);
 
         // Disallow the creation of new features
         model.lm.setAllowNewFeatures(false);
-
-        // initialize the inference solver
-//        model.infSolver = new ViterbiInferenceSolver(model.lm);
 
         // Get our meta-feature generator with current set of features
         FeatureGenerator featureGenerator = getCurrentFeatureGenerator(model.lm);
@@ -54,6 +51,9 @@ public class Train {
         SLParameters parameters = new SLParameters();
         parameters.loadConfigFile(slConfigPath);
         parameters.TOTAL_NUMBER_FEATURE = featureGenerator.getFeatureVectorSize();
+
+        // initialize the inference solver
+        model.infSolver = new ViterbiInferenceSolver(model.lm, featureGenerator);
 
         Learner learner = LearnerFactory.getLearner(model.infSolver, featureGenerator, parameters);
         model.wv = learner.train(slProblem);
