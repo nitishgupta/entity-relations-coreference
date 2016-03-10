@@ -1,7 +1,9 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
+
 import edu.illinois.cs.cogcomp.lbjava.classify.TestDiscrete;
+
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 

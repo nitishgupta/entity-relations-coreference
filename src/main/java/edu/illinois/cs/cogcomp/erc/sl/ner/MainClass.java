@@ -1,16 +1,18 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
+import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
+import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
-import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
-import edu.illinois.cs.cogcomp.sl.applications.tutorial.Sentence;
+
+import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 /**
  * Created by Bhargav Mangipudi on 3/9/16.
@@ -70,7 +72,18 @@ public class MainClass {
         return sp;
     }
 
-    public static void Main(String[] args) {
+    /**
+     * Main method.
+     * @param args List of command-line argument.
+     */
+    public static void main(String[] args) {
+        ConfigSystem.initialize();
 
+        try {
+            SLParameters para = new SLParameters();
+            para.loadConfigFile(Parameters.SL_PARAMETER_CONFIG_FILE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

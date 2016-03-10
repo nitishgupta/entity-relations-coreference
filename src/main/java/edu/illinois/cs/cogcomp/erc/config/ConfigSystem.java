@@ -69,7 +69,6 @@ public class ConfigSystem {
             System.out.println("ACE05_TEST_FILELIST : " + Parameters.ACE05_TEST_FILELIST);
         }
 
-
         if(props.containsKey("ACE04_FILELIST")){
             Parameters.ACE04_FILELIST = props.getProperty("ACE04_FILELIST");
             System.out.println("ACE04_FILELIST : " + Parameters.ACE04_FILELIST);
@@ -85,7 +84,9 @@ public class ConfigSystem {
             System.out.println("ACE05_SERIALIZED_DOCS : " + Parameters.ACE05_SERIALIZED_DOCS);
         }
 
+        if (props.containsKey("SL_PARAMETER_CONFIG_FILE")) {
+            Parameters.SL_PARAMETER_CONFIG_FILE = props.getProperty("SL_PARAMETER_CONFIG_FILE");
+            System.out.println("SL_PARAMETER_CONFIG_FILE : " + Parameters.SL_PARAMETER_CONFIG_FILE);
+        }
     }
-
-
 }

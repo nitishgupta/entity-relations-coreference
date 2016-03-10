@@ -1,10 +1,10 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
-import com.google.common.collect.ImmutableList;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.sl.ner.features.EmissionFeatures;
 import edu.illinois.cs.cogcomp.erc.sl.ner.features.PriorFeatures;
 import edu.illinois.cs.cogcomp.erc.sl.ner.features.TransitionFeatures;
+
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
@@ -13,6 +13,9 @@ import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by nitishgupta on 3/9/16.
@@ -26,13 +29,12 @@ public class Train {
      */
     public static FeatureGenerator getCurrentFeatureGenerator(Lexiconer lexiconer) {
         // Modifying this will require re-training
-        return new FeatureGenerator(ImmutableList.of(
+        return new FeatureGenerator(Collections.unmodifiableList(Arrays.asList(
                 new PriorFeatures(lexiconer),
                 new EmissionFeatures(lexiconer),
-                new TransitionFeatures(lexiconer)));
+                new TransitionFeatures(lexiconer)
+        )));
     }
-
-
 
     public static void trainNER(Corpus trainData, String slConfigPath, String modelPath) throws Exception {
         SLModel model = new SLModel();
