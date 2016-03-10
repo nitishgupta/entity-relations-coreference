@@ -1,8 +1,8 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner.features;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
-import edu.illinois.cs.cogcomp.erc.sl.SequenceInstance;
-import edu.illinois.cs.cogcomp.erc.sl.SequenceLabel;
+import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceInstance;
+import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceLabel;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
