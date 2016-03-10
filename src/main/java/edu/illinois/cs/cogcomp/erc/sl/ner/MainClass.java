@@ -1,97 +1,73 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
-import com.google.common.collect.ImmutableList;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
-import edu.illinois.cs.cogcomp.erc.sl.ner.features.EmissionFeatures;
-import edu.illinois.cs.cogcomp.erc.sl.ner.features.PriorFeatures;
-import edu.illinois.cs.cogcomp.erc.sl.ner.features.TransitionFeatures;
-import edu.illinois.cs.cogcomp.lbjava.classify.TestDiscrete;
-import edu.illinois.cs.cogcomp.sl.core.SLModel;
-import edu.illinois.cs.cogcomp.sl.core.SLParameters;
+import edu.illinois.cs.cogcomp.erc.ir.Document;
+import edu.illinois.cs.cogcomp.sl.applications.tutorial.POSTag;
+import edu.illinois.cs.cogcomp.sl.applications.tutorial.Sentence;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
-import edu.illinois.cs.cogcomp.sl.learner.Learner;
-import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
-import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
-import edu.illinois.cs.cogcomp.sl.util.WeightVector;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.DataFormatException;
 
 /**
  * Created by Bhargav Mangipudi on 3/9/16.
  */
 public class MainClass {
     /**
-     * Returns the meta-feature generator based on the order of feature definitions.
-     * @param lexiconer Lexiconer for generating features.
-     * @return FeatureGenerator instance.
+     * This SLProblem returned by this method has List<Constituents> as IInstance.
+     * For test data, the IInstance doesn't encode that a given token is unknown.
+     * While creating lexical features, a check for each Constituent token needs to be put for whether the word exists in the Lexiconer.
+     *
+     * @param corpus : The corpus for which the <IInstance, IStructure> pairs need to be retured.
+     * @param lm : Lexiconer that has the word and label space lexicon
+     * @return  Instance of the SLProblem
      */
-    public static FeatureGenerator getCurrentFeatureGenerator(Lexiconer lexiconer) {
-        // Modifying this will require re-training
+    public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm) {
+        SLProblem sp = new SLProblem();
+        int num_instances = 0;
+        if(lm.isAllowNewFeatures())
+            lm.addFeature("w:unknownword");
 
-        return new FeatureGenerator(ImmutableList.of(
-                new PriorFeatures(lexiconer),
-                new EmissionFeatures(lexiconer),
-                new TransitionFeatures(lexiconer)));
-    }
+        // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()*corpus.numDocs()
+        List<Document> docs = corpus.getDocs();
+        for(Document doc : docs){
+            TokenLabelView NER_GOLD_BIO_VIEW = doc.getNERBIOView();
+            View SentenceView = doc.getSentenceView();
 
-    public static void trainNER(Corpus trainData, String slConfigPath, String modelPath) throws Exception {
-        SLModel model = new SLModel();
-        model.lm = new Lexiconer();
+            // One Sentence inside. Therefore one SequenceInstance and SequenceLabel should be made
+            // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()
+            for(Constituent sentence : SentenceView.getConstituents()){
+                SequenceInstance sen = null;
+                SequenceLabel sen_label = null;
 
-        SLProblem slProblem = null; // Nitish's method plug
+                int start_token = sentence.getStartSpan();  // Inclusive
+                int end_token = sentence.getEndSpan() - 1;  // Inclusive
 
-        // Disallow the creation of new features
-        model.lm.setAllowNewFeatures(false);
+                List<Constituent> token_constituents = new ArrayList<Constituent>();
+                int[] tagIds = new int[end_token - start_token + 1];
 
-        // initialize the inference solver
-//        model.infSolver = new ViterbiInferenceSolver(model.lm);
+                for(int token_num = start_token; token_num <= end_token; token_num++){
+                    Constituent c = NER_GOLD_BIO_VIEW.getConstituentAtToken(token_num);
+                    if(lm.isAllowNewFeatures()){
+                        lm.addFeature("w:"+c.getSurfaceForm());
+                    }
+                    token_constituents.add(c);
 
-        // Get our meta-feature generator with current set of features
-        FeatureGenerator featureGenerator = getCurrentFeatureGenerator(model.lm);
+                    lm.addLabel("tag:"+c.getLabel());
+                    tagIds[token_num - start_token] = lm.getLabelId("tag:"+c.getLabel());
+                }
 
-        SLParameters parameters = new SLParameters();
-        parameters.loadConfigFile(slConfigPath);
-        parameters.TOTAL_NUMBER_FEATURE = featureGenerator.getFeatureVectorSize();
-
-        Learner learner = LearnerFactory.getLearner(model.infSolver, featureGenerator, parameters);
-        model.wv = learner.train(slProblem);
-        WeightVector.printSparsity(model.wv);
-
-        if(learner instanceof L2LossSSVMLearner)
-            System.out.println("Primal objective:" +
-                    ((L2LossSSVMLearner)learner).getPrimalObjective(slProblem, model.wv, model.infSolver, parameters.C_FOR_STRUCTURE));
-
-        // save the model
-        model.saveModel(modelPath);
-    }
-
-    public static void testNER(Corpus testData, String modelPath) throws Exception {
-        SLModel model = SLModel.loadModel(modelPath);
-        SLProblem slProblem = null; // Nitish's method plug
-
-        TestDiscrete testDiscreteRaw = new TestDiscrete();
-        TestDiscrete testDiscreteFormatted = new TestDiscrete();
-
-        for (int i = 0; i < slProblem.instanceList.size(); i++) {
-
-            SequenceLabel gold = (SequenceLabel) slProblem.goldStructureList.get(i);
-            SequenceLabel prediction = (SequenceLabel) model.infSolver.getBestStructure(
-                    model.wv,
-                    slProblem.instanceList.get(i));
-
-            for (int j = 0; j < prediction.tagIds.length; j++) {
-                testDiscreteRaw.reportPrediction(prediction.tagIds[j] + "", gold.tagIds[j] + "");
-
-                testDiscreteFormatted.reportPrediction(
-                        model.lm.getLabelString(prediction.tagIds[j]),
-                        model.lm.getLabelString(gold.tagIds[j]));
+                sen = new SequenceInstance(token_constituents);
+                sen_label = new SequenceLabel(tagIds);
+                sp.addExample(sen, sen_label);
+                num_instances++;
             }
         }
-
-        System.out.print("Raw Performance Metrics");
-        testDiscreteRaw.printPerformance(System.out);
-
-        System.out.print("Formatted Performance Metrics");
-        testDiscreteFormatted.printPerformance(System.out);
+        System.out.println("Num of Instances added in the SLProblem = " + num_instances);
+        return sp;
     }
 
     public static void Main(String[] args) {

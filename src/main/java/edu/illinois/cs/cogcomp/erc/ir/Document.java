@@ -1,6 +1,9 @@
 package edu.illinois.cs.cogcomp.erc.ir;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
+import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.util.PipelineService;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocumentAnnotation;
 
@@ -44,5 +47,18 @@ public class Document implements Serializable {
         return filename;
     }
 
+    public TokenLabelView getNERBIOView(){
+        if(ta.hasView(Corpus.NER_GOLD_BIO_VIEW))
+            return (TokenLabelView)this.getTA().getView(Corpus.NER_GOLD_BIO_VIEW);
+        else
+            return null;
+    }
+
+    public View getSentenceView(){
+        if(ta.hasView(Corpus.SENTENCE_VIEW))
+            return this.getTA().getView(Corpus.SENTENCE_VIEW);
+        else
+            return null;
+    }
 
 }
