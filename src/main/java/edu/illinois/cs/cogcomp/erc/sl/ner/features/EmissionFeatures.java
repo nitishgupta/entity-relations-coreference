@@ -22,9 +22,9 @@ public class EmissionFeatures extends FeatureDefinitionBase {
         for (Constituent c : sequence.getConstituents()) {
             int featureId;
             if (this.lexiconer.containFeature(c.getSurfaceForm())) {
-                featureId = this.lexiconer.getFeatureId(c.getSurfaceForm());
+                featureId = this.lexiconer.getFeatureId("w:" + c.getSurfaceForm());
             } else {
-                featureId = this.lexiconer.getFeatureId("NULL");
+                featureId = this.lexiconer.getFeatureId("w:unknownword");
             }
 
             fvb.addFeature(featureId + this.lexiconer.getNumOfLabels() * label.tagIds[idx++], 1.0f);

@@ -5,10 +5,12 @@ import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceLabel;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
+import java.io.Serializable;
+
 /**
  * Created by Bhargav Mangipudi on 3/8/16.
  */
-public abstract class FeatureDefinitionBase {
+public abstract class FeatureDefinitionBase implements Serializable {
     protected Lexiconer lexiconer;
 
     public FeatureDefinitionBase(Lexiconer lm) {
