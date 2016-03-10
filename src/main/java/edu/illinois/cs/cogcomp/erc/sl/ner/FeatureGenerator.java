@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl;
+package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.erc.sl.ner.features.FeatureDefinitionBase;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;

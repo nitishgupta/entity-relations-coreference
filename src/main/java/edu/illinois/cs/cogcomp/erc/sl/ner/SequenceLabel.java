@@ -1,7 +1,6 @@
-package edu.illinois.cs.cogcomp.erc.sl;
+package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
-import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 /**
  * Created by Bhargav Mangipudi on 3/8/16.
