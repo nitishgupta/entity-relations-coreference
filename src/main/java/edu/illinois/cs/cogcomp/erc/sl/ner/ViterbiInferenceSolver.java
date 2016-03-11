@@ -63,7 +63,7 @@ public class ViterbiInferenceSolver extends
         int[] sentenceTokens = new int[numOfTokens];
         for (int i = 0; i < numOfTokens; i++) {
             Constituent c = sen.getConstituents().get(i);
-            if (lm.containFeature(c.getSurfaceForm())) {
+            if (lm.containFeature("w:" + c.getSurfaceForm())) {
                 sentenceTokens[i] = lm.getFeatureId("w:" + c.getSurfaceForm());
             } else {
                 sentenceTokens[i] = lm.getFeatureId("w:unknownword");
