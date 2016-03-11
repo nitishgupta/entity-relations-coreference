@@ -16,8 +16,9 @@ public class Test {
         SLModel model = SLModel.loadModel(modelPath);
         SLProblem slProblem = MainClass.readStructuredData(testData, model.lm);
 
-        TestDiscrete testDiscreteRaw = new TestDiscrete();
         TestDiscrete testDiscreteFormatted = new TestDiscrete();
+        TestDiscrete testFiltered = new TestDiscrete();
+        testFiltered.addNull("tag:O");
 
         for (int i = 0; i < slProblem.instanceList.size(); i++) {
 
@@ -27,18 +28,20 @@ public class Test {
                     slProblem.instanceList.get(i));
 
             for (int j = 0; j < prediction.tagIds.length; j++) {
-                testDiscreteRaw.reportPrediction(prediction.tagIds[j] + "", gold.tagIds[j] + "");
-
                 testDiscreteFormatted.reportPrediction(
+                        model.lm.getLabelString(prediction.tagIds[j]),
+                        model.lm.getLabelString(gold.tagIds[j]));
+
+                testFiltered.reportPrediction(
                         model.lm.getLabelString(prediction.tagIds[j]),
                         model.lm.getLabelString(gold.tagIds[j]));
             }
         }
 
-        System.out.println("Raw Performance Metrics");
-        testDiscreteRaw.printPerformance(System.out);
-
         System.out.println("Formatted Performance Metrics");
         testDiscreteFormatted.printPerformance(System.out);
+
+        System.out.println("Filtered Performance Metrics");
+        testFiltered.printPerformance(System.out);
     }
 }

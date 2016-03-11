@@ -27,7 +27,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
                 featureId = this.lexiconer.getFeatureId("w:unknownword");
             }
 
-            fvb.addFeature(featureId + this.lexiconer.getNumOfLabels() * label.tagIds[idx++], 1.0f);
+            fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * label.tagIds[idx++], 1.0f);
         }
 
         return fvb;
