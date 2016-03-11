@@ -21,7 +21,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
         int idx = 0;
         for (Constituent c : sequence.getConstituents()) {
             int featureId;
-            if (this.lexiconer.containFeature(c.getSurfaceForm())) {
+            if (this.lexiconer.containFeature("w:"+ c.getSurfaceForm())) {
                 featureId = this.lexiconer.getFeatureId("w:" + c.getSurfaceForm());
             } else {
                 featureId = this.lexiconer.getFeatureId("w:unknownword");
