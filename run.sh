@@ -1,3 +1,5 @@
+set -e
+
 #mvn clean
 #mvn dependency:copy-dependencies
 
