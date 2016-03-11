@@ -17,6 +17,7 @@
  *******************************************************************************/
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -49,10 +50,6 @@ public class ViterbiInferenceSolver extends
 		SequenceLabel goldLabeledSeq = (SequenceLabel) gold;
         SequenceInstance sen = (SequenceInstance) input;
 
-		if (true) {
-            return new SequenceLabel(new int[sen.getConstituents().size()]);
-        }
-
 		int numOfLabels = lm.getNumOfLabels();
 		int numOfTokens = sen.getConstituents().size();
 		int numOfEmissionFeatures = lm.getNumOfFeature();
@@ -62,20 +59,30 @@ public class ViterbiInferenceSolver extends
 
 		int offset = (numOfEmissionFeatures + 1) * numOfLabels;
 
-        /*
+        // Temporary fix. This needs to be integrated with FeatureDefinitionBase somehow.
+        int[] sentenceTokens = new int[numOfTokens];
+        for (int i = 0; i < numOfTokens; i++) {
+            Constituent c = sen.getConstituents().get(i);
+            if (lm.containFeature(c.getSurfaceForm())) {
+                sentenceTokens[i] = lm.getFeatureId("w:" + c.getSurfaceForm());
+            } else {
+                sentenceTokens[i] = lm.getFeatureId("w:unknownword");
+            }
+        }
+    
 		// Viterbi algorithm
 		for (int j = 0; j < numOfLabels; j++) {
-			float priorScore = wv.get(numOfEmissionFeatures * numOfLabels + j);
-			float zeroOrderScore =  wv.get(sen.tokens[0] + j*numOfEmissionFeatures) +
-					((gold !=null && j != goldLabeledSeq.tags[0])?1:0);
+			float priorScore = wv.get(j);
+			float zeroOrderScore =  wv.get(sentenceTokens[0] + j*numOfEmissionFeatures + numOfLabels) +
+					((gold !=null && j != goldLabeledSeq.tagIds[0])?1:0);
 			dpTable[0][j] = priorScore + zeroOrderScore; 	 
 			path[0][j] = -1;
 		}
 		
 		for (int i = 1; i < numOfTokens; i++) {
 			for (int j = 0; j < numOfLabels; j++) {
-				float zeroOrderScore = wv.get(sen.tokens[i] + j*numOfEmissionFeatures)
-						+ ((gold!=null && j != goldLabeledSeq.tags[i])?1:0);
+				float zeroOrderScore = wv.get(sentenceTokens[i] + j*numOfEmissionFeatures + numOfLabels)
+						+ ((gold!=null && j != goldLabeledSeq.tagIds[i])?1:0);
 				
 				float bestScore = Float.NEGATIVE_INFINITY;
 				for (int k = 0; k < numOfLabels; k++) {
@@ -88,9 +95,8 @@ public class ViterbiInferenceSolver extends
 				dpTable[i%2][j] = zeroOrderScore + bestScore;
 			}
 		}
-		*/
-		
-		// find the best sequence		
+
+		// find the best sequence
 		int[] labels = new int[numOfTokens];
 		
 		int maxTag = 0;
