@@ -14,6 +14,10 @@ public class Test {
 
     public static void testNER(Corpus testData, String modelPath) throws Exception {
         SLModel model = SLModel.loadModel(modelPath);
+
+        // Disable modification of lexicon while testing.
+        model.lm.setAllowNewFeatures(false);
+
         SLProblem slProblem = MainClass.readStructuredData(testData, model.lm);
 
         TestDiscrete testDiscreteFormatted = new TestDiscrete();

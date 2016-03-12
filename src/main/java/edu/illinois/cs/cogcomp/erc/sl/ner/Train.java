@@ -40,6 +40,9 @@ public class Train {
         SLModel model = new SLModel();
         model.lm = new Lexiconer();
 
+        // Enable modification of lexicon while reading data
+        model.lm.setAllowNewFeatures(true);
+
         SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm);
 
         // Disallow the creation of new features
