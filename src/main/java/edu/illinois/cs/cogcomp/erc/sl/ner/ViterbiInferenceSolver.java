@@ -21,6 +21,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
+import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
@@ -48,45 +49,34 @@ public class ViterbiInferenceSolver extends
 
         // initialization
 		SequenceLabel goldLabeledSeq = (SequenceLabel) gold;
-        SequenceInstance sen = (SequenceInstance) input;
+        SequenceInstance sentence = (SequenceInstance) input;
 
 		int numOfLabels = lm.getNumOfLabels();
-		int numOfTokens = sen.getConstituents().size();
-		int numOfEmissionFeatures = lm.getNumOfFeature();
-				
+		int numOfTokens = sentence.getConstituents().size();
+
 		float[][] dpTable = new float[2][numOfLabels];
 		int[][] path = new int[numOfTokens][numOfLabels];
 
-		int offset = (numOfEmissionFeatures + 1) * numOfLabels;
-
-        // Temporary fix. This needs to be integrated with FeatureDefinitionBase somehow.
-        int[] sentenceTokens = new int[numOfTokens];
-        for (int i = 0; i < numOfTokens; i++) {
-            Constituent c = sen.getConstituents().get(i);
-            if (lm.containFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm())) {
-                sentenceTokens[i] = lm.getFeatureId(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
-            } else {
-                sentenceTokens[i] = lm.getFeatureId(LexiconerConstants.UNKNOWN_WORD);
-            }
-        }
-    
 		// Viterbi algorithm
 		for (int j = 0; j < numOfLabels; j++) {
-			float priorScore = wv.get(j);
-			float zeroOrderScore =  wv.get(sentenceTokens[0] + j*numOfEmissionFeatures + numOfLabels) +
-					((gold !=null && j != goldLabeledSeq.tagIds[0])?1:0);
-			dpTable[0][j] = priorScore + zeroOrderScore; 	 
+			FeatureVectorBuffer localScoreSparse = this.featureGenerator.getLocalScore(sentence, 0, 0, j);
+			float zeroOrderScore =  wv.dotProduct(localScoreSparse.toFeatureVector()) +
+					((gold != null && j != goldLabeledSeq.tagIds[0]) ? 1 : 0);
+
+			dpTable[0][j] = zeroOrderScore;
 			path[0][j] = -1;
 		}
 		
 		for (int i = 1; i < numOfTokens; i++) {
 			for (int j = 0; j < numOfLabels; j++) {
-				float zeroOrderScore = wv.get(sentenceTokens[i] + j*numOfEmissionFeatures + numOfLabels)
-						+ ((gold!=null && j != goldLabeledSeq.tagIds[i])?1:0);
+                float zeroOrderScore = ((gold != null && j != goldLabeledSeq.tagIds[i]) ? 1 : 0);
 				
 				float bestScore = Float.NEGATIVE_INFINITY;
 				for (int k = 0; k < numOfLabels; k++) {
-					float candidateScore = dpTable[(i-1)%2][k] +  wv.get(offset + (k * numOfLabels + j));
+                    FeatureVectorBuffer localScoreSparse = this.featureGenerator.getLocalScore(sentence, i, k, j);
+                    float localScore = wv.dotProduct(localScoreSparse.toFeatureVector());
+
+					float candidateScore = dpTable[(i-1)%2][k] + localScore;
 					if (candidateScore > bestScore) {
 						bestScore = candidateScore;
 						path[i][j] = k;
