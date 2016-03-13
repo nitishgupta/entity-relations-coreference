@@ -5,61 +5,45 @@ import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
 import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
+import edu.illinois.cs.cogcomp.erc.reader.DocumentReader;
+import edu.illinois.cs.cogcomp.erc.util.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by nitishgupta on 3/9/16.
  */
 public class CorpusUtils {
+    public static Corpus readCorpus(CorpusType corpusType){
+        Corpus corpus;
+        boolean is2004 = (corpusType == CorpusType.ACE04);
+        String serializedCorpusFile = is2004 ? Parameters.ACE04_SERIALIZED_CORPUS : Parameters.ACE05_SERIALIZED_CORPUS;
 
-    public static Corpus readACE05Corpus(){
-        Corpus ace05;
-        if ((new File(Parameters.ACE05_SERIALIZED_CORPUS)).exists()) {
-            ace05 = edu.illinois.cs.cogcomp.erc.util.Utils.readSerializedCorpus(Parameters.ACE05_SERIALIZED_CORPUS);
+        if ((new File(serializedCorpusFile)).exists()) {
+            corpus = Utils.readSerializedCorpus(serializedCorpusFile);
         } else {
             // To read corpus from directory and write serialized docs
-            Ace05Reader ace05reader = new Ace05Reader();
-            List<Document> ace05docs = ace05reader.readCorpus();
-            ace05 = new Corpus(ace05docs, ace05reader.checkis2004());
+            DocumentReader documentReader = is2004 ? new Ace04Reader() : new Ace05Reader();
+            List<Document> corpusDocuments = documentReader.readCorpus();
+            corpus = new Corpus(corpusDocuments, is2004);
 
-
-            edu.illinois.cs.cogcomp.erc.util.Utils.writeSerializedCorpus(ace05, Parameters.ACE05_SERIALIZED_CORPUS);
+            edu.illinois.cs.cogcomp.erc.util.Utils.writeSerializedCorpus(corpus, serializedCorpusFile);
         }
 
-        if(ace05 != null) {
-            System.out.println("Number of ACE05 documents read - " + ace05.getDocs().size());
-            System.out.println("Ace05 Stats : ");
-            edu.illinois.cs.cogcomp.erc.util.Utils.countCorpusTypeDocs(ace05);
-            for(Document doc : ace05.getDocs()){
+        if (corpus != null) {
+            System.out.println("Reading documents from " + (is2004 ? "ACE2004" : "ACE2005"));
+            System.out.println("Number of documents read - " + corpus.getDocs().size());
+            System.out.println("Corpus Stats : ");
+            Utils.countCorpusTypeDocs(corpus);
+
+            for(Document doc : corpus.getDocs()) {
                 DocUtils.addNERCoarseBIOView(doc);
             }
         }
 
-        return ace05;
-    }
-
-    public static Corpus readACE04Corpus(){
-        Corpus ace04;
-        if ((new File(Parameters.ACE04_SERIALIZED_CORPUS)).exists()) {
-            ace04 = edu.illinois.cs.cogcomp.erc.util.Utils.readSerializedCorpus(Parameters.ACE04_SERIALIZED_CORPUS);
-        } else {
-            // To read corpus from directory and write serialized docs
-            Ace04Reader ace04reader = new Ace04Reader();
-            List<Document> ace04docs = ace04reader.readCorpus();
-            ace04 = new Corpus(ace04docs, ace04reader.checkis2004());
-
-            System.out.println("Number of ACE05 documents read - " + ace04docs.size());
-
-            System.out.println("Ace04 Stats : ");
-            edu.illinois.cs.cogcomp.erc.util.Utils.countCorpusTypeDocs(ace04);
-            edu.illinois.cs.cogcomp.erc.util.Utils.writeSerializedCorpus(ace04, Parameters.ACE04_SERIALIZED_CORPUS);
-        }
-
-        return ace04;
+        return corpus;
     }
 
     public static List<Corpus> getTrainDevTestCorpora(Corpus corpus){
@@ -90,11 +74,10 @@ public class CorpusUtils {
         return corpora;
     }
 
-    public static List<Corpus> readACE05CompleteTrainDevTestCorpora(){
-        Corpus ace05 = CorpusUtils.readACE05Corpus();
-        List<Corpus> corpora = CorpusUtils.getTrainDevTestCorpora(ace05);
-        corpora.add(0, ace05);
+    public static List<Corpus> readCompleteTrainDevTestCorpora(CorpusType corpusType){
+        Corpus corpus = CorpusUtils.readCorpus(corpusType);
+        List<Corpus> corpora = CorpusUtils.getTrainDevTestCorpora(corpus);
+        corpora.add(0, corpus);
         return corpora;
     }
-
 }
