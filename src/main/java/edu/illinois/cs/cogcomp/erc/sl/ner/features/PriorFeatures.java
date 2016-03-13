@@ -24,4 +24,18 @@ public class PriorFeatures extends FeatureDefinitionBase {
     public int getFeatureSize() {
         return this.lexiconer.getNumOfLabels();
     }
+
+    @Override
+    public FeatureVectorBuffer getLocalScore(SequenceInstance sequence,
+                                             int currentWordPosition,
+                                             int prevLabelId,
+                                             int currentLabelId) {
+        FeatureVectorBuffer fvb = new FeatureVectorBuffer();
+
+        // Prior features are will not have a value for non-first position
+        if (currentWordPosition == 0)
+            fvb.addFeature(currentLabelId, 1.0f);
+
+        return fvb;
+    }
 }
