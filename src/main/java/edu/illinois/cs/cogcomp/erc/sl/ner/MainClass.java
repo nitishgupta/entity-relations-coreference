@@ -32,7 +32,7 @@ public class MainClass {
         SLProblem sp = new SLProblem();
         int num_instances = 0;
         if(lm.isAllowNewFeatures())
-            lm.addFeature("w:unknownword");
+            lm.addFeature(LexiconerConstants.UNKNOWN_WORD);
 
         // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()*corpus.numDocs()
         List<Document> docs = corpus.getDocs();
@@ -54,13 +54,19 @@ public class MainClass {
 
                 for(int token_num = start_token; token_num <= end_token; token_num++){
                     Constituent c = NER_GOLD_BIO_VIEW.getConstituentAtToken(token_num);
-                    if(lm.isAllowNewFeatures()){
-                        lm.addFeature("w:"+c.getSurfaceForm());
-                    }
                     token_constituents.add(c);
 
-                    lm.addLabel("tag:"+c.getLabel());
-                    tagIds[token_num - start_token] = lm.getLabelId("tag:"+c.getLabel());
+                    if (lm.isAllowNewFeatures()) {
+                        lm.addFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
+                    }
+
+                    String labelTag = LexiconerConstants.LABEL_PREFIX + c.getLabel();
+                    if (lm.isAllowNewFeatures()) {
+                        lm.addLabel(labelTag);
+                    }
+
+                    assert lm.containsLabel(labelTag) : "Error: Previously unseen label found during testing.";
+                    tagIds[token_num - start_token] = lm.getLabelId(labelTag);
                 }
 
                 sen = new SequenceInstance(token_constituents);
@@ -69,6 +75,7 @@ public class MainClass {
                 num_instances++;
             }
         }
+
         System.out.println("Num of Instances added in the SLProblem = " + num_instances);
         return sp;
     }
@@ -82,13 +89,13 @@ public class MainClass {
 
         try {
             List<Corpus> corpora  = CorpusUtils.readACE05CompleteTrainDevTestCorpora();
-            Corpus ace05 = corpora.get(0);
-            Corpus ace05train = corpora.get(1);
-            Corpus ace05dev = corpora.get(2);
-            Corpus ace05test = corpora.get(3);
+            Corpus allCorpora = corpora.get(0);
+            Corpus trainData = corpora.get(1);
+            Corpus devData = corpora.get(2);
+            Corpus testData = corpora.get(3);
 
-            Train.trainNER(ace05train, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel");
-            Test.testNER(ace05test, "testModel");
+            Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel");
+            Test.testNER(testData, "testModel");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

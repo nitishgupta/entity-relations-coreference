@@ -1,6 +1,7 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner.features;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.erc.sl.ner.LexiconerConstants;
 import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceInstance;
 import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceLabel;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
@@ -21,10 +22,10 @@ public class EmissionFeatures extends FeatureDefinitionBase {
         int idx = 0;
         for (Constituent c : sequence.getConstituents()) {
             int featureId;
-            if (this.lexiconer.containFeature("w:"+ c.getSurfaceForm())) {
-                featureId = this.lexiconer.getFeatureId("w:" + c.getSurfaceForm());
+            if (this.lexiconer.containFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm())) {
+                featureId = this.lexiconer.getFeatureId(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
             } else {
-                featureId = this.lexiconer.getFeatureId("w:unknownword");
+                featureId = this.lexiconer.getFeatureId(LexiconerConstants.UNKNOWN_WORD);
             }
 
             fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * label.tagIds[idx++], 1.0f);
