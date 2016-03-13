@@ -22,7 +22,7 @@ public class Test {
 
         TestDiscrete testDiscreteFormatted = new TestDiscrete();
         TestDiscrete testFiltered = new TestDiscrete();
-        testFiltered.addNull("tag:O");
+        testFiltered.addNull(LexiconerConstants.LABEL_PREFIX + "O");
 
         for (int i = 0; i < slProblem.instanceList.size(); i++) {
 

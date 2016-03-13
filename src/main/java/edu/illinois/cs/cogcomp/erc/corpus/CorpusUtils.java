@@ -38,6 +38,7 @@ public class CorpusUtils {
                 DocUtils.addNERCoarseBIOView(doc);
             }
         }
+
         return ace05;
     }
 
@@ -64,11 +65,9 @@ public class CorpusUtils {
     public static List<Corpus> getTrainDevTestCorpora(Corpus corpus){
         List<Document> alldocs = corpus.getDocs();
 
-        int start_train = 0, end_train = (int) (Parameters.train_perc*alldocs.size()),
-                start_dev = end_train, end_dev = (int) ((Parameters.train_perc + Parameters.dev_perc)*alldocs.size()),
-                start_test = end_dev, end_test = alldocs.size();
-
-
+        int start_train = 0, end_train = (int) (Parameters.train_perc * alldocs.size());
+        int start_dev = end_train, end_dev = (int) ((Parameters.train_perc + Parameters.dev_perc) * alldocs.size());
+        int start_test = end_dev, end_test = alldocs.size();
 
         List<Document> train = alldocs.subList(start_train, end_train);
         List<Document> dev = alldocs.subList(start_dev, end_dev);
@@ -77,7 +76,6 @@ public class CorpusUtils {
         Corpus tr = new Corpus(train, corpus.checkisACE2004());
         Corpus te = new Corpus(test, corpus.checkisACE2004());
         Corpus deve = new Corpus(dev, corpus.checkisACE2004());
-
 
         System.out.println("Number of files after split : ");
         System.out.println("Train : " + train.size());
@@ -90,7 +88,6 @@ public class CorpusUtils {
         corpora.add(te);
 
         return corpora;
-
     }
 
     public static List<Corpus> readACE05CompleteTrainDevTestCorpora(){
