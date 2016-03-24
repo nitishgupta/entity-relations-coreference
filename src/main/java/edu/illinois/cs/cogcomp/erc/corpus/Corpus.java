@@ -5,10 +5,7 @@ import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by nitishgupta on 2/21/16.

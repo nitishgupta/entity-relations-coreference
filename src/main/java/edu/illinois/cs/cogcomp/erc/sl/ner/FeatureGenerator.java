@@ -1,6 +1,7 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.erc.sl.ner.features.FeatureDefinitionBase;
+import edu.illinois.cs.cogcomp.erc.sl.ner.features.IFeatureDefinition;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by Bhargav Mangipudi on 3/8/16.
  */
-public class FeatureGenerator extends AbstractFeatureGenerator {
+public class FeatureGenerator extends AbstractFeatureGenerator implements IFeatureDefinition {
     List<FeatureDefinitionBase> activeFeatures;
 
     /**
@@ -29,6 +30,11 @@ public class FeatureGenerator extends AbstractFeatureGenerator {
         SequenceInstance sequence = (SequenceInstance)iInstance;
         SequenceLabel label = (SequenceLabel)iStructure;
 
+        return this.getSparseFeature(sequence, label).toFeatureVector();
+    }
+
+    @Override
+    public FeatureVectorBuffer getSparseFeature(SequenceInstance sequence, SequenceLabel label) {
         int shift = 0;
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
 
@@ -37,14 +43,15 @@ public class FeatureGenerator extends AbstractFeatureGenerator {
             shift += feature.getFeatureSize();
         }
 
-        return fvb.toFeatureVector();
+        return fvb;
     }
 
     /**
      * Returns the size of the final feature vector.
      * @return Size of the final FeatureVector
      */
-    public int getFeatureVectorSize() {
+    @Override
+    public int getFeatureSize() {
         int size = 0;
 
         for (FeatureDefinitionBase feature : this.activeFeatures) {
@@ -52,5 +59,21 @@ public class FeatureGenerator extends AbstractFeatureGenerator {
         }
 
         return size;
+    }
+
+    @Override
+    public FeatureVectorBuffer getLocalScore(SequenceInstance sequence,
+                                             int currentWordPosition,
+                                             int prevLabelId,
+                                             int currentLabelId) {
+        int shift = 0;
+        FeatureVectorBuffer fvb = new FeatureVectorBuffer();
+
+        for (FeatureDefinitionBase feature : this.activeFeatures) {
+            fvb.addFeature(feature.getLocalScore(sequence, currentWordPosition, prevLabelId, currentLabelId), shift);
+            shift += feature.getFeatureSize();
+        }
+
+        return fvb;
     }
 }

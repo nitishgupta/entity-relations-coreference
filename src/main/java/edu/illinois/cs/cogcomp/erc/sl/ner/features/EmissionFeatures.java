@@ -38,4 +38,24 @@ public class EmissionFeatures extends FeatureDefinitionBase {
     public int getFeatureSize() {
         return this.lexiconer.getNumOfFeature() * this.lexiconer.getNumOfLabels();
     }
+
+    @Override
+    public FeatureVectorBuffer getLocalScore(SequenceInstance sequence,
+                                             int currentWordPosition,
+                                             int prevLabelId,
+                                             int currentLabelId) {
+        FeatureVectorBuffer fvb = new FeatureVectorBuffer();
+
+        Constituent c = sequence.getConstituents().get(currentWordPosition);
+        int featureId;
+        if (this.lexiconer.containFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm())) {
+            featureId = this.lexiconer.getFeatureId(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
+        } else {
+            featureId = this.lexiconer.getFeatureId(LexiconerConstants.UNKNOWN_WORD);
+        }
+
+        fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * currentLabelId, 1.0f);
+
+        return fvb;
+    }
 }

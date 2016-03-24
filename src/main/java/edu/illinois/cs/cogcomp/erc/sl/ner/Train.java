@@ -53,7 +53,7 @@ public class Train {
 
         SLParameters parameters = new SLParameters();
         parameters.loadConfigFile(slConfigPath);
-        parameters.TOTAL_NUMBER_FEATURE = featureGenerator.getFeatureVectorSize();
+        parameters.TOTAL_NUMBER_FEATURE = featureGenerator.getFeatureSize();
 
         // initialize the inference solver
         model.infSolver = new ViterbiInferenceSolver(model.lm, featureGenerator);
