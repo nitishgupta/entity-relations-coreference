@@ -26,10 +26,6 @@ public abstract class DocumentReader {
     protected String serializedDocDir;
     protected boolean is2004;
 
-    public DocumentReader(){
-
-    }
-
     protected static AceFileProcessor fileProcessor = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
 
     public Document readDocument(String fileName) {

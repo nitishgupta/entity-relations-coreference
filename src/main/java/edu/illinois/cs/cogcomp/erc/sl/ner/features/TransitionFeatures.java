@@ -30,4 +30,18 @@ public class TransitionFeatures extends FeatureDefinitionBase {
     public int getFeatureSize() {
         return this.lexiconer.getNumOfLabels() * this.lexiconer.getNumOfLabels();
     }
+
+    @Override
+    public FeatureVectorBuffer getLocalScore(SequenceInstance sequence,
+                                             int currentWordPosition,
+                                             int prevLabelId,
+                                             int currentLabelId) {
+        FeatureVectorBuffer fvb = new FeatureVectorBuffer();
+
+        if (currentWordPosition > 0) {
+            fvb.addFeature(prevLabelId * this.lexiconer.getNumOfLabels() + currentLabelId, 1.0f);
+        }
+
+        return fvb;
+    }
 }

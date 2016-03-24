@@ -3,10 +3,10 @@ package edu.illinois.cs.cogcomp.erc.sl.ner;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
+import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
-import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
@@ -88,7 +88,7 @@ public class MainClass {
         ConfigSystem.initialize();
 
         try {
-            List<Corpus> corpora  = CorpusUtils.readACE05CompleteTrainDevTestCorpora();
+            List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
             Corpus allCorpora = corpora.get(0);
             Corpus trainData = corpora.get(1);
             Corpus devData = corpora.get(2);
