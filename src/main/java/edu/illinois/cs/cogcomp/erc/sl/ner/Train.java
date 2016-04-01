@@ -1,9 +1,7 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
-import edu.illinois.cs.cogcomp.erc.sl.ner.features.EmissionFeatures;
-import edu.illinois.cs.cogcomp.erc.sl.ner.features.PriorFeatures;
-import edu.illinois.cs.cogcomp.erc.sl.ner.features.TransitionFeatures;
+import edu.illinois.cs.cogcomp.erc.sl.ner.features.*;
 
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
@@ -32,7 +30,9 @@ public class Train {
         return new FeatureGenerator(Collections.unmodifiableList(Arrays.asList(
                 new PriorFeatures(lexiconer),
                 new EmissionFeatures(lexiconer),
-                new TransitionFeatures(lexiconer)
+                new TransitionFeatures(lexiconer),
+                new CurrentWordPOSFeature(lexiconer),
+                new CurrentWordCapitalizationFeature(lexiconer)
         )));
     }
 
@@ -57,6 +57,7 @@ public class Train {
 
         // initialize the inference solver
         model.infSolver = new ViterbiInferenceSolver(model.lm, featureGenerator);
+        model.featureGenerator = featureGenerator;
 
         Learner learner = LearnerFactory.getLearner(model.infSolver, featureGenerator, parameters);
         model.wv = learner.train(slProblem);
