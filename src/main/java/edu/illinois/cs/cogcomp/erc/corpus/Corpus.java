@@ -17,6 +17,13 @@ public class Corpus implements Serializable{
     private boolean isACE04;
     public static final String NER_GOLD_COARSE_VIEW = "NER_ACE_COARSE";
     public static final String NER_GOLD_BIO_VIEW = "NER_GOLD_BIO_VIEW";
+    public static final String NER_GOLD_COARSE_EXTENT = "NER_GOLD_COARSE_EXTENT";
+    public static final String NER_GOLD_COARSE_HEAD = "NER_GOLD_COARSE_HEAD";
+    public static final String TOKENS_VIEW = "TOKENS";
+    public static final String SENTENCE_VIEW = "SENTENCE";
+    public static final String SHALLOW_PARSE_VIEW = "SHALLOW_PARSE";
+    public static final String POS_VIEW = "POS";
+
 
     /*
     Have included a method to shuffle docs when storing because
@@ -24,7 +31,7 @@ public class Corpus implements Serializable{
         1. Do not want to shuffle everytime when returning.
      */
     public Corpus(List<Document> docs, boolean isACE04){
-        Collections.shuffle(docs);
+        //Collections.shuffle(docs);
         this.docs = docs;
         this.isACE04 = isACE04;
     }
