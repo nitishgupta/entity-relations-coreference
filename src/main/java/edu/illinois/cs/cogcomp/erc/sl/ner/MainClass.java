@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
+import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
@@ -31,13 +32,17 @@ public class MainClass {
     public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm) {
         SLProblem sp = new SLProblem();
         int num_instances = 0;
-        if(lm.isAllowNewFeatures())
-            lm.addFeature(LexiconerConstants.UNKNOWN_WORD);
+
+        if (lm.isAllowNewFeatures()) {
+            lm.addFeature(LexiconerConstants.WORD_UNKNOWN);
+            lm.addFeature(LexiconerConstants.POS_UNKNOWN);
+        }
 
         // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()*corpus.numDocs()
         List<Document> docs = corpus.getDocs();
         for(Document doc : docs){
             TokenLabelView NER_GOLD_BIO_VIEW = doc.getNERBIOView();
+            View POS_VIEW = doc.getTA().getView(ViewNames.POS);
             View SentenceView = doc.getSentenceView();
 
             // One Sentence inside. Therefore one SequenceInstance and SequenceLabel should be made
@@ -50,14 +55,19 @@ public class MainClass {
                 int end_token = sentence.getEndSpan() - 1;  // Inclusive
 
                 List<Constituent> token_constituents = new ArrayList<Constituent>();
+                List<String> posTag_list = new ArrayList<>();
                 int[] tagIds = new int[end_token - start_token + 1];
 
                 for(int token_num = start_token; token_num <= end_token; token_num++){
                     Constituent c = NER_GOLD_BIO_VIEW.getConstituentAtToken(token_num);
                     token_constituents.add(c);
 
+                    String posTag = POS_VIEW.getConstituentsCoveringToken(token_num).get(0).getLabel();
+                    posTag_list.add(posTag);
+
                     if (lm.isAllowNewFeatures()) {
                         lm.addFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
+                        lm.addFeature(LexiconerConstants.POS_PREFIX + posTag);
                     }
 
                     String labelTag = LexiconerConstants.LABEL_PREFIX + c.getLabel();
@@ -69,7 +79,7 @@ public class MainClass {
                     tagIds[token_num - start_token] = lm.getLabelId(labelTag);
                 }
 
-                sen = new SequenceInstance(token_constituents);
+                sen = new SequenceInstance(token_constituents, posTag_list);
                 sen_label = new SequenceLabel(tagIds);
                 sp.addExample(sen, sen_label);
                 num_instances++;

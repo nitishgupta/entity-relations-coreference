@@ -76,4 +76,16 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements IFeatu
 
         return fvb;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Features Used for NER\n");
+
+        for (FeatureDefinitionBase feature : this.activeFeatures) {
+            sb.append(feature.getClass().getSimpleName() + ": " + feature.getFeatureSize() + "\n");
+        }
+
+        return sb.toString();
+    }
 }

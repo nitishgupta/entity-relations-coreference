@@ -8,11 +8,13 @@ import edu.illinois.cs.cogcomp.erc.util.Utils;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
+import java.util.List;
+
 /**
- * Created by Bhargav Mangipudi on 3/8/16.
+ * Created by Bhargav Mangipudi on 3/27/16.
  */
-public class EmissionFeatures extends FeatureDefinitionBase {
-    public EmissionFeatures(Lexiconer lm) {
+public class CurrentWordPOSFeature extends FeatureDefinitionBase {
+    public CurrentWordPOSFeature(Lexiconer lm) {
         super(lm);
     }
 
@@ -20,14 +22,20 @@ public class EmissionFeatures extends FeatureDefinitionBase {
     public FeatureVectorBuffer getSparseFeature(SequenceInstance sequence, SequenceLabel label) {
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
 
+        List<String> posTagSequence = sequence.getPOSTagSequence();
+
         int idx = 0;
         for (Constituent c : sequence.getConstituents()) {
-            int featureId = Utils.getFeatureIdOrElse(
-                    this.lexiconer,
-                    LexiconerConstants.WORD_PREFIX + c.getSurfaceForm(),
-                    LexiconerConstants.WORD_UNKNOWN);
+            int labelId = label.tagIds[idx];
 
-            fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * label.tagIds[idx++], 1.0f);
+            String posTag = posTagSequence.get(idx);
+            int posTagFeatureId = Utils.getFeatureIdOrElse(
+                    this.lexiconer,
+                    LexiconerConstants.POS_PREFIX + posTag,
+                    LexiconerConstants.POS_UNKNOWN);
+
+            fvb.addFeature(this.lexiconer.getNumOfLabels() * labelId + posTagFeatureId, 1.0f);
+            idx++;
         }
 
         return fvb;
@@ -35,7 +43,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
 
     @Override
     public int getFeatureSize() {
-        return this.lexiconer.getNumOfFeature() * this.lexiconer.getNumOfLabels();
+        return this.lexiconer.getNumOfLabels() * this.lexiconer.getNumOfFeature();
     }
 
     @Override
@@ -45,13 +53,13 @@ public class EmissionFeatures extends FeatureDefinitionBase {
                                              int currentLabelId) {
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
 
-        Constituent c = sequence.getConstituents().get(currentWordPosition);
-        int featureId = Utils.getFeatureIdOrElse(
+        String posTag = sequence.getPOSTagSequence().get(currentWordPosition);
+        int posTagFeatureId = Utils.getFeatureIdOrElse(
                 this.lexiconer,
-                LexiconerConstants.WORD_PREFIX + c.getSurfaceForm(),
-                LexiconerConstants.WORD_UNKNOWN);
+                LexiconerConstants.POS_PREFIX + posTag,
+                LexiconerConstants.POS_UNKNOWN);
 
-        fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * currentLabelId, 1.0f);
+        fvb.addFeature(this.lexiconer.getNumOfLabels() * currentLabelId +  posTagFeatureId, 1.0f);
 
         return fvb;
     }

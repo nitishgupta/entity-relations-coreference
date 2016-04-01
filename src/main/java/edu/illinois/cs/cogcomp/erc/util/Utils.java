@@ -8,6 +8,7 @@ import edu.illinois.cs.cogcomp.core.utilities.StringUtils;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
+import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -182,4 +183,8 @@ public class Utils {
         System.out.println("\n");
     }
 
+    public static int getFeatureIdOrElse(Lexiconer lm, String feature, String fallback) {
+        if (lm.containFeature(feature)) return lm.getFeatureId(feature);
+        return lm.getFeatureId(fallback);
+    }
 }
