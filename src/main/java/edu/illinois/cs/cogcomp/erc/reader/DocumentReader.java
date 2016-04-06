@@ -3,6 +3,8 @@ package edu.illinois.cs.cogcomp.erc.reader;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.io.LineIO;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
+import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
+import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.util.Utils;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
@@ -50,17 +52,19 @@ public abstract class DocumentReader {
         Document newDoc = null;
         try {
             ACEDocument doc = fileProcessor.processAceEntry(new File(this.baseDir + prefix + "/"), fullfilepath);
+            String contentRemovingTags = doc.contentRemovingTags;
 
+            newDoc = new Document(doc.aceAnnotation, contentRemovingTags, is2004, fileName);
 
-            List<TextAnnotation> taList = AceFileProcessor.populateTextAnnotation(doc);
+            // ADDING SPAN NER EXTENT VIEW IN TA
+            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_COARSE_EXTENT))
+                DocUtils.createGOLDNER_ExtentView(newDoc);
+            // ADDING BIO NER EXTENT VIEW IN TA
+            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_BIO_VIEW))
+                DocUtils.addBIOView(newDoc, Corpus.NER_GOLD_COARSE_EXTENT, Corpus.NER_GOLD_BIO_VIEW);
 
-            if (taList.size() == 1) {
-                newDoc = new Document(taList.get(0), doc.aceAnnotation, is2004, fileName);
-                // Write document to cache
-                Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);
-            }
-            else
-                newDoc = null;
+            // Write document to cache
+            Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);
         } catch (Exception ex) {
             if (Parameters.isDebug) System.err.println("Failed to parse document - " + fullfilepath);
             if (Parameters.isDebug) ex.printStackTrace(System.err);

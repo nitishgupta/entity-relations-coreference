@@ -31,6 +31,9 @@ public class PipelineService {
     }
 
     public static void addShallowParse(TextAnnotation ta) {
+        if(ta == null){
+            return;
+        }
         try {
             prep.addView(ta, ViewNames.SHALLOW_PARSE);
         } catch (Exception e) {
@@ -39,6 +42,9 @@ public class PipelineService {
     }
 
     public static void addPOS(TextAnnotation ta) {
+        if(ta == null){
+            return;
+        }
         try {
             prep.addView(ta, ViewNames.POS);
         } catch (Exception e) {
