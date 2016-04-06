@@ -1,6 +1,8 @@
 package edu.illinois.cs.cogcomp.erc.util;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.core.io.LineIO;
 import edu.illinois.cs.cogcomp.core.utilities.StringUtils;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
@@ -131,5 +133,53 @@ public class Utils {
         System.out.println("\n");
     }
 
+    public static void printSpanNERView(Document doc){
+        System.out.println("\n");
+        TextAnnotation ta = doc.getTA();
+        View ner = ta.getView(Corpus.NER_GOLD_COARSE_EXTENT);
+        View tokens_view = ta.getView(Corpus.TOKENS_VIEW);
+        List<Constituent> tokens_constituents = tokens_view.getConstituents();
+
+        Map<Integer, Integer> start_end = new HashMap<Integer, Integer>();
+        for(Constituent c : ner.getConstituents()){
+            start_end.put(c.getStartSpan(), c.getEndSpan()-1);
+        }
+
+        int i = 0;
+        while(i < tokens_constituents.size()) {
+            Constituent token = tokens_constituents.get(i);
+            Constituent c_bio = null;
+            // Either token i is start of NER type or OUTSIDE
+            if (start_end.containsKey(i)) {
+                int end = start_end.get(i);
+                List<Constituent> cons = ner.getConstituentsCoveringToken(i);
+                String label = cons.get(0).getLabel();
+                System.out.print(token.getSurfaceForm() + "_" + label + " ");
+                i++;
+                while (i <= end) {
+                    token = tokens_constituents.get(i);
+                    System.out.print(token.getSurfaceForm() + "_" + label + " ");
+                    i++;
+                }
+            } else {
+                System.out.print(token.getSurfaceForm() + " ");
+                i++;
+            }
+        }
+
+        System.out.println("\n");
+    }
+
+    public static void printBIONERView(Document doc){
+        System.out.println("\n");
+
+        View ner = doc.getTA().getView(Corpus.NER_GOLD_BIO_VIEW);
+        List<Constituent> tokens = ner.getConstituents();
+        for(Constituent token : tokens){
+            System.out.print(token.getSurfaceForm()+"_"+token.getLabel() + " ");
+        }
+
+        System.out.println("\n");
+    }
 
 }

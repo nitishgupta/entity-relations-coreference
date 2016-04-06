@@ -1,7 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.corpus;
 
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
-import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
 import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
@@ -22,14 +21,16 @@ public class CorpusUtils {
         String serializedCorpusFile = is2004 ? Parameters.ACE04_SERIALIZED_CORPUS : Parameters.ACE05_SERIALIZED_CORPUS;
 
         if ((new File(serializedCorpusFile)).exists()) {
+            System.out.println("***  READING SERIALIZED CORPUS *** ");
             corpus = Utils.readSerializedCorpus(serializedCorpusFile);
         } else {
             // To read corpus from directory and write serialized docs
+            System.out.println("***  READING DOCS DIRECTLY  *** ");
             DocumentReader documentReader = is2004 ? new Ace04Reader() : new Ace05Reader();
             List<Document> corpusDocuments = documentReader.readCorpus();
             corpus = new Corpus(corpusDocuments, is2004);
 
-            edu.illinois.cs.cogcomp.erc.util.Utils.writeSerializedCorpus(corpus, serializedCorpusFile);
+            Utils.writeSerializedCorpus(corpus, serializedCorpusFile);
         }
 
         if (corpus != null) {
@@ -38,9 +39,10 @@ public class CorpusUtils {
             System.out.println("Corpus Stats : ");
             Utils.countCorpusTypeDocs(corpus);
 
-            for(Document doc : corpus.getDocs()) {
-                DocUtils.addNERCoarseBIOView(doc);
-            }
+            /* TODO : STOPPING ADDING BIO VIEW UNTIL NER_GOLD_VIEW IS ESTABLISHED */
+//            for(Document doc : corpus.getDocs()) {
+//                DocUtils.addNERCoarseBIOView(doc);
+//            }
         }
 
         return corpus;
