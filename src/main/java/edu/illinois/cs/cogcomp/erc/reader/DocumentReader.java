@@ -57,11 +57,15 @@ public abstract class DocumentReader {
             newDoc = new Document(doc.aceAnnotation, contentRemovingTags, is2004, fileName);
 
             // ADDING SPAN NER EXTENT VIEW IN TA
-            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_COARSE_EXTENT))
+            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_EXTENT_SPAN))
                 DocUtils.createGOLDNER_ExtentView(newDoc);
+            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_HEAD_SPAN))
+                DocUtils.createGOLDNER_HeadView(newDoc);
             // ADDING BIO NER EXTENT VIEW IN TA
-            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_BIO_VIEW))
-                DocUtils.addBIOView(newDoc, Corpus.NER_GOLD_COARSE_EXTENT, Corpus.NER_GOLD_BIO_VIEW);
+            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_HEAD_BIO_VIEW))
+                DocUtils.addNERHeadBIOView(newDoc);
+            if(!newDoc.getTA().hasView(Corpus.NER_GOLD_EXTENT_BIO_VIEW))
+                DocUtils.addNERExtentBIOView(newDoc);
 
             // Write document to cache
             Utils.writeSerializedDocument(newDoc, serializedDocDir, cacheFileName);

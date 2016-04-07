@@ -29,5 +29,5 @@ public class Parameters {
 
     public static double train_perc = 0.75;
     public static double dev_perc = 0.15;
-    public static double test_perc = 0.1;
+    public static double test_perc = 0.2;
 }

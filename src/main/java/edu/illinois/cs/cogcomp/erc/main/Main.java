@@ -1,10 +1,12 @@
 package edu.illinois.cs.cogcomp.erc.main;
 
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
+import edu.illinois.cs.cogcomp.erc.ir.Document;
 
 import java.util.List;
 
@@ -28,8 +30,6 @@ public class Main {
         System.out.println(ace05.getDocs().get(5).getTA().getAvailableViews());
 
         View view = ace05.getDocs().get(5).getTA().getView(Corpus.NER_GOLD_COARSE_EXTENT);
-
-
 
 //        NERExperiment ner = new NERExperiment();
 //        ner.setCorpus(ace05);
