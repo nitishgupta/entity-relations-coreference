@@ -15,10 +15,10 @@ public class Corpus implements Serializable{
 
     private List<Document> docs;
     private boolean isACE04;
-    public static final String NER_GOLD_COARSE_VIEW = "NER_ACE_COARSE";
-    public static final String NER_GOLD_BIO_VIEW = "NER_GOLD_BIO_VIEW";
-    public static final String NER_GOLD_COARSE_EXTENT = "NER_GOLD_COARSE_EXTENT";
-    public static final String NER_GOLD_COARSE_HEAD = "NER_GOLD_COARSE_HEAD";
+    public static final String NER_GOLD_HEAD_BIO_VIEW = "NER_GOLD_HEAD_BIO_VIEW";
+    public static final String NER_GOLD_EXTENT_BIO_VIEW = "NER_GOLD_EXTENT_BIO_VIEW";
+    public static final String NER_GOLD_EXTENT_SPAN = "NER_GOLD_EXTENT_SPAN";
+    public static final String NER_GOLD_HEAD_SPAN = "NER_GOLD_HEAD_SPAN";
     public static final String TOKENS_VIEW = "TOKENS";
     public static final String SENTENCE_VIEW = "SENTENCE";
     public static final String SHALLOW_PARSE_VIEW = "SHALLOW_PARSE";

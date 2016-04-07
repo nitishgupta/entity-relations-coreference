@@ -19,8 +19,12 @@ public class DocUtils {
 
     private static final String NAME = DocUtils.class.getCanonicalName();
 
-    public static void addNERCoarseBIOView(Document doc) {
-        DocUtils.addBIOView(doc, Corpus.NER_GOLD_COARSE_VIEW, Corpus.NER_GOLD_BIO_VIEW);
+    public static void addNERHeadBIOView(Document doc) {
+        DocUtils.addBIOView(doc, Corpus.NER_GOLD_HEAD_SPAN, Corpus.NER_GOLD_HEAD_BIO_VIEW);
+    }
+
+    public static void addNERExtentBIOView(Document doc) {
+        DocUtils.addBIOView(doc, Corpus.NER_GOLD_EXTENT_SPAN, Corpus.NER_GOLD_EXTENT_BIO_VIEW);
     }
 
     /**
@@ -80,7 +84,7 @@ public class DocUtils {
 
     public static void createGOLDNER_ExtentView(Document doc){
         TextAnnotation ta = doc.getTA();
-        String viewName = Corpus.NER_GOLD_COARSE_EXTENT;
+        String viewName = Corpus.NER_GOLD_EXTENT_SPAN;
 
         List<ACEEntity> entities = doc.getAceAnnotation().entityList;
         List<Constituent> coarse_constituents = new ArrayList<Constituent>();
@@ -90,6 +94,38 @@ public class DocUtils {
             for(ACEEntityMention mention : e.entityMentionList) {
                 int startCharOffset = mention.extentStart;
                 int endCharOffset = mention.extentEnd;
+                int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
+                int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
+
+                if(start_token >= 0 && end_token >= 0 && !(end_token-start_token < 0)){
+                    // Be careful with the +1 in end_span below. Regular TextAnnotation likes the end_token number exclusive
+                    Constituent c = new Constituent(type, 1.0, viewName, ta, start_token, end_token + 1);
+                    coarse_constituents.add(c);
+                }
+            }
+        }
+
+        coarse_constituents = removeOverlappingEntities(coarse_constituents);
+        View nerView = new View(viewName, NAME, ta, 1.0 );
+        for(Constituent c : coarse_constituents)
+            nerView.addConstituent(c);
+
+        ta.addView(viewName, nerView);
+
+    }
+
+    public static void createGOLDNER_HeadView(Document doc){
+        TextAnnotation ta = doc.getTA();
+        String viewName = Corpus.NER_GOLD_HEAD_SPAN;
+
+        List<ACEEntity> entities = doc.getAceAnnotation().entityList;
+        List<Constituent> coarse_constituents = new ArrayList<Constituent>();
+
+        for ( ACEEntity e : entities ) {
+            String type = e.type;
+            for(ACEEntityMention mention : e.entityMentionList) {
+                int startCharOffset = mention.headStart;
+                int endCharOffset = mention.headEnd;
                 int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
                 int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
 
