@@ -47,5 +47,7 @@ public class Test {
 
         System.out.println("Filtered Performance Metrics");
         testFiltered.printPerformance(System.out);
+
+        System.out.print(model.featureGenerator);
     }
 }
