@@ -8,7 +8,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.util.PipelineService;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
-import edu.illinois.cs.cogcomp.nlp.utility.CcgTextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocumentAnnotation;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEEntity;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEEntityMention;
@@ -43,7 +43,7 @@ public class Document implements Serializable {
     }
 
     public Document(ACEDocumentAnnotation aceAnnotation, String contentRemovingTags, boolean is2004, String filename) {
-        TextAnnotationBuilder taBuilder = new CcgTextAnnotationBuilder(new IllinoisTokenizer());
+        TextAnnotationBuilder taBuilder = new TokenizerTextAnnotationBuilder(new IllinoisTokenizer());
         if(is2004)
             ta = taBuilder.createTextAnnotation( "ACE2004", filename, contentRemovingTags);
         else

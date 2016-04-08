@@ -8,7 +8,7 @@ import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.util.Utils;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
-import edu.illinois.cs.cogcomp.nlp.utility.CcgTextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.AceFileProcessor;
 import edu.illinois.cs.cogcomp.reader.ace2005.documentReader.ReadACEAnnotation;
@@ -28,7 +28,7 @@ public abstract class DocumentReader {
     protected String serializedDocDir;
     protected boolean is2004;
 
-    protected static AceFileProcessor fileProcessor = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
+    protected static AceFileProcessor fileProcessor = new AceFileProcessor(new TokenizerTextAnnotationBuilder(new IllinoisTokenizer()));
 
     public Document readDocument(String fileName) {
         String cacheFileName = Utils.getCacheFilenameForDocument(fileName);
@@ -100,7 +100,7 @@ public abstract class DocumentReader {
     }
 
     public static void readDocumentTester(String directory, String filename){
-        AceFileProcessor fileProcessor = new AceFileProcessor(new CcgTextAnnotationBuilder(new IllinoisTokenizer()));
+        AceFileProcessor fileProcessor = new AceFileProcessor(new TokenizerTextAnnotationBuilder(new IllinoisTokenizer()));
         ReadACEAnnotation.is2004mode = true;
 
         ACEDocument doc = fileProcessor.processAceEntry(new File(directory), filename);
