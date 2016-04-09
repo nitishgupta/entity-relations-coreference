@@ -18,6 +18,7 @@ public class CurrentWordPOSFeature extends FeatureDefinitionBase {
         super(lm);
     }
 
+    // [L1[POSs], L2[POSs], ...... , Ln[POSs]]
     @Override
     public FeatureVectorBuffer getSparseFeature(SequenceInstance sequence, SequenceLabel label) {
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
@@ -34,7 +35,7 @@ public class CurrentWordPOSFeature extends FeatureDefinitionBase {
                     LexiconerConstants.POS_PREFIX + posTag,
                     LexiconerConstants.POS_UNKNOWN);
 
-            fvb.addFeature(this.lexiconer.getNumOfLabels() * labelId + posTagFeatureId, 1.0f);
+            fvb.addFeature(this.lexiconer.getNumOfFeature() * labelId + posTagFeatureId, 1.0f);
             idx++;
         }
 
@@ -59,7 +60,7 @@ public class CurrentWordPOSFeature extends FeatureDefinitionBase {
                 LexiconerConstants.POS_PREFIX + posTag,
                 LexiconerConstants.POS_UNKNOWN);
 
-        fvb.addFeature(this.lexiconer.getNumOfLabels() * currentLabelId +  posTagFeatureId, 1.0f);
+        fvb.addFeature(this.lexiconer.getNumOfFeature() * currentLabelId +  posTagFeatureId, 1.0f);
 
         return fvb;
     }

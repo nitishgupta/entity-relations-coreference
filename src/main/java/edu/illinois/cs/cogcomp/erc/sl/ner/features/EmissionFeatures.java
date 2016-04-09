@@ -16,6 +16,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
         super(lm);
     }
 
+    // [L1[Words], L2[Words], ...... , Ln[Words]]
     @Override
     public FeatureVectorBuffer getSparseFeature(SequenceInstance sequence, SequenceLabel label) {
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
@@ -27,9 +28,9 @@ public class EmissionFeatures extends FeatureDefinitionBase {
                     LexiconerConstants.WORD_PREFIX + c.getSurfaceForm(),
                     LexiconerConstants.WORD_UNKNOWN);
 
-            fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * label.tagIds[idx++], 1.0f);
+            fvb.addFeature(featureId + this.lexiconer.getNumOfFeature() * label.tagIds[idx], 1.0f);
+            idx++;
         }
-
         return fvb;
     }
 

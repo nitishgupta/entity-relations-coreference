@@ -27,6 +27,6 @@ public class NERExperiment {
 
         Lexiconer lm = new Lexiconer();
         lm.setAllowNewFeatures(true);
-        SLProblem sp = MainClass.readStructuredData(corpus, lm);
+        SLProblem sp = MainClass.readStructuredData(corpus, lm, Corpus.NER_GOLD_HEAD_BIO_VIEW);
     }
 }
