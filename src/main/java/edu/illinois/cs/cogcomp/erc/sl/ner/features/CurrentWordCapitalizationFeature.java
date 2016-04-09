@@ -16,6 +16,7 @@ public class CurrentWordCapitalizationFeature extends FeatureDefinitionBase {
         super(lm);
     }
 
+
     @Override
     public FeatureVectorBuffer getSparseFeature(SequenceInstance sequence, SequenceLabel label) {
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
@@ -25,8 +26,9 @@ public class CurrentWordCapitalizationFeature extends FeatureDefinitionBase {
         for (Constituent c : sequence.getConstituents()) {
             boolean isCapitalized = WordHelpers.isCapitalized(ta, ta.getTokenIdFromCharacterOffset(c.getStartCharOffset()));
             if (isCapitalized) {
-                fvb.addFeature(label.tagIds[idx++], 1.0f);
+                fvb.addFeature(label.tagIds[idx], 1.0f);
             }
+            idx++;
         }
 
         return fvb;

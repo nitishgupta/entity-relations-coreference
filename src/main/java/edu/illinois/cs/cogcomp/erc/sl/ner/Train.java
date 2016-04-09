@@ -43,7 +43,7 @@ public class Train {
         // Enable modification of lexicon while reading data
         model.lm.setAllowNewFeatures(true);
 
-        SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm);
+        SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm, Corpus.NER_GOLD_HEAD_BIO_VIEW);
 
         // Disallow the creation of new features
         model.lm.setAllowNewFeatures(false);

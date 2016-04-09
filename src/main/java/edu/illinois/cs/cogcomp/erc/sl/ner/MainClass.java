@@ -29,7 +29,7 @@ public class MainClass {
      * @param lm : Lexiconer that has the word and label space lexicon
      * @return  Instance of the SLProblem
      */
-    public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm) {
+    public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm, String viewName) {
         SLProblem sp = new SLProblem();
         int num_instances = 0;
 
@@ -41,7 +41,16 @@ public class MainClass {
         // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()*corpus.numDocs()
         List<Document> docs = corpus.getDocs();
         for(Document doc : docs){
-            TokenLabelView NER_GOLD_BIO_VIEW = doc.getNERBIOView();
+            TokenLabelView NER_GOLD_BIO_VIEW = null;
+            if(viewName.equals(Corpus.NER_GOLD_EXTENT_BIO_VIEW))
+                NER_GOLD_BIO_VIEW = doc.getNERExtentBIOView();
+            else if(viewName.equals(Corpus.NER_GOLD_HEAD_BIO_VIEW))
+                NER_GOLD_BIO_VIEW = doc.getNERHeadBIOView();
+            else{
+                System.out.println("View Name not found : " + viewName);
+                System.exit(0);
+            }
+
             View POS_VIEW = doc.getTA().getView(ViewNames.POS);
             View SentenceView = doc.getSentenceView();
 

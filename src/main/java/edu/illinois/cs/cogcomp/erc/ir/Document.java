@@ -74,9 +74,16 @@ public class Document implements Serializable {
         return filename;
     }
 
-    public TokenLabelView getNERBIOView(){
-        if (ta.hasView(Corpus.NER_GOLD_BIO_VIEW))
-            return (TokenLabelView) this.getTA().getView(Corpus.NER_GOLD_BIO_VIEW);
+    public TokenLabelView getNERExtentBIOView(){
+        if (ta.hasView(Corpus.NER_GOLD_EXTENT_BIO_VIEW))
+            return (TokenLabelView) this.getTA().getView(Corpus.NER_GOLD_EXTENT_BIO_VIEW);
+
+        return null;
+    }
+
+    public TokenLabelView getNERHeadBIOView(){
+        if (ta.hasView(Corpus.NER_GOLD_HEAD_BIO_VIEW))
+            return (TokenLabelView) this.getTA().getView(Corpus.NER_GOLD_HEAD_BIO_VIEW);
 
         return null;
     }

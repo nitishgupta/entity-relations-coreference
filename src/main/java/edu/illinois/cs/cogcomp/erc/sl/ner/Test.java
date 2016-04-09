@@ -18,7 +18,7 @@ public class Test {
         // Disable modification of lexicon while testing.
         model.lm.setAllowNewFeatures(false);
 
-        SLProblem slProblem = MainClass.readStructuredData(testData, model.lm);
+        SLProblem slProblem = MainClass.readStructuredData(testData, model.lm, Corpus.NER_GOLD_HEAD_BIO_VIEW);
 
         TestDiscrete testDiscreteFormatted = new TestDiscrete();
         TestDiscrete testFiltered = new TestDiscrete();

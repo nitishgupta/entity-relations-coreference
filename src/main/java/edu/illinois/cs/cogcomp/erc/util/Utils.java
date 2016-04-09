@@ -134,10 +134,10 @@ public class Utils {
         System.out.println("\n");
     }
 
-    public static void printSpanNERView(Document doc){
+    public static void printSpanNERView(Document doc, String viewName){
         System.out.println("\n");
         TextAnnotation ta = doc.getTA();
-        View ner = ta.getView(Corpus.NER_GOLD_COARSE_EXTENT);
+        View ner = ta.getView(viewName);
         View tokens_view = ta.getView(Corpus.TOKENS_VIEW);
         List<Constituent> tokens_constituents = tokens_view.getConstituents();
 
@@ -171,10 +171,10 @@ public class Utils {
         System.out.println("\n");
     }
 
-    public static void printBIONERView(Document doc){
+    public static void printBIONERView(Document doc, String viewName){
         System.out.println("\n");
 
-        View ner = doc.getTA().getView(Corpus.NER_GOLD_BIO_VIEW);
+        View ner = doc.getTA().getView(viewName);
         List<Constituent> tokens = ner.getConstituents();
         for(Constituent token : tokens){
             System.out.print(token.getSurfaceForm()+"_"+token.getLabel() + " ");
