@@ -3,3 +3,4 @@ target/
 *.idea
 wordnet/
 index/
+*.DS_Store
