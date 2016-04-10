@@ -3,11 +3,5 @@ set -e
 #mvn clean
 #mvn dependency:copy-dependencies
 
-mvn compile -q
+mvn -q compile exec:java -Dexec.arguments="-Xmx8g" -Dexec.mainClass=edu.illinois.cs.cogcomp.erc.sl.ner.MainClass -Dexec.args="$*"
 
-DEFAULT_PACKAGE="edu.illinois.cs.cogcomp.erc"
-PACKAGE="sl.ner"
-MAINCLASS="MainClass"
-CP="./:./target/classes/:./target/dependency/*:./config/:target/dependency/*"
-
-java -Xmx8g -cp $CP $DEFAULT_PACKAGE.$PACKAGE.$MAINCLASS $*
