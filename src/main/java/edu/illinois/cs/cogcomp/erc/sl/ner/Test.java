@@ -31,14 +31,14 @@ public class Test {
                     model.wv,
                     slProblem.instanceList.get(i));
 
-            for (int j = 0; j < prediction.tagIds.length; j++) {
+            for (int j = 0; j < prediction.labels.length; j++) {
                 testDiscreteFormatted.reportPrediction(
-                        model.lm.getLabelString(prediction.tagIds[j]),
-                        model.lm.getLabelString(gold.tagIds[j]));
+                        prediction.getLabelAtPosition(j),
+                        gold.getLabelAtPosition(j));
 
                 testFiltered.reportPrediction(
-                        model.lm.getLabelString(prediction.tagIds[j]),
-                        model.lm.getLabelString(gold.tagIds[j]));
+                        prediction.getLabelAtPosition(j),
+                        gold.getLabelAtPosition(j));
             }
         }
 

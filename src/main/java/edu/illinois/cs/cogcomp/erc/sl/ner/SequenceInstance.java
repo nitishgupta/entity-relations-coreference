@@ -39,6 +39,26 @@ public class SequenceInstance implements IInstance {
 
     public List<String> getPOSTagSequence() { return  this.posTagSequence; }
 
+    public String getTokenAtPosition(int i){
+        int size = this.size();
+        if(i>=size)
+            return  "";
+        else{
+            return constituents.get(i).getSurfaceForm();
+        }
+    }
+
+    public String getPOSAtPosition(int i){
+        int size = this.size();
+        if(i>=size)
+            return  "";
+        else{
+            return posTagSequence.get(i);
+        }
+    }
+
+    public int size(){  return this.constituents.size();    }
+
     @Override
     public String toString() {
         return "";

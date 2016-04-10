@@ -29,8 +29,6 @@ public class Main {
 
         System.out.println(ace05.getDocs().get(5).getTA().getAvailableViews());
 
-        View view = ace05.getDocs().get(5).getTA().getView(Corpus.NER_GOLD_HEAD_SPAN);
-
 //        NERExperiment ner = new NERExperiment();
 //        ner.setCorpus(ace05);
 //        ner.runExperiment();
