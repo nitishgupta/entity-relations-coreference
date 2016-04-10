@@ -73,12 +73,12 @@ public class ViterbiInferenceSolver extends
 		
 		for (int i = 1; i < numOfTokens; i++) {
 			for (int j = 0; j < numOfLabels; j++) {
-				String prevLabel = lm.getLabelString(j);
-                float zeroOrderScore = ((gold != null && !prevLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
+				String currentLabel = lm.getLabelString(j);
+                float zeroOrderScore = ((gold != null && !currentLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
 				
 				float bestScore = Float.NEGATIVE_INFINITY;
 				for (int k = 0; k < numOfLabels; k++) {
-					String currentLabel = lm.getLabelString(k);
+					String prevLabel = lm.getLabelString(k);
                     IFeatureVector localScoreSparse = this.featureGenerator.getLocalFeatureVector(sentence, currentLabel, prevLabel, i).toFeatureVector();
                     float localScore = wv.dotProduct(localScoreSparse);
 
@@ -107,7 +107,8 @@ public class ViterbiInferenceSolver extends
 
 		String [] labelStrings = new String[numOfTokens];
 		for(int i=0; i<numOfTokens; i++)
-			labelStrings[i] = lm.getLabelString(labels[i]);
+			labelStrings[i] = lm.getLabelString(labels[i]).split(":")[1];
+
 		return new SequenceLabel(labelStrings);
 	}
 	

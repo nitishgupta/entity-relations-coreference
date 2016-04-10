@@ -36,32 +36,23 @@ public class Train {
 //    }
 
     public static void trainNER(Corpus trainData, String slConfigPath, String modelPath) throws Exception {
-
         SLModel model = new SLModel();
         model.lm = new Lexiconer();
         model.lm.setAllowNewFeatures(true);
 
-        if (model.lm.isAllowNewFeatures()) {
+        if (model.lm.isAllowNewFeatures()) {    // To act as Unknown feature
             model.lm.addFeature(LexiconerConstants.WORD_UNKNOWN);
-            model.lm.addFeature(LexiconerConstants.POS_UNKNOWN);
         }
-
         model.featureGenerator = new FeatureGenerator(model.lm);
-
-        // Read the training data into IInstance and IStructure
+        // Read the training data into IInstance and IStructure || IStructure=string[] "label" || lm.label=PREFIX+"label"
         SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm, Corpus.NER_GOLD_HEAD_BIO_VIEW);
-
         // Get our meta-feature generator with current set of features
         //FeatureGenerator featureGenerator = getCurrentFeatureGenerator(model.lm);
-
-
         pre_extract(model, slProblem);
+        //Extraction Done
         System.out.println("Number of Features : " + model.lm.getNumOfFeature());
         System.out.println("Number of Labels : " + model.lm.getNumOfLabels());
-
-        // Disallow the creation of new features
-        model.lm.setAllowNewFeatures(false);
-
+        //model.lm.setAllowNewFeatures(false);  // Disallow the creation of new features
 
         // initialize the inference solver
         model.infSolver = new ViterbiInferenceSolver(model.lm, model.featureGenerator);
@@ -71,6 +62,7 @@ public class Train {
 
         Learner learner = LearnerFactory.getLearner(model.infSolver, model.featureGenerator, parameters);
         model.wv = learner.train(slProblem);
+        model.lm.setAllowNewFeatures(false);
         WeightVector.printSparsity(model.wv);
 
         if(learner instanceof L2LossSSVMLearner)
