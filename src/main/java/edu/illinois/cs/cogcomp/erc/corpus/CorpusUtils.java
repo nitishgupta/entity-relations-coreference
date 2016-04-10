@@ -1,11 +1,11 @@
 package edu.illinois.cs.cogcomp.erc.corpus;
 
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
+import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
-import edu.illinois.cs.cogcomp.erc.reader.Ace04Reader;
-import edu.illinois.cs.cogcomp.erc.reader.Ace05Reader;
-import edu.illinois.cs.cogcomp.erc.reader.DocumentReader;
 import edu.illinois.cs.cogcomp.erc.util.Utils;
+import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
  * Created by nitishgupta on 3/9/16.
  */
 public class CorpusUtils {
-    public static Corpus readCorpus(CorpusType corpusType){
+    public static Corpus readCorpus(CorpusType corpusType) throws Exception {
         Corpus corpus;
         boolean is2004 = (corpusType == CorpusType.ACE04);
         String serializedCorpusFile = is2004 ? Parameters.ACE04_SERIALIZED_CORPUS : Parameters.ACE05_SERIALIZED_CORPUS;
@@ -26,8 +26,30 @@ public class CorpusUtils {
         } else {
             // To read corpus from directory and write serialized docs
             System.out.println("***  READING DOCS DIRECTLY  *** ");
-            DocumentReader documentReader = is2004 ? new Ace04Reader() : new Ace05Reader();
-            List<Document> corpusDocuments = documentReader.readCorpus();
+
+            String datasetPath = is2004 ? Parameters.ACE04_DATA_DIR : Parameters.ACE05_DATA_DIR;
+            ACEReader aceDocumentReader = new ACEReader(datasetPath, is2004);
+
+            List<Document> corpusDocuments = new ArrayList<>();
+            for (TextAnnotation ta : aceDocumentReader) {
+                Document doc = new Document(ta, is2004, ta.getId());
+
+                // ADDING SPAN NER EXTENT VIEW IN TA
+                if(!doc.getTA().hasView(Corpus.NER_GOLD_EXTENT_SPAN))
+                    DocUtils.createGOLDNER_ExtentView(doc);
+
+                if(!doc.getTA().hasView(Corpus.NER_GOLD_HEAD_SPAN))
+                    DocUtils.createGOLDNER_HeadView(doc);
+
+                // ADDING BIO NER EXTENT VIEW IN TA
+                if(!doc.getTA().hasView(Corpus.NER_GOLD_HEAD_BIO_VIEW))
+                    DocUtils.addNERHeadBIOView(doc);
+
+                if(!doc.getTA().hasView(Corpus.NER_GOLD_EXTENT_BIO_VIEW))
+                    DocUtils.addNERExtentBIOView(doc);
+
+                corpusDocuments.add(doc);
+            }
             corpus = new Corpus(corpusDocuments, is2004);
 
             Utils.writeSerializedCorpus(corpus, serializedCorpusFile);
@@ -76,7 +98,7 @@ public class CorpusUtils {
         return corpora;
     }
 
-    public static List<Corpus> readCompleteTrainDevTestCorpora(CorpusType corpusType){
+    public static List<Corpus> readCompleteTrainDevTestCorpora(CorpusType corpusType) throws Exception {
         Corpus corpus = CorpusUtils.readCorpus(corpusType);
         List<Corpus> corpora = CorpusUtils.getTrainDevTestCorpora(corpus);
         corpora.add(0, corpus);
