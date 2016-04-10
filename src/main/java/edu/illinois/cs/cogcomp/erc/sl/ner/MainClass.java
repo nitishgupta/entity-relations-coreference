@@ -80,7 +80,7 @@ public class MainClass {
 //                        lm.addFeature(LexiconerConstants.POS_PREFIX + posTag);
 //                    }
 
-                    labels[token_num - start_token] = LexiconerConstants.LABEL_PREFIX + c.getLabel();
+                    labels[token_num - start_token] = c.getLabel();
                     if (lm.isAllowNewFeatures()) {
                         lm.addLabel(LexiconerConstants.LABEL_PREFIX + c.getLabel());
                     }

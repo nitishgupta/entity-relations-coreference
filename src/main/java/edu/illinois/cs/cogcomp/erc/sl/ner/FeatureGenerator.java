@@ -34,7 +34,6 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
     public IFeatureVector getFeatureVector(IInstance iInstance, IStructure iStructure) {
         SequenceInstance sequence = (SequenceInstance)iInstance;
         SequenceLabel label = (SequenceLabel)iStructure;
-
         FeatureVectorBuffer fvb = getSparseFeature(sequence, label);
         return fvb.toFeatureVector();
     }
@@ -57,7 +56,7 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         addPriorFeature(sent, labelseq, i, featureMap);
         addEmissionFeature(sent, labelseq, i, featureMap);
         addPOSEmissionFeature(sent, labelseq, i, featureMap);
-        //addCapitalizationFeature(sent, labelseq, i, featureMap);
+        addCapitalizationFeature(sent, labelseq, i, featureMap);
         addLabelTransitionFeature(labelseq, i, featureMap);
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
@@ -94,8 +93,9 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
 
     private void addCapitalizationFeature(SequenceInstance sent, SequenceLabel label, int i,
                                     List<String> featureMap) {
-        TextAnnotation ta = sent.getConstituents().get(0).getTextAnnotation();
-        boolean isCapitalized = WordHelpers.isCapitalized(ta, ta.getTokenIdFromCharacterOffset(sent.getConstituents().get(0).getStartCharOffset()));
+        Constituent c = sent.getConstituents().get(i);
+        TextAnnotation ta = c.getTextAnnotation();
+        boolean isCapitalized = WordHelpers.isCapitalized(ta, ta.getTokenIdFromCharacterOffset(c.getStartCharOffset()));
         if(isCapitalized)
             featureMap.add(LexiconerConstants.LABEL_PREFIX + label.getLabelAtPosition(i) + "_Capital");
     }
@@ -115,7 +115,7 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         addLocalPriorFeature(sent, currentLabel, prevLabel, i, featureMap);
         addLocalEmissionFeature(sent, currentLabel, prevLabel, i, featureMap);
         addLocalPOSEmissionFeature(sent, currentLabel, prevLabel, i, featureMap);
-        //addLocalCapitalizationFeature(sent, currentLabel, prevLabel, i, featureMap);
+        addLocalCapitalizationFeature(sent, currentLabel, prevLabel, i, featureMap);
         addLocalLabelTransitionFeature(sent, currentLabel, prevLabel, i, featureMap);
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
@@ -127,6 +127,7 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
             else
                 fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
         }
+
         return fvb;
     }
 
