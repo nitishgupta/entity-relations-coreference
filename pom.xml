@@ -44,8 +44,13 @@
         </dependency>
         <dependency>
             <groupId>edu.illinois.cs.cogcomp</groupId>
-            <artifactId>illinois-nlp-readers</artifactId>
-            <version>0.0.3</version>
+            <artifactId>illinois-core-utilities</artifactId>
+            <version>3.0.25</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.illinois.cs.cogcomp</groupId>
+            <artifactId>illinois-corpusreaders</artifactId>
+            <version>3.0.25</version>
         </dependency>
         <dependency>
             <groupId>edu.illinois.cs.cogcomp</groupId>
