@@ -18,10 +18,12 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
+import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
@@ -36,9 +38,9 @@ public class ViterbiInferenceSolver extends
 	protected Lexiconer lm = null;
     protected FeatureGenerator featureGenerator;
 
-	public ViterbiInferenceSolver(Lexiconer lm, FeatureGenerator fg) {
+	public ViterbiInferenceSolver(Lexiconer lm, AbstractFeatureGenerator fg) {
         this.lm = lm;
-        this.featureGenerator = fg;
+        this.featureGenerator = (FeatureGenerator) fg;
 	}
 	
 	@Override
@@ -57,11 +59,13 @@ public class ViterbiInferenceSolver extends
 		float[][] dpTable = new float[2][numOfLabels];
 		int[][] path = new int[numOfTokens][numOfLabels];
 
-		// Viterbi algorithm
+		/*****	Viterbi algorithm	*****/
+		//Adding scores for prior
 		for (int j = 0; j < numOfLabels; j++) {
-			FeatureVectorBuffer localScoreSparse = this.featureGenerator.getLocalScore(sentence, 0, 0, j);
-			float zeroOrderScore =  wv.dotProduct(localScoreSparse.toFeatureVector()) +
-					((gold != null && j != goldLabeledSeq.tagIds[0]) ? 1 : 0);
+			String currentLabel = lm.getLabelString(j);
+			IFeatureVector localScoreSparse = this.featureGenerator.getLocalFeatureVector(sentence, currentLabel, "", 0).toFeatureVector();
+			float zeroOrderScore =  wv.dotProduct(localScoreSparse) +
+					((gold != null && !currentLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
 
 			dpTable[0][j] = zeroOrderScore;
 			path[0][j] = -1;
@@ -69,12 +73,14 @@ public class ViterbiInferenceSolver extends
 		
 		for (int i = 1; i < numOfTokens; i++) {
 			for (int j = 0; j < numOfLabels; j++) {
-                float zeroOrderScore = ((gold != null && j != goldLabeledSeq.tagIds[i]) ? 1 : 0);
+				String prevLabel = lm.getLabelString(j);
+                float zeroOrderScore = ((gold != null && !prevLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
 				
 				float bestScore = Float.NEGATIVE_INFINITY;
 				for (int k = 0; k < numOfLabels; k++) {
-                    FeatureVectorBuffer localScoreSparse = this.featureGenerator.getLocalScore(sentence, i, k, j);
-                    float localScore = wv.dotProduct(localScoreSparse.toFeatureVector());
+					String currentLabel = lm.getLabelString(k);
+                    IFeatureVector localScoreSparse = this.featureGenerator.getLocalFeatureVector(sentence, currentLabel, prevLabel, i).toFeatureVector();
+                    float localScore = wv.dotProduct(localScoreSparse);
 
 					float candidateScore = dpTable[(i-1)%2][k] + localScore;
 					if (candidateScore > bestScore) {
@@ -98,16 +104,20 @@ public class ViterbiInferenceSolver extends
 		
 		for (int i = numOfTokens - 1; i >= 1; i--) 
 			labels[i-1] = path[i][labels[i]];
-		
-		return new SequenceLabel(labels);
+
+		String [] labelStrings = new String[numOfTokens];
+		for(int i=0; i<numOfTokens; i++)
+			labelStrings[i] = lm.getLabelString(labels[i]);
+		return new SequenceLabel(labelStrings);
 	}
 	
 	@Override
 	public float getLoss(IInstance ins, IStructure goldStructure,  IStructure structure){
         SequenceLabel goldLabeledSeq = (SequenceLabel) goldStructure;
+		SequenceLabel predLabelSeq = (SequenceLabel) structure;
 		float loss = 0;
-		for (int i = 0; i < goldLabeledSeq.tagIds.length; i++)
-			if (((SequenceLabel) structure).tagIds[i] != goldLabeledSeq.tagIds[i])
+		for (int i = 0; i < goldLabeledSeq.labels.length; i++)
+			if (!predLabelSeq.getLabelAtPosition(i).equals(goldLabeledSeq.getLabelAtPosition(i)) )	// If not equal, incur loss
 				loss += 1.0f;
 		return loss;
 	}

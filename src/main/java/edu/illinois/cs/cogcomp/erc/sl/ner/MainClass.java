@@ -26,17 +26,17 @@ public class MainClass {
      * While creating lexical features, a check for each Constituent token needs to be put for whether the word exists in the Lexiconer.
      *
      * @param corpus : The corpus for which the <IInstance, IStructure> pairs need to be retured.
-     * @param lm : Lexiconer that has the word and label space lexicon
+     * @param lm : To store the sspace of labels - BIO labels in this case
      * @return  Instance of the SLProblem
      */
     public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm, String viewName) {
         SLProblem sp = new SLProblem();
         int num_instances = 0;
 
-        if (lm.isAllowNewFeatures()) {
-            lm.addFeature(LexiconerConstants.WORD_UNKNOWN);
-            lm.addFeature(LexiconerConstants.POS_UNKNOWN);
-        }
+//        if (lm.isAllowNewFeatures()) {
+//            lm.addFeature(LexiconerConstants.WORD_UNKNOWN);
+//            lm.addFeature(LexiconerConstants.POS_UNKNOWN);
+//        }
 
         // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()*corpus.numDocs()
         List<Document> docs = corpus.getDocs();
@@ -65,7 +65,8 @@ public class MainClass {
 
                 List<Constituent> token_constituents = new ArrayList<Constituent>();
                 List<String> posTag_list = new ArrayList<>();
-                int[] tagIds = new int[end_token - start_token + 1];
+                String[] labels = new String[end_token - start_token + 1];;
+                //int[] tagIds = new int[end_token - start_token + 1];
 
                 for(int token_num = start_token; token_num <= end_token; token_num++){
                     Constituent c = NER_GOLD_BIO_VIEW.getConstituentAtToken(token_num);
@@ -74,22 +75,26 @@ public class MainClass {
                     String posTag = POS_VIEW.getConstituentsCoveringToken(token_num).get(0).getLabel();
                     posTag_list.add(posTag);
 
-                    if (lm.isAllowNewFeatures()) {
-                        lm.addFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
-                        lm.addFeature(LexiconerConstants.POS_PREFIX + posTag);
-                    }
+//                    if (lm.isAllowNewFeatures()) {
+//                        lm.addFeature(LexiconerConstants.WORD_PREFIX + c.getSurfaceForm());
+//                        lm.addFeature(LexiconerConstants.POS_PREFIX + posTag);
+//                    }
 
-                    String labelTag = LexiconerConstants.LABEL_PREFIX + c.getLabel();
+                    labels[token_num - start_token] = LexiconerConstants.LABEL_PREFIX + c.getLabel();
                     if (lm.isAllowNewFeatures()) {
-                        lm.addLabel(labelTag);
+                        lm.addLabel(LexiconerConstants.LABEL_PREFIX + c.getLabel());
                     }
+                    //String labelTag = LexiconerConstants.LABEL_PREFIX + c.getLabel();
+//                    if (lm.isAllowNewFeatures()) {
+//                        lm.addLabel(labelTag);
+//                    }
 
-                    assert lm.containsLabel(labelTag) : "Error: Previously unseen label found during testing.";
-                    tagIds[token_num - start_token] = lm.getLabelId(labelTag);
+                    //assert lm.containsLabel(labelTag) : "Error: Previously unseen label found during testing.";
+                    //tagIds[token_num - start_token] = lm.getLabelId(labelTag);
                 }
 
                 sen = new SequenceInstance(token_constituents, posTag_list);
-                sen_label = new SequenceLabel(tagIds);
+                sen_label = new SequenceLabel(labels);
                 sp.addExample(sen, sen_label);
                 num_instances++;
             }
