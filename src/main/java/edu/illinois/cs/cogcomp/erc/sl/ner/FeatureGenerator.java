@@ -61,12 +61,15 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
         for (String f : featureMap) {
-            if (lm.isAllowNewFeatures())
+            if (lm.isAllowNewFeatures()) {
                 lm.addFeature(f);
-            if (lm.containFeature(f))
+            }
+
+            if (lm.containFeature(f)) {
                 fvb.addFeature(lm.getFeatureId(f), 1.0f);
-            else
-                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
+            } else {
+//                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
+            }
         }
         return fvb;
     }
@@ -109,7 +112,7 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         }
     }
 
-    public FeatureVectorBuffer getLocalFeatureVector(SequenceInstance sent, String prevLabel, String currentLabel, int i) {
+    public FeatureVectorBuffer getLocalFeatureVector(SequenceInstance sent, String currentLabel, String prevLabel, int i) {
         List<String> featureMap = new ArrayList<>();
 
         addLocalPriorFeature(sent, currentLabel, prevLabel, i, featureMap);
@@ -120,37 +123,52 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
         for (String f : featureMap) {
-            if (lm.isAllowNewFeatures())
+            if (lm.isAllowNewFeatures()) {
                 lm.addFeature(f);
-            if (lm.containFeature(f))
+            }
+
+            if (lm.containFeature(f)) {
                 fvb.addFeature(lm.getFeatureId(f), 1.0f);
-            else
-                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
+            } else {
+//                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
+            }
         }
 
         return fvb;
     }
 
-    private void addLocalPriorFeature(SequenceInstance sent, String prevLabel, String currentLabel, int i,
-                                         List<String> featureMap) {
+    private void addLocalPriorFeature(SequenceInstance sent,
+                                      String currentLabel,
+                                      String prevLabel,
+                                      int i,
+                                      List<String> featureMap) {
         if(i == 0)
             featureMap.add(currentLabel + "_Prior");
     }
 
-    private void addLocalEmissionFeature(SequenceInstance sent, String prevLabel, String currentLabel, int i,
-                                    List<String> featureMap) {
+    private void addLocalEmissionFeature(SequenceInstance sent,
+                                         String currentLabel,
+                                         String prevLabel,
+                                         int i,
+                                         List<String> featureMap) {
         featureMap.add(LexiconerConstants.WORD_PREFIX + sent.getTokenAtPosition(i)
                 + "_" + currentLabel + "_WordEmmision");
     }
 
-    private void addLocalPOSEmissionFeature(SequenceInstance sent, String prevLabel, String currentLabel, int i,
-                                       List<String> featureMap) {
+    private void addLocalPOSEmissionFeature(SequenceInstance sent,
+                                            String currentLabel,
+                                            String prevLabel,
+                                            int i,
+                                            List<String> featureMap) {
         featureMap.add(LexiconerConstants.POS_PREFIX + sent.getPOSAtPosition(i)
                 + "_" + currentLabel + "_POSEmmision");
     }
 
-    private void addLocalCapitalizationFeature(SequenceInstance sent, String prevLabel, String currentLabel, int i,
-                                          List<String> featureMap) {
+    private void addLocalCapitalizationFeature(SequenceInstance sent,
+                                               String currentLabel,
+                                               String prevLabel,
+                                               int i,
+                                               List<String> featureMap) {
         Constituent c = sent.getConstituents().get(i);
         TextAnnotation ta = c.getTextAnnotation();
         boolean isCapitalized = WordHelpers.isCapitalized(ta, ta.getTokenIdFromCharacterOffset(c.getStartCharOffset()));
@@ -159,8 +177,11 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
     }
 
     // If i == 0 then prevLabel = "" is input. This case is handled by the prior features
-    private void addLocalLabelTransitionFeature(SequenceInstance sent, String prevLabel, String currentLabel, int i,
-                                           List<String> featureMap) {
+    private void addLocalLabelTransitionFeature(SequenceInstance sent,
+                                                String currentLabel,
+                                                String prevLabel,
+                                                int i,
+                                                List<String> featureMap) {
         if(i > 0){
             featureMap.add(prevLabel + "_" + currentLabel + "_LabelTransition");
         }
