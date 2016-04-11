@@ -65,7 +65,7 @@ public class ViterbiInferenceSolver extends
 			String currentLabel = lm.getLabelString(j);
 			IFeatureVector localScoreSparse = this.featureGenerator.getLocalFeatureVector(sentence, currentLabel, "", 0).toFeatureVector();
 			float zeroOrderScore =  wv.dotProduct(localScoreSparse) +
-					((gold != null && !currentLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
+					((gold != null && currentLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
 
 			dpTable[0][j] = zeroOrderScore;
 			path[0][j] = -1;
@@ -74,7 +74,7 @@ public class ViterbiInferenceSolver extends
 		for (int i = 1; i < numOfTokens; i++) {
 			for (int j = 0; j < numOfLabels; j++) {
 				String currentLabel = lm.getLabelString(j);
-                float zeroOrderScore = ((gold != null && !currentLabel.equals(goldLabeledSeq.getLabelAtPosition(0))) ? 1 : 0);
+                float zeroOrderScore = ((gold != null && currentLabel.equals(goldLabeledSeq.getLabelAtPosition(i))) ? 1 : 0);
 				
 				float bestScore = Float.NEGATIVE_INFINITY;
 				for (int k = 0; k < numOfLabels; k++) {
