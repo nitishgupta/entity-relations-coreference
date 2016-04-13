@@ -77,12 +77,17 @@ public class DocUtils {
     public static void createGOLDNER_ExtentView(Document doc) {
         TextAnnotation ta = doc.getTA();
         String viewName = Corpus.NER_GOLD_EXTENT_SPAN;
-        View nerView = new View(viewName, NAME, ta, 1.0 );
+        List<Constituent> constituentList = new ArrayList<>();
 
         SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
         for (Constituent c : entityView.getConstituents()) {
             Constituent cons = c.cloneForNewView(viewName);
-            nerView.addConstituent(cons);
+            constituentList.add(cons);
+        }
+
+        View nerView = new View(viewName, NAME, ta, 1.0 );
+        for (Constituent filtered : removeOverlappingEntities(constituentList)) {
+            nerView.addConstituent(filtered);
         }
 
         ta.addView(viewName, nerView);
@@ -91,7 +96,7 @@ public class DocUtils {
     public static void createGOLDNER_HeadView(Document doc) {
         TextAnnotation ta = doc.getTA();
         String viewName = Corpus.NER_GOLD_HEAD_SPAN;
-        View nerView = new View(viewName, NAME, ta, 1.0 );
+        List<Constituent> constituentList = new ArrayList<>();
 
         SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
         for (Constituent c : entityView.getConstituents()) {
@@ -108,10 +113,53 @@ public class DocUtils {
                     cons.addAttribute(attributeKey, c.getAttribute(attributeKey));
                 }
 
-                nerView.addConstituent(cons);
+                constituentList.add(cons);
             }
         }
 
+        View nerView = new View(viewName, NAME, ta, 1.0 );
+        for (Constituent filtered : removeOverlappingEntities(constituentList)) {
+            nerView.addConstituent(filtered);
+        }
+
         ta.addView(viewName, nerView);
+    }
+
+    public static List<Constituent> removeOverlappingEntities(List<Constituent> neConstituents) {
+
+        Collections.sort(neConstituents, new Comparator<Constituent>() {
+            @Override
+            public int compare(Constituent ca, Constituent cb) {
+                if (ca.getStartSpan() < cb.getStartSpan())
+                    return -1;
+                else if (ca.getStartSpan() > cb.getStartSpan())
+                    return 1;
+                else if (ca.getEndSpan() > cb.getEndSpan())
+                    return -1;
+                else if (ca.getEndSpan() < cb.getEndSpan())
+                    return 1;
+                else
+                    return 0;
+            }
+        });
+
+        Set<Constituent> nesToRemove = new HashSet<>();
+
+        int lastNeEnd = -1;
+        Constituent prevNe = null;
+
+        for (Constituent ne : neConstituents) {
+            if (ne.getStartSpan() < lastNeEnd) {
+                nesToRemove.add(prevNe);
+            }
+
+            lastNeEnd = ne.getEndSpan();
+            prevNe = ne;
+        }
+
+        for (Constituent e : nesToRemove)
+            neConstituents.remove(e);
+
+        return neConstituents;
     }
 }
