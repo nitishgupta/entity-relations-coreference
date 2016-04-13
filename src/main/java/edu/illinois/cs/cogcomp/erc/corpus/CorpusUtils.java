@@ -1,6 +1,7 @@
 package edu.illinois.cs.cogcomp.erc.corpus;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
@@ -28,7 +29,12 @@ public class CorpusUtils {
             System.out.println("***  READING DOCS DIRECTLY  *** ");
 
             String datasetPath = is2004 ? Parameters.ACE04_DATA_DIR : Parameters.ACE05_DATA_DIR;
-            ACEReader aceDocumentReader = new ACEReader(datasetPath, is2004);
+            String sectionsToRead = is2004 ? Parameters.ACE04_SECTION_LIST : Parameters.ACE05_SECTION_LIST;
+            String[] sections = sectionsToRead.split(",");
+
+            // Quirk in the reader.
+            if (sections.length == 0) sections = null;
+            ACEReader aceDocumentReader = new ACEReader(datasetPath, sections, is2004);
 
             List<Document> corpusDocuments = new ArrayList<>();
             for (TextAnnotation ta : aceDocumentReader) {

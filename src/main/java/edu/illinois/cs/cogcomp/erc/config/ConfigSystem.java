@@ -51,27 +51,14 @@ public class ConfigSystem {
             System.out.println("ACE05_DATA_DIR : " + Parameters.ACE05_DATA_DIR);
         }
 
-        if(props.containsKey("ACE05_FILELIST")){
-            Parameters.ACE05_FILELIST = props.getProperty("ACE05_FILELIST");
-            System.out.println("ACE05_FILELIST : " + Parameters.ACE05_FILELIST);
+        if(props.containsKey("ACE05_SECTION_LIST")){
+            Parameters.ACE05_SECTION_LIST = props.getProperty("ACE05_SECTION_LIST");
+            System.out.println("ACE05_SECTION_LIST : " + Parameters.ACE05_SECTION_LIST);
         }
 
-        if(props.containsKey("ACE05_TRAIN_FILELIST")){
-            Parameters.ACE05_TRAIN_FILELIST = props.getProperty("ACE05_TRAIN_FILELIST");
-            System.out.println("ACE05_TRAIN_FILELIST : " + Parameters.ACE05_TRAIN_FILELIST);
-        }
-        if(props.containsKey("ACE05_DEV_FILELIST")){
-            Parameters.ACE05_DEV_FILELIST = props.getProperty("ACE05_DEV_FILELIST");
-            System.out.println("ACE05_DEV_FILELIST : " + Parameters.ACE05_DEV_FILELIST);
-        }
-        if(props.containsKey("ACE05_TEST_FILELIST")){
-            Parameters.ACE05_TEST_FILELIST = props.getProperty("ACE05_TEST_FILELIST");
-            System.out.println("ACE05_TEST_FILELIST : " + Parameters.ACE05_TEST_FILELIST);
-        }
-
-        if(props.containsKey("ACE04_FILELIST")){
-            Parameters.ACE04_FILELIST = props.getProperty("ACE04_FILELIST");
-            System.out.println("ACE04_FILELIST : " + Parameters.ACE04_FILELIST);
+        if(props.containsKey("ACE04_SECTION_LIST")){
+            Parameters.ACE04_SECTION_LIST = props.getProperty("ACE04_SECTION_LIST");
+            System.out.println("ACE04_SECTION_LIST : " + Parameters.ACE04_SECTION_LIST);
         }
 
         if(props.containsKey("ACE04_SERIALIZED_DOCS")){
