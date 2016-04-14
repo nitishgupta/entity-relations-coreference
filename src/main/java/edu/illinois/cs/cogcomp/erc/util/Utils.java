@@ -94,6 +94,9 @@ public class Utils {
     }
 
     public static void writeSerializedCorpus(Corpus c, String pathToWrite) {
+        String indexDirPath = pathToWrite.substring(0, pathToWrite.lastIndexOf("/"));
+        (new File(indexDirPath)).mkdirs();
+
         try (
                 OutputStream file = new FileOutputStream(pathToWrite);
                 OutputStream buffer = new BufferedOutputStream(file);
