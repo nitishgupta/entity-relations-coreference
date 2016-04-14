@@ -1,14 +1,8 @@
 package edu.illinois.cs.cogcomp.erc.ir;
 
-import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
-import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEEntity;
-import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEEntityMention;
-import edu.illinois.cs.cogcomp.reader.util.EventConstants;
+import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
 
 import java.util.*;
 
@@ -80,73 +74,58 @@ public class DocUtils {
         ta.addView(outputViewName, bioView);
     }
 
-
-
-    public static void createGOLDNER_ExtentView(Document doc){
+    public static void createGOLDNER_ExtentView(Document doc) {
         TextAnnotation ta = doc.getTA();
         String viewName = Corpus.NER_GOLD_EXTENT_SPAN;
+        List<Constituent> constituentList = new ArrayList<>();
 
-        List<ACEEntity> entities = doc.getAceAnnotation().entityList;
-        List<Constituent> coarse_constituents = new ArrayList<Constituent>();
-
-        for ( ACEEntity e : entities ) {
-            String type = e.type;
-            for(ACEEntityMention mention : e.entityMentionList) {
-                int startCharOffset = mention.extentStart;
-                int endCharOffset = mention.extentEnd;
-                int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
-                int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
-
-                if(start_token >= 0 && end_token >= 0 && !(end_token-start_token < 0)){
-                    // Be careful with the +1 in end_span below. Regular TextAnnotation likes the end_token number exclusive
-                    Constituent c = new Constituent(type, 1.0, viewName, ta, start_token, end_token + 1);
-                    coarse_constituents.add(c);
-                }
-            }
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
+        for (Constituent c : entityView.getConstituents()) {
+            Constituent cons = c.cloneForNewView(viewName);
+            constituentList.add(cons);
         }
 
-        coarse_constituents = removeOverlappingEntities(coarse_constituents);
         View nerView = new View(viewName, NAME, ta, 1.0 );
-        for(Constituent c : coarse_constituents)
-            nerView.addConstituent(c);
+        for (Constituent filtered : removeOverlappingEntities(constituentList)) {
+            nerView.addConstituent(filtered);
+        }
 
         ta.addView(viewName, nerView);
-
     }
 
-    public static void createGOLDNER_HeadView(Document doc){
+    public static void createGOLDNER_HeadView(Document doc) {
         TextAnnotation ta = doc.getTA();
         String viewName = Corpus.NER_GOLD_HEAD_SPAN;
+        List<Constituent> constituentList = new ArrayList<>();
 
-        List<ACEEntity> entities = doc.getAceAnnotation().entityList;
-        List<Constituent> coarse_constituents = new ArrayList<Constituent>();
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
+        for (Constituent c : entityView.getConstituents()) {
+            int startCharOffset = Integer.parseInt(c.getAttribute(ACEReader.EntityHeadStartCharOffset));
+            int endCharOffset = Integer.parseInt(c.getAttribute(ACEReader.EntityHeadEndCharOffset));
+            int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
+            int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
 
-        for ( ACEEntity e : entities ) {
-            String type = e.type;
-            for(ACEEntityMention mention : e.entityMentionList) {
-                int startCharOffset = mention.headStart;
-                int endCharOffset = mention.headEnd;
-                int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
-                int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
+            if (start_token >= 0 && end_token >= 0 && !(end_token - start_token < 0)) {
+                // Be careful with the +1 in end_span below. Regular TextAnnotation likes the end_token number exclusive
+                Constituent cons = new Constituent(c.getLabel(), 1.0, viewName, ta, start_token, end_token + 1);
 
-                if(start_token >= 0 && end_token >= 0 && !(end_token-start_token < 0)){
-                    // Be careful with the +1 in end_span below. Regular TextAnnotation likes the end_token number exclusive
-                    Constituent c = new Constituent(type, 1.0, viewName, ta, start_token, end_token + 1);
-                    coarse_constituents.add(c);
+                for (String attributeKey : c.getAttributeKeys()) {
+                    cons.addAttribute(attributeKey, c.getAttribute(attributeKey));
                 }
+
+                constituentList.add(cons);
             }
         }
 
-        coarse_constituents = removeOverlappingEntities(coarse_constituents);
         View nerView = new View(viewName, NAME, ta, 1.0 );
-        for(Constituent c : coarse_constituents)
-            nerView.addConstituent(c);
+        for (Constituent filtered : removeOverlappingEntities(constituentList)) {
+            nerView.addConstituent(filtered);
+        }
 
         ta.addView(viewName, nerView);
-
     }
 
-    public static List< Constituent > removeOverlappingEntities(List< Constituent > neConstituents ) {
+    public static List<Constituent> removeOverlappingEntities(List<Constituent> neConstituents) {
 
         Collections.sort(neConstituents, new Comparator<Constituent>() {
             @Override
@@ -164,23 +143,23 @@ public class DocUtils {
             }
         });
 
-        Set< Constituent > nesToRemove = new HashSet< Constituent >();
+        Set<Constituent> nesToRemove = new HashSet<>();
 
         int lastNeEnd = -1;
         Constituent prevNe = null;
 
-        for ( Constituent ne : neConstituents ) {
+        for (Constituent ne : neConstituents) {
             if (ne.getStartSpan() < lastNeEnd) {
                 nesToRemove.add(prevNe);
             }
+
             lastNeEnd = ne.getEndSpan();
             prevNe = ne;
         }
 
-        for ( Constituent e : nesToRemove )
-            neConstituents.remove( e );
+        for (Constituent e : nesToRemove)
+            neConstituents.remove(e);
 
         return neConstituents;
     }
-
 }

@@ -18,7 +18,7 @@ public class Main {
 
 
 
-    public static void main(String [] args) {
+    public static void main(String [] args) throws Exception {
         ConfigSystem.initialize();
 
         List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);

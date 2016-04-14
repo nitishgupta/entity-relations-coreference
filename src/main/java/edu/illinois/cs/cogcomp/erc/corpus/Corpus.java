@@ -1,8 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.corpus;
 
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
-import edu.illinois.cs.cogcomp.reader.ace2005.annotationStructure.ACEDocument;
 
 import java.io.*;
 import java.util.*;
