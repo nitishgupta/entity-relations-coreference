@@ -7,6 +7,8 @@ import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.util.Utils;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,17 +18,20 @@ import java.util.List;
  * Created by nitishgupta on 3/9/16.
  */
 public class CorpusUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(CorpusUtils.class);
+
     public static Corpus readCorpus(CorpusType corpusType) throws Exception {
         Corpus corpus;
         boolean is2004 = (corpusType == CorpusType.ACE04);
         String serializedCorpusFile = is2004 ? Parameters.ACE04_SERIALIZED_CORPUS : Parameters.ACE05_SERIALIZED_CORPUS;
 
         if ((new File(serializedCorpusFile)).exists()) {
-            System.out.println("***  READING SERIALIZED CORPUS *** ");
+            logger.info("***  READING SERIALIZED CORPUS *** ");
             corpus = Utils.readSerializedCorpus(serializedCorpusFile);
         } else {
             // To read corpus from directory and write serialized docs
-            System.out.println("***  READING DOCS DIRECTLY  *** ");
+            logger.info("***  READING DOCS DIRECTLY  *** ");
 
             String datasetPath = is2004 ? Parameters.ACE04_DATA_DIR : Parameters.ACE05_DATA_DIR;
             String sectionsToRead = is2004 ? Parameters.ACE04_SECTION_LIST : Parameters.ACE05_SECTION_LIST;
@@ -62,9 +67,9 @@ public class CorpusUtils {
         }
 
         if (corpus != null) {
-            System.out.println("Reading documents from " + (is2004 ? "ACE2004" : "ACE2005"));
-            System.out.println("Number of documents read - " + corpus.getDocs().size());
-            System.out.println("Corpus Stats : ");
+            logger.info("Reading documents from " + (is2004 ? "ACE2004" : "ACE2005"));
+            logger.info("Number of documents read - " + corpus.getDocs().size());
+            logger.info("Corpus Stats : ");
             Utils.countCorpusTypeDocs(corpus);
 
             /* TODO : STOPPING ADDING BIO VIEW UNTIL NER_GOLD_VIEW IS ESTABLISHED */
@@ -109,5 +114,9 @@ public class CorpusUtils {
         List<Corpus> corpora = CorpusUtils.getTrainDevTestCorpora(corpus);
         corpora.add(0, corpus);
         return corpora;
+    }
+
+    public static CorpusType getCorpusTypeEnum(String corpusTypeString) {
+        return Enum.valueOf(CorpusType.class, corpusTypeString.trim().toUpperCase());
     }
 }
