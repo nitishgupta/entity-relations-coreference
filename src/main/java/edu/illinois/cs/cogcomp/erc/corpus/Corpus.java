@@ -23,6 +23,7 @@ public class Corpus implements Serializable{
     public static final String POS_VIEW = "POS";
 
 
+
     /*
     Have included a method to shuffle docs when storing because
         0. The docs are read in the order of the folder. When training want to present docs of different folders in a random fashion
