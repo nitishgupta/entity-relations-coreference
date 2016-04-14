@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <cogcomp.core.version>3.0.24</cogcomp.core.version>
+        <cogcomp.core.version>3.0.25</cogcomp.core.version>
     </properties>
 
     <repositories>
@@ -44,13 +44,8 @@
         </dependency>
         <dependency>
             <groupId>edu.illinois.cs.cogcomp</groupId>
-            <artifactId>illinois-core-utilities</artifactId>
-            <version>3.0.25</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.illinois.cs.cogcomp</groupId>
             <artifactId>illinois-corpusreaders</artifactId>
-            <version>3.0.25</version>
+            <version>${cogcomp.core.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.illinois.cs.cogcomp</groupId>
