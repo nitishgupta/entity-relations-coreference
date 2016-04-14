@@ -112,7 +112,7 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         }
     }
 
-    public FeatureVectorBuffer getLocalFeatureVector(SequenceInstance sent, String currentLabel, String prevLabel, int i) {
+    public FeatureVectorBuffer  getLocalFeatureVector(SequenceInstance sent, String currentLabel, String prevLabel, int i) {
         List<String> featureMap = new ArrayList<>();
 
         addLocalPriorFeature(sent, currentLabel, prevLabel, i, featureMap);

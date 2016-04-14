@@ -119,7 +119,8 @@ public class MainClass {
             Corpus testData = corpora.get(3);
 
             Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel");
-            Test.testNER(testData, "testModel");
+            //Test.testNER(testData, "testModel");
+            Test.testNER(trainData, "testModel");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
