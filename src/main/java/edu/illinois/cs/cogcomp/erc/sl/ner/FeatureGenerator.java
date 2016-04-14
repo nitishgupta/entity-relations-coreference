@@ -43,36 +43,42 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         int shift = 0;
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
         for(int i=0; i<sequence.size(); i++){
-            FeatureVectorBuffer fvbi = getFeaturesForSentenceAtPosition(sequence, label, i);
+            String current = LexiconerConstants.LABEL_PREFIX + label.getLabelAtPosition(i);
+            String prev = "";
+            if(i > 0)
+                prev = LexiconerConstants.LABEL_PREFIX + label.getLabelAtPosition(i-1);
+
+            FeatureVectorBuffer fvbi = getLocalFeatureVector(sequence, current, prev, i);
+            //FeatureVectorBuffer fvbi = getFeaturesForSentenceAtPosition(sequence, label, i);
             fvb.addFeature(fvbi);
         }
 
         return fvb;
     }
 
-    public FeatureVectorBuffer getFeaturesForSentenceAtPosition(SequenceInstance sent, SequenceLabel labelseq, int i) {
-        List<String> featureMap = new ArrayList<>();
-
-        addPriorFeature(sent, labelseq, i, featureMap);
-        addEmissionFeature(sent, labelseq, i, featureMap);
-        addPOSEmissionFeature(sent, labelseq, i, featureMap);
-        addCapitalizationFeature(sent, labelseq, i, featureMap);
-        addLabelTransitionFeature(labelseq, i, featureMap);
-
-        FeatureVectorBuffer fvb = new FeatureVectorBuffer();
-        for (String f : featureMap) {
-            if (lm.isAllowNewFeatures()) {
-                lm.addFeature(f);
-            }
-
-            if (lm.containFeature(f)) {
-                fvb.addFeature(lm.getFeatureId(f), 1.0f);
-            } else {
-//                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
-            }
-        }
-        return fvb;
-    }
+//    public FeatureVectorBuffer getFeaturesForSentenceAtPosition(SequenceInstance sent, SequenceLabel labelseq, int i) {
+//        List<String> featureMap = new ArrayList<>();
+//
+//        addPriorFeature(sent, labelseq, i, featureMap);
+//        addEmissionFeature(sent, labelseq, i, featureMap);
+//        addPOSEmissionFeature(sent, labelseq, i, featureMap);
+//        addCapitalizationFeature(sent, labelseq, i, featureMap);
+//        addLabelTransitionFeature(labelseq, i, featureMap);
+//
+//        FeatureVectorBuffer fvb = new FeatureVectorBuffer();
+//        for (String f : featureMap) {
+//            if (lm.isAllowNewFeatures()) {
+//                lm.addFeature(f);
+//            }
+//
+//            if (lm.containFeature(f)) {
+//                fvb.addFeature(lm.getFeatureId(f), 1.0f);
+//            } else {
+////                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
+//            }
+//        }
+//        return fvb;
+//    }
 
     private void addPriorFeature(SequenceInstance sent, SequenceLabel label, int i,
                                     List<String> featureMap) {
@@ -112,6 +118,9 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         }
     }
 
+    /*
+        SHOULD GET LABEL WITH PREFIX !!!!!!!!!!!!!!!!!!
+     */
     public FeatureVectorBuffer  getLocalFeatureVector(SequenceInstance sent, String currentLabel, String prevLabel, int i) {
         List<String> featureMap = new ArrayList<>();
 
@@ -129,9 +138,10 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
 
             if (lm.containFeature(f)) {
                 fvb.addFeature(lm.getFeatureId(f), 1.0f);
-            } else {
-//                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
             }
+//            else {
+//                fvb.addFeature(lm.getFeatureId(LexiconerConstants.WORD_UNKNOWN), 1.0f);
+//            }
         }
 
         return fvb;
