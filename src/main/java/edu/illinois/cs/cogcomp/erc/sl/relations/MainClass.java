@@ -12,6 +12,7 @@ import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,21 +37,21 @@ public class MainClass {
     }
 
     @CommandDescription(usage = "", description = "")
-    public static void train(String corpusType) { train(corpusType, null); }
+    public static void train(String corpusType) throws IOException, ClassNotFoundException { train(corpusType, null); }
 
     @CommandDescription(usage = "", description = "")
-    public static void train(String corpusType, String modelFileName) {
+    public static void train(String corpusType, String modelFileName) throws IOException, ClassNotFoundException {
         Corpus aceCorpus = MainClass.readCorpus(corpusType);
 
         List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
         Corpus trainCorpus = allCorpora.get(0);
         Corpus develCorpus = allCorpora.get(1);
 
-        for (Document doc : aceCorpus.getDocs()) {
-            SLHelper.populateSLProblemForDocument(doc);
-        }
+        SLModel slModel = SLModel.loadModel(modelFileName);
 
-        System.out.println("Total Violations - " + SLHelper.count);
+        for (Document doc : aceCorpus.getDocs()) {
+            SLHelper.populateSLProblemForDocument(doc, "", slModel.lm);
+        }
     }
 
     @CommandDescription(usage = "", description = "")
