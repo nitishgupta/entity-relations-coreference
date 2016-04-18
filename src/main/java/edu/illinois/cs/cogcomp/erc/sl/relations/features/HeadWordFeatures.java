@@ -27,6 +27,7 @@ public class HeadWordFeatures extends FeatureDefinitionBase {
         Constituent firstMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getFirstMention(), "View");
         Constituent secondMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getSecondMention(), "View");
 
+        // TODO: Add logging here.
         headWordFeatures[0] = firstMentionHead == null ? "" : firstMentionHead.getSurfaceForm();
         headWordFeatures[1] = secondMentionHead == null ? "" : secondMentionHead.getSurfaceForm();
         headWordFeatures[2] = headWordFeatures[0] + "_" + headWordFeatures[1];

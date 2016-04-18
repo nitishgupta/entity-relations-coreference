@@ -4,7 +4,6 @@ import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
-import edu.illinois.cs.cogcomp.edison.features.Feature;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
@@ -12,9 +11,6 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
-import edu.illinois.cs.cogcomp.erc.sl.ner.LexiconerConstants;
-import edu.illinois.cs.cogcomp.erc.sl.relations.features.EntityTypeFeature;
-import edu.illinois.cs.cogcomp.erc.sl.relations.features.FeatureDefinitionBase;
 import edu.illinois.cs.cogcomp.lbjava.classify.TestDiscrete;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
 import edu.illinois.cs.cogcomp.sl.core.*;
@@ -27,9 +23,6 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -105,7 +98,11 @@ public class MainClass {
 
         if(learner instanceof L2LossSSVMLearner)
             System.out.println("Primal objective:" +
-                    ((L2LossSSVMLearner)learner).getPrimalObjective(slProblem, model.wv, model.infSolver, parameters.C_FOR_STRUCTURE));
+                    ((L2LossSSVMLearner)learner).getPrimalObjective(
+                            slProblem,
+                            model.wv,
+                            model.infSolver,
+                            parameters.C_FOR_STRUCTURE));
 
         // save the model
         model.saveModel(modelFileName);
@@ -122,7 +119,7 @@ public class MainClass {
 
     @CommandDescription(usage = "", description = "")
     public static void trainAndTest(String corpusType, String modelFileName) throws Exception {
-        train(corpusType);
+        train(corpusType, modelFileName);
         test(corpusType, modelFileName);
     }
 
@@ -131,7 +128,6 @@ public class MainClass {
         Corpus aceCorpus = MainClass.readCorpus(corpusType);
 
         List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
-        Corpus trainCorpus = allCorpora.get(0);
         Corpus testCorpus = allCorpora.get(2);
 
         SLProblem slProblem = new SLProblem();
