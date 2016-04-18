@@ -142,7 +142,7 @@ public class MainClass {
 
         String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
 
-        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", viewName);
+        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", goldViewName);
         Test.addNERView(testData, goldViewName, "testModel");
         Test.testNER(testData, goldViewName);
 
