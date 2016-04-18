@@ -15,10 +15,12 @@ import java.io.Serializable;
  * @author Bhargav Mangipudi
  */
 public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator implements Serializable {
-    protected Lexiconer lexiconer;
+    protected final Lexiconer lexiconer;
+    protected final String featurePrefix;
 
     public FeatureDefinitionBase(Lexiconer lm) {
         this.lexiconer = lm;
+        this.featurePrefix = this.getClass().getName();
     }
 
     // Assumes lexicon is populated already.

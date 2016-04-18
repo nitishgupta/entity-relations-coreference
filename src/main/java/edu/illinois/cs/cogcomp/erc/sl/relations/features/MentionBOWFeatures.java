@@ -1,43 +1,45 @@
 package edu.illinois.cs.cogcomp.erc.sl.relations.features;
 
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
-import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.sl.relations.SLInstance;
 import edu.illinois.cs.cogcomp.erc.sl.relations.SLStructure;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
+import java.util.Arrays;
+
 /**
  * @author Bhargav Mangipudi
  */
-public class HeadWordFeatures extends FeatureDefinitionBase {
-    public HeadWordFeatures(Lexiconer lexiconer) {
-        super(lexiconer);
+public class MentionBOWFeatures extends FeatureDefinitionBase {
+
+    public MentionBOWFeatures(Lexiconer lm) {
+        super(lm);
     }
 
     @Override
     public FeatureVectorBuffer getFeatureVector(SLInstance instance, SLStructure structure) {
         String nullFeature = this.featurePrefix + "_" + structure.getRelationLabel();
-        String[] headWordFeatures = new String[3];
+        String[] bowWordsFeatures = new String[2];
 
-        Constituent firstMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getFirstMention(), "View");
-        Constituent secondMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getSecondMention(), "View");
 
-        // TODO: Add logging here.
-        headWordFeatures[0] = firstMentionHead == null ? "" : firstMentionHead.getSurfaceForm();
-        headWordFeatures[1] = secondMentionHead == null ? "" : secondMentionHead.getSurfaceForm();
-        headWordFeatures[2] = headWordFeatures[0] + "_" + headWordFeatures[1];
+        String[] firstMentionUnordered = instance.getFirstMention().getSurfaceForm().split(" ");
+        Arrays.sort(firstMentionUnordered);
+        bowWordsFeatures[0] = String.join(" ", firstMentionUnordered);
+
+        String[] secondMentionUnordered = instance.getSecondMention().getSurfaceForm().split(" ");
+        Arrays.sort(secondMentionUnordered);
+        bowWordsFeatures[1] = String.join(" ", secondMentionUnordered);
 
         if (this.lexiconer.isAllowNewFeatures()) {
             this.lexiconer.addFeature(nullFeature);
-            for (String feat : headWordFeatures) {
+            for (String feat : bowWordsFeatures) {
                 this.lexiconer.addFeature(nullFeature + "_" + feat);
             }
         }
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
 
-        for (String feat : headWordFeatures) {
+        for (String feat : bowWordsFeatures) {
 
             if (this.lexiconer.containFeature(nullFeature + "_" + feat)) {
                 fvb.addFeature(this.lexiconer.getFeatureId(nullFeature + "_" + feat), 1.0f);

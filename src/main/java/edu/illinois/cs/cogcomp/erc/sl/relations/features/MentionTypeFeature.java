@@ -9,12 +9,9 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 /**
  * @author Bhargav Mangipudi
  */
-public class EntityTypeFeature extends FeatureDefinitionBase {
-    private String featurePrefix;
-
-    public EntityTypeFeature(Lexiconer lm) {
+public class MentionTypeFeature extends FeatureDefinitionBase {
+    public MentionTypeFeature(Lexiconer lm) {
         super(lm);
-        this.featurePrefix = this.getClass().getName();
     }
 
     @Override
