@@ -35,7 +35,7 @@ public class Train {
 //        )));
 //    }
 
-    public static void trainNER(Corpus trainData, String slConfigPath, String modelPath) throws Exception {
+    public static void trainNER(Corpus trainData, String slConfigPath, String modelPath, String viewName) throws Exception {
         SLModel model = new SLModel();
         model.lm = new Lexiconer();
         model.lm.setAllowNewFeatures(true);
@@ -47,7 +47,7 @@ public class Train {
         model.featureGenerator = new FeatureGenerator(model.lm);
 
         // Read the training data into IInstance and IStructure || IStructure=string[] "label" || lm.label=PREFIX+"label"
-        SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm, Corpus.NER_GOLD_HEAD_BIO_VIEW);
+        SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm, viewName);
 
         // Get our meta-feature generator with current set of features
         //FeatureGenerator featureGenerator = getCurrentFeatureGenerator(model.lm);
