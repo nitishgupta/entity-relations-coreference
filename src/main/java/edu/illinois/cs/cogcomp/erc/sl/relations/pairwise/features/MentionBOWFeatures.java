@@ -1,7 +1,7 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations.features;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.features;
 
-import edu.illinois.cs.cogcomp.erc.sl.relations.SLInstance;
-import edu.illinois.cs.cogcomp.erc.sl.relations.SLStructure;
+import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.RelationMentionPair;
+import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.RelationLabel;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
@@ -17,7 +17,7 @@ public class MentionBOWFeatures extends FeatureDefinitionBase {
     }
 
     @Override
-    public FeatureVectorBuffer getFeatureVector(SLInstance instance, SLStructure structure) {
+    public FeatureVectorBuffer getFeatureVector(RelationMentionPair instance, RelationLabel structure) {
         String nullFeature = this.featurePrefix + "_" + structure.getRelationLabel();
         String[] bowWordsFeatures = new String[2];
 

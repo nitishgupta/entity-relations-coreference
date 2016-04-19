@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
@@ -17,7 +17,7 @@ public class SLHelper {
 
     public static final String NO_RELATION_LABEL = "NIL";
 
-    public static List<Pair<SLInstance, SLStructure>> populateSLProblemForDocument(
+    public static List<Pair<RelationMentionPair, RelationLabel>> populateSLProblemForDocument(
             Document document,
             Lexiconer lm,
             String entityViewName,
@@ -28,15 +28,15 @@ public class SLHelper {
 
         PredicateArgumentView relationSourceView = (PredicateArgumentView) ta.getView(relationViewName);
 
-        List<Pair<SLInstance, SLStructure>> problemInstances = new ArrayList<>();
+        List<Pair<RelationMentionPair, RelationLabel>> problemInstances = new ArrayList<>();
         List<Constituent> argumentListForNegativeSampling = new ArrayList<>();
 
         for (Constituent predicate : relationSourceView.getPredicates()) {
             Constituent relArg = predicate.getOutgoingRelations().get(0).getTarget();
             String label = predicate.getAttribute(ACEReader.RelationTypeAttribute);
 
-            SLInstance instance = new SLInstance(predicate, relArg);
-            SLStructure structure = new SLStructure(label);
+            RelationMentionPair instance = new RelationMentionPair(predicate, relArg);
+            RelationLabel structure = new RelationLabel(label);
 
             if (lm.isAllowNewFeatures()) {
                 lm.addLabel(label);
@@ -66,8 +66,8 @@ public class SLHelper {
                     continue;
                 }
 
-                SLInstance instance = new SLInstance(predicate, randCons);
-                SLStructure structure = new SLStructure(NO_RELATION_LABEL);
+                RelationMentionPair instance = new RelationMentionPair(predicate, randCons);
+                RelationLabel structure = new RelationLabel(NO_RELATION_LABEL);
 
                 problemInstances.add(new Pair<>(instance, structure));
 

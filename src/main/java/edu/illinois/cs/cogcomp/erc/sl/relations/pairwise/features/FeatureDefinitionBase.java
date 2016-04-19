@@ -1,7 +1,7 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations.features;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.features;
 
-import edu.illinois.cs.cogcomp.erc.sl.relations.SLInstance;
-import edu.illinois.cs.cogcomp.erc.sl.relations.SLStructure;
+import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.RelationMentionPair;
+import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.RelationLabel;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -24,7 +24,7 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
     }
 
     // Assumes lexicon is populated already.
-    public void preExtractFeatures(SLInstance instance) {
+    public void preExtractFeatures(RelationMentionPair instance) {
         int numOfLabels = this.lexiconer.getNumOfLabels();
 
         // Assumes are labels are indexed between 0 <= labelId < numLabels
@@ -32,15 +32,15 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
             String labelString = this.lexiconer.getLabelString(i);
 
             // Ideally this should be better.
-            this.getFeatureVector(instance, new SLStructure(labelString));
+            this.getFeatureVector(instance, new RelationLabel(labelString));
         }
     }
 
-    public abstract FeatureVectorBuffer getFeatureVector(SLInstance instance, SLStructure structure);
+    public abstract FeatureVectorBuffer getFeatureVector(RelationMentionPair instance, RelationLabel structure);
 
     public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
-        SLInstance ins = (SLInstance) x;
-        SLStructure str = (SLStructure) y;
+        RelationMentionPair ins = (RelationMentionPair) x;
+        RelationLabel str = (RelationLabel) y;
 
         return getFeatureVector(ins, str).toFeatureVector();
     }

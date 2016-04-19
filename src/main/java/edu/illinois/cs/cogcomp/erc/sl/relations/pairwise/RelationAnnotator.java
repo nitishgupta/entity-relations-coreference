@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
@@ -52,7 +52,7 @@ public class RelationAnnotator extends Annotator {
         // Disable modification of lexicon while testing.
         this.trainedModel.lm.setAllowNewFeatures(false);
 
-        List<Pair<SLInstance, SLStructure>> slItems = SLHelper.populateSLProblemForDocument(
+        List<Pair<RelationMentionPair, RelationLabel>> slItems = SLHelper.populateSLProblemForDocument(
                 doc,
                 this.trainedModel.lm,
                 ACEReader.ENTITYVIEW, // TODO: Fix this.
@@ -63,11 +63,11 @@ public class RelationAnnotator extends Annotator {
             return;
         }
 
-        for (Pair<SLInstance, SLStructure> problemInstance : slItems) {
-            SLInstance instance = problemInstance.getFirst();
+        for (Pair<RelationMentionPair, RelationLabel> problemInstance : slItems) {
+            RelationMentionPair instance = problemInstance.getFirst();
 
             try {
-                SLStructure predictedStructure = (SLStructure) this.trainedModel.infSolver.getBestStructure(
+                RelationLabel predictedStructure = (RelationLabel) this.trainedModel.infSolver.getBestStructure(
                         this.trainedModel.wv,
                         instance);
 

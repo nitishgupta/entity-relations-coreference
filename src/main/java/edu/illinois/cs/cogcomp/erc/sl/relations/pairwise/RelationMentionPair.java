@@ -1,17 +1,16 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Sentence;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 
 /**
  * @author Bhargav Mangipudi
  */
-public class SLInstance implements IInstance {
+public class RelationMentionPair implements IInstance {
     private Constituent firstMention;
     private Constituent secondMention;
 
-    public SLInstance(Constituent firstMention, Constituent secondMention) {
+    public RelationMentionPair(Constituent firstMention, Constituent secondMention) {
         assert firstMention != null;
         assert secondMention != null;
 

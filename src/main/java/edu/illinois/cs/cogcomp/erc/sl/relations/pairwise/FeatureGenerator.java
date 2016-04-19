@@ -1,6 +1,6 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
-import edu.illinois.cs.cogcomp.erc.sl.relations.features.*;
+import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.features.*;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
@@ -29,7 +29,7 @@ public class FeatureGenerator extends FeatureDefinitionBase implements Serializa
     }
 
     @Override
-    public FeatureVectorBuffer getFeatureVector(SLInstance instance, SLStructure structure) {
+    public FeatureVectorBuffer getFeatureVector(RelationMentionPair instance, RelationLabel structure) {
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
 
         for (FeatureDefinitionBase feature : this.activeFeatures) {

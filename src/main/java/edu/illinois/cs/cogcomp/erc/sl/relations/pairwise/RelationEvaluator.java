@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.core.experiments.ClassificationTester;

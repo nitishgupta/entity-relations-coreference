@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
@@ -65,13 +65,13 @@ public class MainClass {
 
         SLProblem slProblem = new SLProblem();
         for (Document doc : trainCorpus.getDocs()) {
-            List<Pair<SLInstance, SLStructure>> instances = SLHelper.populateSLProblemForDocument(
+            List<Pair<RelationMentionPair, RelationLabel>> instances = SLHelper.populateSLProblemForDocument(
                     doc,
                     model.lm,
                     ACEReader.ENTITYVIEW,
                     ACEReader.RELATIONVIEW);
 
-            for (Pair<SLInstance, SLStructure> ins : instances) {
+            for (Pair<RelationMentionPair, RelationLabel> ins : instances) {
                 fg.preExtractFeatures(ins.getFirst());
                 slProblem.addExample(ins.getFirst(), ins.getSecond());
             }
@@ -132,13 +132,13 @@ public class MainClass {
 
         SLProblem slProblem = new SLProblem();
         for (Document doc : testCorpus.getDocs()) {
-            List<Pair<SLInstance, SLStructure>> instances = SLHelper.populateSLProblemForDocument(
+            List<Pair<RelationMentionPair, RelationLabel>> instances = SLHelper.populateSLProblemForDocument(
                     doc,
                     modelInstance.lm,
                     ACEReader.ENTITYVIEW,
                     ACEReader.RELATIONVIEW);
 
-            for (Pair<SLInstance, SLStructure> ins : instances) {
+            for (Pair<RelationMentionPair, RelationLabel> ins : instances) {
                 slProblem.addExample(ins.getFirst(), ins.getSecond());
             }
         }
@@ -147,8 +147,8 @@ public class MainClass {
         test.addNull(SLHelper.NO_RELATION_LABEL);
 
         for (Pair<IInstance, IStructure> ins : slProblem) {
-            SLStructure gold = (SLStructure) ins.getSecond();
-            SLStructure pred = (SLStructure) modelInstance.infSolver.getBestStructure(modelInstance.wv, ins.getFirst());
+            RelationLabel gold = (RelationLabel) ins.getSecond();
+            RelationLabel pred = (RelationLabel) modelInstance.infSolver.getBestStructure(modelInstance.wv, ins.getFirst());
 
             test.reportPrediction(pred.getRelationLabel(), gold.getRelationLabel());
         }

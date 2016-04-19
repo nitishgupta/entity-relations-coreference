@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
@@ -34,8 +34,8 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
             IStructure goldStructure) throws Exception {
         assert !this.lm.isAllowNewFeatures();
 
-        SLInstance ins = (SLInstance) instance;
-        SLStructure gold = (SLStructure) goldStructure;
+        RelationMentionPair ins = (RelationMentionPair) instance;
+        RelationLabel gold = (RelationLabel) goldStructure;
 
         List<Pair<String, Float>> scores = new ArrayList<>(this.lm.getNumOfLabels());
 
@@ -43,7 +43,7 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
         for (int i = 0; i < numLabels; i++) {
             String currentLabel = this.lm.getLabelString(i);
 
-            IFeatureVector fv = this.featureGenerator.getFeatureVector(instance, new SLStructure(currentLabel));
+            IFeatureVector fv = this.featureGenerator.getFeatureVector(instance, new RelationLabel(currentLabel));
             scores.add(new Pair<>(currentLabel, weightVector.dotProduct(fv)));
         }
 
@@ -63,13 +63,13 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
             bestStructure = scores.get(1);
         }
 
-        return new SLStructure(bestStructure.getFirst());
+        return new RelationLabel(bestStructure.getFirst());
     }
 
     @Override
     public float getLoss(IInstance iInstance, IStructure goldStructure, IStructure predStructure) {
-        SLStructure gold = (SLStructure) goldStructure;
-        SLStructure pred = (SLStructure) predStructure;
+        RelationLabel gold = (RelationLabel) goldStructure;
+        RelationLabel pred = (RelationLabel) predStructure;
 
         return Objects.equals(pred.getRelationLabel(), gold.getRelationLabel()) ? 0.0f : 1.0f;
     }

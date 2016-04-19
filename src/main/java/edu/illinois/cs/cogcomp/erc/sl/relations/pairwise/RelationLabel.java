@@ -1,14 +1,14 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations;
+package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
 
 /**
  * @author Bhargav Mangipudi
  */
-public class SLStructure implements IStructure {
+public class RelationLabel implements IStructure {
     private String relationLabel;
 
-    public SLStructure(String relationLabel) {
+    public RelationLabel(String relationLabel) {
         this.relationLabel = relationLabel;
     }
 
