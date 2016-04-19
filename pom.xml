@@ -56,6 +56,10 @@
                     <groupId>edu.illinois.cs.cogcomp</groupId>
                     <artifactId>edison</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>edu.illinois.cs.cogcomp</groupId>
+                    <artifactId>coreUtilities</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

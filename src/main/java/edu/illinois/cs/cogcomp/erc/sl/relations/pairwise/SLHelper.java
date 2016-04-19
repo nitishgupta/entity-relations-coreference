@@ -1,6 +1,8 @@
 package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
+import edu.illinois.cs.cogcomp.core.datastructures.IQueryable;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
+import edu.illinois.cs.cogcomp.core.datastructures.QueryableList;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
@@ -29,7 +31,6 @@ public class SLHelper {
         PredicateArgumentView relationSourceView = (PredicateArgumentView) ta.getView(relationViewName);
 
         List<Pair<RelationMentionPair, RelationLabel>> problemInstances = new ArrayList<>();
-        List<Constituent> argumentListForNegativeSampling = new ArrayList<>();
 
         for (Constituent predicate : relationSourceView.getPredicates()) {
             Constituent relArg = predicate.getOutgoingRelations().get(0).getTarget();
@@ -43,42 +44,80 @@ public class SLHelper {
             }
 
             problemInstances.add(new Pair<>(instance, structure));
-            argumentListForNegativeSampling.add(predicate);
-            argumentListForNegativeSampling.add(relArg);
-        }
-
-        // TODO: Revisit sampling strategy
-        int samplingCount = 1;
-        int numArguments = argumentListForNegativeSampling.size();
-        Random rand = new Random();
-
-        for (Constituent predicate : relationSourceView.getPredicates()) {
-            int added = 0;
-            int attempts = 3;
-
-            while (added < samplingCount && attempts > 0) {
-                attempts--;
-
-                Constituent randCons = argumentListForNegativeSampling.get(rand.nextInt(numArguments));
-
-                if (randCons.equals(predicate) ||
-                        (randCons.getIncomingRelations().size() > 0 && randCons.getIncomingRelations().get(0).getSource() == predicate)) {
-                    continue;
-                }
-
-                RelationMentionPair instance = new RelationMentionPair(predicate, randCons);
-                RelationLabel structure = new RelationLabel(NO_RELATION_LABEL);
-
-                problemInstances.add(new Pair<>(instance, structure));
-
-                added++;
-            }
         }
 
         if (lm.isAllowNewFeatures()) {
             lm.addLabel(NO_RELATION_LABEL);
         }
 
+        for (Pair<RelationMentionPair, RelationLabel> items : sampleNegativeRelations(
+                document,
+                lm,
+                entityViewName,
+                relationViewName,
+                0.2)) {
+            problemInstances.add(items);
+        }
+
         return problemInstances;
+    }
+
+    public static List<Pair<RelationMentionPair, RelationLabel>> sampleNegativeRelations(
+            Document document,
+            Lexiconer lm,
+            String entityViewName,
+            String relationViewName,
+            double fractionOfRelations) {
+
+        Random rand = new Random();
+
+        PredicateArgumentView relationView = (PredicateArgumentView) document.getTA().getView(relationViewName);
+
+        int numOfRelation = relationView.getPredicates().size();
+        int toSample = (int) (numOfRelation * fractionOfRelations);
+
+        List<Pair<RelationMentionPair, RelationLabel>> sampledRelations = new ArrayList<>(toSample);
+        SpanLabelView entityView = (SpanLabelView) document.getTA().getView(entityViewName);
+
+        int addedEntities = 0;
+        int attempts = 2;
+        int numEntities = entityView.getNumberOfConstituents();
+
+        IQueryable<Constituent> predicates = new QueryableList<>(relationView.getPredicates());
+
+        while (addedEntities < toSample && attempts > 0) {
+            int firstEntity = rand.nextInt(numEntities);
+            int secondEntity = rand.nextInt(numEntities);
+
+            attempts--;
+            if (firstEntity == secondEntity) {
+                continue;
+            }
+
+            Constituent firstItem = entityView.getConstituents().get(firstEntity);
+            Constituent secondItem = entityView.getConstituents().get(secondEntity);
+
+            boolean hasRelation = false;
+            IQueryable<Constituent> matchPredicateResult = predicates.where(Queries.sameSpanAsConstituent(firstItem));
+            if (matchPredicateResult.count() > 0) {
+                for (Constituent pred : matchPredicateResult) {
+                    if (pred.getStartSpan() == secondItem.getStartSpan() && pred.getEndSpan() == secondItem.getEndSpan()) {
+                        hasRelation = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasRelation) {
+                RelationMentionPair instance = new RelationMentionPair(firstItem, secondItem);
+                RelationLabel structure = new RelationLabel(NO_RELATION_LABEL);
+
+                sampledRelations.add(new Pair<>(instance, structure));
+                addedEntities++;
+                attempts = 2;
+            }
+         }
+
+        return sampledRelations;
     }
 }
