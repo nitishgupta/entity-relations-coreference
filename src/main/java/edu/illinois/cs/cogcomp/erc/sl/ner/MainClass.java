@@ -8,6 +8,8 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
+import edu.illinois.cs.cogcomp.lbjava.nlp.seg.Token;
+import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
@@ -32,11 +34,6 @@ public class MainClass {
     public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm, String viewName) {
         SLProblem sp = new SLProblem();
         int num_instances = 0;
-
-//        if (lm.isAllowNewFeatures()) {
-//            lm.addFeature(LexiconerConstants.WORD_UNKNOWN);
-//            lm.addFeature(LexiconerConstants.POS_UNKNOWN);
-//        }
 
         // In this loop, the number of instances added to the SLProblem = SentenceView.getConstituents().size()*corpus.numDocs()
         List<Document> docs = corpus.getDocs();
@@ -104,24 +101,48 @@ public class MainClass {
         return sp;
     }
 
+    public static IInstance getIInstanceForSentence(Constituent sentence, Lexiconer lm){
+        TextAnnotation ta = sentence.getTextAnnotation();
+        TokenLabelView TokensView = (TokenLabelView)ta.getView(Corpus.TOKENS_VIEW);
+        View POSView = ta.getView(ViewNames.POS);
+
+        int start_token = sentence.getStartSpan();  // Inclusive
+        int end_token = sentence.getEndSpan() - 1;  // Inclusive
+
+
+        List<Constituent> token_constituents = new ArrayList<Constituent>();
+        List<String> posTag_list = new ArrayList<>();
+
+        for(int token_num = start_token; token_num <= end_token; token_num++){
+            Constituent c = TokensView.getConstituentAtToken(token_num);
+            token_constituents.add(c);
+
+            String posTag = POSView.getConstituentsCoveringToken(token_num).get(0).getLabel();
+            posTag_list.add(posTag);
+        }
+
+        IInstance sen = new SequenceInstance(token_constituents, posTag_list);
+
+        return sen;
+    }
+
     /**
      * Main method.
      * @param args List of command-line argument.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ConfigSystem.initialize();
 
-        try {
-            List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
-            Corpus allCorpora = corpora.get(0);
-            Corpus trainData = corpora.get(1);
-            Corpus devData = corpora.get(2);
-            Corpus testData = corpora.get(3);
+        List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
+        Corpus allCorpora = corpora.get(0);
+        Corpus trainData = corpora.get(1);
+        Corpus devData = corpora.get(2);
+        Corpus testData = corpora.get(3);
 
-//            Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel");
-//            Test.testNER(testData, "testModel");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
+
+        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", goldViewName);
+        Test.addNERView(testData, goldViewName, "testModel");
+        Test.testNER(testData, goldViewName);
     }
 }

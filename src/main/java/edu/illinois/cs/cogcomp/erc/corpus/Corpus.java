@@ -14,13 +14,16 @@ public class Corpus implements Serializable{
     private List<Document> docs;
     private boolean isACE04;
     public static final String NER_GOLD_HEAD_BIO_VIEW = "NER_GOLD_HEAD_BIO_VIEW";
+    public static final String NER_PRED_HEAD_BIO_VIEW = "NER_PRED_HEAD_BIO_VIEW";
     public static final String NER_GOLD_EXTENT_BIO_VIEW = "NER_GOLD_EXTENT_BIO_VIEW";
+    public static final String NER_PRED_EXTENT_BIO_VIEW = "NER_PRED_EXTENT_BIO_VIEW";
     public static final String NER_GOLD_EXTENT_SPAN = "NER_GOLD_EXTENT_SPAN";
     public static final String NER_GOLD_HEAD_SPAN = "NER_GOLD_HEAD_SPAN";
     public static final String TOKENS_VIEW = "TOKENS";
     public static final String SENTENCE_VIEW = "SENTENCE";
     public static final String SHALLOW_PARSE_VIEW = "SHALLOW_PARSE";
     public static final String POS_VIEW = "POS";
+
 
 
     /*

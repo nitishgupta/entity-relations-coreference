@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,8 +110,13 @@ public class CorpusUtils {
         return corpora;
     }
 
-    public static List<Corpus> readCompleteTrainDevTestCorpora(CorpusType corpusType) throws Exception {
-        Corpus corpus = CorpusUtils.readCorpus(corpusType);
+    public static List<Corpus> readCompleteTrainDevTestCorpora(CorpusType corpusType) {
+        Corpus corpus = null;
+        try {
+            corpus = CorpusUtils.readCorpus(corpusType);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         List<Corpus> corpora = CorpusUtils.getTrainDevTestCorpora(corpus);
         corpora.add(0, corpus);
         return corpora;
