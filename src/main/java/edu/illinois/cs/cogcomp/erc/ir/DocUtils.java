@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.ir;
 
+import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
@@ -79,7 +80,7 @@ public class DocUtils {
         String viewName = Corpus.NER_GOLD_EXTENT_SPAN;
         List<Constituent> constituentList = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE);
         for (Constituent c : entityView.getConstituents()) {
             Constituent cons = c.cloneForNewView(viewName);
             constituentList.add(cons);
@@ -98,7 +99,7 @@ public class DocUtils {
         String viewName = Corpus.NER_GOLD_HEAD_SPAN;
         List<Constituent> constituentList = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE);
         for (Constituent c : entityView.getConstituents()) {
             Constituent cons = DocUtils.getHeadConstituentForEntityExtent(c, viewName);
             if (cons != null) {

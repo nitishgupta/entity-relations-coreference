@@ -1,6 +1,10 @@
 package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
+import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.experiments.ClassificationTester;
+import edu.illinois.cs.cogcomp.core.utilities.Table;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
@@ -11,8 +15,6 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
-import edu.illinois.cs.cogcomp.lbjava.classify.TestDiscrete;
-import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
 import edu.illinois.cs.cogcomp.sl.core.*;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
@@ -68,8 +70,8 @@ public class MainClass {
             List<Pair<RelationMentionPair, RelationLabel>> instances = SLHelper.populateSLProblemForDocument(
                     doc,
                     model.lm,
-                    ACEReader.ENTITYVIEW,
-                    ACEReader.RELATIONVIEW);
+                    ViewNames.NER_ACE_COARSE,
+                    ViewNames.RELATION_ACE_COARSE);
 
             for (Pair<RelationMentionPair, RelationLabel> ins : instances) {
                 fg.preExtractFeatures(ins.getFirst());
@@ -130,35 +132,34 @@ public class MainClass {
         List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
         Corpus testCorpus = allCorpora.get(2);
 
-        SLProblem slProblem = new SLProblem();
+        RelationEvaluator evaluator = new RelationEvaluator();
+
+        ClassificationTester clfTester = new ClassificationTester();
+        clfTester.ignoreLabelFromSummary(SLHelper.NO_RELATION_LABEL);
+
+        RelationAnnotator annotator = new RelationAnnotator(
+                "RELATION_PRED",
+                new String[] { ViewNames.POS, ViewNames.TOKENS, ViewNames.NER_ACE_COARSE },
+                ViewNames.RELATION_ACE_COARSE,
+                modelInstance,
+                aceCorpus.checkisACE2004());
+
         for (Document doc : testCorpus.getDocs()) {
-            List<Pair<RelationMentionPair, RelationLabel>> instances = SLHelper.populateSLProblemForDocument(
-                    doc,
-                    modelInstance.lm,
-                    ACEReader.ENTITYVIEW,
-                    ACEReader.RELATIONVIEW);
+            TextAnnotation ta = doc.getTA();
+            annotator.addView(ta);
 
-            for (Pair<RelationMentionPair, RelationLabel> ins : instances) {
-                slProblem.addExample(ins.getFirst(), ins.getSecond());
-            }
+            evaluator.setViews(ta.getView(ViewNames.RELATION_ACE_COARSE), ta.getView("RELATION_PRED"));
+            evaluator.evaluate(clfTester);
         }
 
-        TestDiscrete test = new TestDiscrete();
-        test.addNull(SLHelper.NO_RELATION_LABEL);
-
-        for (Pair<IInstance, IStructure> ins : slProblem) {
-            RelationLabel gold = (RelationLabel) ins.getSecond();
-            RelationLabel pred = (RelationLabel) modelInstance.infSolver.getBestStructure(modelInstance.wv, ins.getFirst());
-
-            test.reportPrediction(pred.getRelationLabel(), gold.getRelationLabel());
-        }
-
-        test.printPerformance(System.out);
+        Table performanceTable = clfTester.getPerformanceTable(true);
+        System.out.println(performanceTable.toOrgTable());
     }
 
     @CommandIgnore
     public static void main(String[] args) throws Exception {
         ConfigSystem.initialize();
+
         InteractiveShell<MainClass> shell = new InteractiveShell<>(MainClass.class);
 
         if (args.length == 0) {

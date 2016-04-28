@@ -33,8 +33,9 @@ public class SLHelper {
         List<Pair<RelationMentionPair, RelationLabel>> problemInstances = new ArrayList<>();
 
         for (Constituent predicate : relationSourceView.getPredicates()) {
-            Constituent relArg = predicate.getOutgoingRelations().get(0).getTarget();
-            String label = predicate.getAttribute(ACEReader.RelationTypeAttribute);
+            Relation relation = predicate.getOutgoingRelations().get(0);
+            Constituent relArg = relation.getTarget();
+            String label = relation.getRelationName();
 
             RelationMentionPair instance = new RelationMentionPair(predicate, relArg);
             RelationLabel structure = new RelationLabel(label);

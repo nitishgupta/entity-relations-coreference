@@ -58,7 +58,7 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
 
         Pair<String, Float> bestStructure = scores.get(0);
 
-        // Skip the best structure
+        // Skip the best structure during training phase to return the loss augmented structure.
         if (gold != null && bestStructure.getFirst().equals(gold.getRelationLabel())) {
             bestStructure = scores.get(1);
         }
