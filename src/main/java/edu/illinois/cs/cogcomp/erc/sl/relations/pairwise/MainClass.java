@@ -70,8 +70,8 @@ public class MainClass {
             List<Pair<RelationMentionPair, RelationLabel>> instances = SLHelper.populateSLProblemForDocument(
                     doc,
                     model.lm,
-                    ViewNames.NER_ACE_COARSE,
-                    ViewNames.RELATION_ACE_COARSE);
+                    Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD,
+                    Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD);
 
             for (Pair<RelationMentionPair, RelationLabel> ins : instances) {
                 fg.preExtractFeatures(ins.getFirst());
@@ -137,18 +137,22 @@ public class MainClass {
         ClassificationTester clfTester = new ClassificationTester();
         clfTester.ignoreLabelFromSummary(SLHelper.NO_RELATION_LABEL);
 
+        String relationGoldView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD;
+        String relationPredictedView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_PREDICTION;
+
         RelationAnnotator annotator = new RelationAnnotator(
-                "RELATION_PRED",
-                new String[] { ViewNames.POS, ViewNames.TOKENS, ViewNames.NER_ACE_COARSE },
-                ViewNames.RELATION_ACE_COARSE,
+                relationPredictedView,                                                // Final View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD },
+                relationGoldView,                                                    // Relation Gold View
                 modelInstance,
                 aceCorpus.checkisACE2004());
+
 
         for (Document doc : testCorpus.getDocs()) {
             TextAnnotation ta = doc.getTA();
             annotator.addView(ta);
 
-            evaluator.setViews(ta.getView(ViewNames.RELATION_ACE_COARSE), ta.getView("RELATION_PRED"));
+            evaluator.setViews(ta.getView(relationGoldView), ta.getView(relationPredictedView));
             evaluator.evaluate(clfTester);
         }
 

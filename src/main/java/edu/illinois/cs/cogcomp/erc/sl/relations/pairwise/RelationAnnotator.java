@@ -7,6 +7,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.PredicateArgumentView;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
@@ -56,7 +57,7 @@ public class RelationAnnotator extends Annotator {
         List<Pair<RelationMentionPair, RelationLabel>> slItems = SLHelper.populateSLProblemForDocument(
                 doc,
                 this.trainedModel.lm,
-                ViewNames.NER_ACE_COARSE, // TODO: Fix this.
+                Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD,
                 this.inputRelationView);
 
         if (slItems == null) {
