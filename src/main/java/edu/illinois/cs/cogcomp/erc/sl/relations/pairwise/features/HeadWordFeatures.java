@@ -6,11 +6,15 @@ import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.RelationMentionPair;
 import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.RelationLabel;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bhargav Mangipudi
  */
 public class HeadWordFeatures extends FeatureDefinitionBase {
+    private static final Logger logger = LoggerFactory.getLogger(HeadWordFeatures.class);
+
     public HeadWordFeatures(Lexiconer lexiconer) {
         super(lexiconer);
     }
@@ -23,7 +27,14 @@ public class HeadWordFeatures extends FeatureDefinitionBase {
         Constituent firstMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getFirstMention(), "View");
         Constituent secondMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getSecondMention(), "View");
 
-        // TODO: Add logging here.
+        if (firstMentionHead == null) {
+            logger.warn("Mention Head not found for {}", instance.getFirstMention());
+        }
+
+        if (secondMentionHead == null) {
+            logger.warn("Mention Head not found for {}", instance.getSecondMention());
+        }
+
         headWordFeatures[0] = firstMentionHead == null ? "" : firstMentionHead.getSurfaceForm();
         headWordFeatures[1] = secondMentionHead == null ? "" : secondMentionHead.getSurfaceForm();
         headWordFeatures[2] = headWordFeatures[0] + "_" + headWordFeatures[1];

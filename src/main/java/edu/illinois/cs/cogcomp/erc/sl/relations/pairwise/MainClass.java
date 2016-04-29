@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
 
+import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
@@ -15,6 +16,7 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
+import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.annotators.*;
 import edu.illinois.cs.cogcomp.sl.core.*;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
@@ -140,13 +142,12 @@ public class MainClass {
         String relationGoldView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD;
         String relationPredictedView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_PREDICTION;
 
-        RelationAnnotator annotator = new RelationAnnotator(
+        Annotator annotator = new GoldPairsAnnotator(
                 relationPredictedView,                                                // Final View
                 new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD },
                 relationGoldView,                                                    // Relation Gold View
                 modelInstance,
                 aceCorpus.checkisACE2004());
-
 
         for (Document doc : testCorpus.getDocs()) {
             TextAnnotation ta = doc.getTA();

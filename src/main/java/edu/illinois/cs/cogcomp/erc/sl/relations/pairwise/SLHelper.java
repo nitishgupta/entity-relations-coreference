@@ -5,9 +5,11 @@ import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.QueryableList;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
+import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -119,5 +121,31 @@ public class SLHelper {
          }
 
         return sampledRelations;
+    }
+
+    public static void annotateSLProblems(List<RelationMentionPair> slItems,
+                                           SLModel trainedModel,
+                                           PredicateArgumentView finalView) throws Exception {
+        for (RelationMentionPair instance : slItems) {
+
+            RelationLabel predictedStructure = (RelationLabel) trainedModel.infSolver.getBestStructure(
+                    trainedModel.wv,
+                    instance);
+
+            Constituent predicate = instance.getFirstMention().cloneForNewViewWithDestinationLabel(
+                    finalView.getViewName(),
+                    predictedStructure.getRelationLabel());
+
+            Constituent argument = instance.getSecondMention().cloneForNewViewWithDestinationLabel(
+                    finalView.getViewName(),
+                    predictedStructure.getRelationLabel());
+
+            // Populate the final relation view.
+            finalView.addPredicateArguments(
+                    predicate,
+                    Collections.singletonList(argument),
+                    new String[] { predictedStructure.getRelationLabel() },
+                    new double[] { 1.0f });
+        }
     }
 }
