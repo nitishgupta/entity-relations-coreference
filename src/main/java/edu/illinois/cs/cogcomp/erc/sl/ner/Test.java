@@ -20,56 +20,55 @@ import java.util.List;
  * Created by nitishgupta on 3/9/16.
  */
 public class Test {
-
-
-
-    public static void addNERView(Corpus testData, String viewName, String modelPath) throws Exception {
-        System.out.println("Adding Predicted BIO View");
-        SLModel model = SLModel.loadModel(modelPath);
-
+    public static void addNERView(Document doc, String outputViewName, SLModel model) throws Exception {
         // Disable modification of lexicon while testing.
         model.lm.setAllowNewFeatures(false);
 
-        for(Document doc : testData.getDocs()){
-            TextAnnotation ta = doc.getTA();
-            String outputViewName = null;
-            TokenLabelView NER_PRED_BIO_VIEW = null;
-            if(viewName.equals(Corpus.NER_GOLD_EXTENT_BIO_VIEW)) {
-                outputViewName = Corpus.NER_PRED_EXTENT_BIO_VIEW;
-                NER_PRED_BIO_VIEW = new TokenLabelView(outputViewName, "sl.ner.Test", ta, 1.0);
+        TextAnnotation ta = doc.getTA();
+        View tokensview = ta.getView(Corpus.TOKENS_VIEW);
+        TokenLabelView NER_PRED_BIO_VIEW = new TokenLabelView(outputViewName, "sl.ner.Test", ta, 1.0);
+
+        List<Constituent> tokens = tokensview.getConstituents();
+        View SentenceView = doc.getSentenceView();
+
+        for(Constituent sentence : SentenceView.getConstituents()) {
+            IInstance instance = MainClass.getIInstanceForSentence(sentence, model.lm);
+            SequenceLabel prediction = (SequenceLabel) model.infSolver.getBestStructure(model.wv, instance);
+            int start_token = sentence.getStartSpan();  // Inclusive
+            int end_token = sentence.getEndSpan() - 1;  // Inclusive
+
+            for(int token_num = start_token; token_num <= end_token; token_num++) {
+                Constituent c = tokens.get(token_num);
+                Constituent outC = c.cloneForNewViewWithDestinationLabel(outputViewName,
+                        prediction.getLabelAtPosition(token_num - start_token));
+
+                NER_PRED_BIO_VIEW.addConstituent(outC);
             }
-            else if(viewName.equals(Corpus.NER_GOLD_HEAD_BIO_VIEW)) {
-                outputViewName = Corpus.NER_PRED_HEAD_BIO_VIEW;
-                NER_PRED_BIO_VIEW = new TokenLabelView(outputViewName, "sl.ner.Test", ta, 1.0);
-            }
-
-            else{
-                System.out.println("View Name not found : " + viewName);
-                System.exit(0);
-            }
-
-            View tokensview = ta.getView(Corpus.TOKENS_VIEW);
-            List<Constituent> tokens = tokensview.getConstituents();
-            View SentenceView = doc.getSentenceView();
-
-            for(Constituent sentence : SentenceView.getConstituents()) {
-                IInstance instance = MainClass.getIInstanceForSentence(sentence, model.lm);
-                SequenceLabel prediction = (SequenceLabel) model.infSolver.getBestStructure(model.wv, instance);
-                int start_token = sentence.getStartSpan();  // Inclusive
-                int end_token = sentence.getEndSpan() - 1;  // Inclusive
-
-                List<Constituent> token_constituents = new ArrayList<Constituent>();
-
-                for(int token_num = start_token; token_num <= end_token; token_num++) {
-                    Constituent c = tokens.get(token_num);
-                    Constituent outC = c.cloneForNewViewWithDestinationLabel(outputViewName,
-                            prediction.getLabelAtPosition(token_num - start_token));
-
-                    NER_PRED_BIO_VIEW.addConstituent(outC);
-                }
-            }
-            ta.addView(outputViewName, NER_PRED_BIO_VIEW);
         }
+        ta.addView(outputViewName, NER_PRED_BIO_VIEW);
+    }
+
+    public static void addNERView(Corpus testData, String viewName, String modelPath) throws Exception {
+        System.out.println("Adding Predicted BIO View");
+
+        String outputViewName = null;
+
+        if(viewName.equals(Corpus.NER_GOLD_EXTENT_BIO_VIEW)) {
+            outputViewName = Corpus.NER_PRED_EXTENT_BIO_VIEW;
+        }
+        else if(viewName.equals(Corpus.NER_GOLD_HEAD_BIO_VIEW)) {
+            outputViewName = Corpus.NER_PRED_HEAD_BIO_VIEW;
+        }
+        else{
+            System.out.println("View Name not found : " + viewName);
+            System.exit(0);
+        }
+
+        SLModel slModel = SLModel.loadModel(modelPath);
+        for(Document doc : testData.getDocs()) {
+            Test.addNERView(doc, outputViewName, slModel);
+        }
+
         System.out.println("Predicted BIO View Added");
     }
 

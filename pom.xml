@@ -73,6 +73,11 @@
             <artifactId>illinois-edison</artifactId>
             <version>${cogcomp.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>edu.illinois.cs.cogcomp</groupId>
+            <artifactId>openeval-client_2.11</artifactId>
+            <version>0.1.2</version>
+        </dependency>
     </dependencies>
 
     <build>

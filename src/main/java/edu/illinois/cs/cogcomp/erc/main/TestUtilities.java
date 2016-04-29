@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.main;
 
+import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
@@ -8,6 +9,11 @@ import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
+import edu.illinois.cs.cogcomp.erc.sl.ner.NERAnnotator;
+import edu.illinois.cs.cogcomp.openeval.learner.Server;
+import edu.illinois.cs.cogcomp.openeval.learner.ServerPreferences;
+import edu.illinois.cs.cogcomp.sl.core.SLModel;
+import fi.iki.elonen.util.ServerRunner;
 
 import java.util.List;
 
@@ -32,16 +38,20 @@ public class TestUtilities {
 
         Document doc = ace05.getDocs().get(5);
         TextAnnotation ta = doc.getTA();
-        View view = ta.getView(Corpus.NER_GOLD_HEAD_SPAN);
+//        View view = ta.getView(Corpus.NER_GOLD_HEAD_SPAN);
+//
+//        List<Constituent> constituents = view.getConstituents();
+//        for(Constituent c : constituents){
+//            System.out.println(c.getSurfaceForm() + "_" + c.getLabel() + " " + c.getStartSpan());
+//        }
+//        System.out.println();
+//
 
-        List<Constituent> constituents = view.getConstituents();
-        for(Constituent c : constituents){
-            System.out.println(c.getSurfaceForm() + "_" + c.getLabel() + " " + c.getStartSpan());
-        }
-        System.out.println();
+        SLModel model = SLModel.loadModel("testModel");
+        Annotator annotator = new NERAnnotator(model);
+        Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
 
-
-
+        ServerRunner.executeInstance(client);
 
 
 //        NERExperiment ner = new NERExperiment();
