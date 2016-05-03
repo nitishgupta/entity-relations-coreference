@@ -16,7 +16,7 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
 import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.BIOAnnotator;
-import edu.illinois.cs.cogcomp.lbjava.Main;
+import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.NERAnnotator;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
@@ -151,7 +151,7 @@ public class MainClass {
 
         String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
 
-        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", goldViewName);
+        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, modelFileName, goldViewName);
     }
 
     @CommandDescription(description = "Test the NER Model.")
@@ -161,32 +161,52 @@ public class MainClass {
 
     @CommandDescription(description = "Test the NER Model.")
     public static void test(String modelFileName) throws Exception {
-        String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
+        CorpusType corpusType = CorpusType.ACE05;
         String predictedBIOView = Corpus.NER_PRED_HEAD_BIO_VIEW;
         String predictedEntityView = "ENTITYVIEW";
 
-        CorpusType corpusType = CorpusType.ACE05;
+        SLModel model = SLModel.loadModel(modelFileName);
 
         List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(corpusType);
         Corpus testData = corpora.get(3);
 
-        SLModel model = SLModel.loadModel(modelFileName);
+//        Annotator annotator = new NERAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView, predictedEntityView);
         Annotator annotator = new BIOAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView);
         Evaluator evaluator = new ConstituentLabelingEvaluator();
         ClassificationTester tester = new ClassificationTester();
-        tester.ignoreLabelFromSummary("O");
+
+        String goldViewName;
+        String predictedViewName;
+
+        if (annotator instanceof NERAnnotator) {
+            goldViewName = ViewNames.NER_ACE_COARSE;
+            predictedViewName = predictedEntityView;
+        } else if (annotator instanceof BIOAnnotator) {
+            goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
+            predictedViewName = predictedBIOView;
+            tester.ignoreLabelFromSummary("O");
+        } else {
+            System.out.println("Invalid annotator configuration.");
+            return;
+        }
 
         for (Document doc : testData.getDocs()) {
             TextAnnotation ta = doc.getTA();
             annotator.addView(ta);
 
             // Evaluator does an .equals on constituents and expects same view name
-            SpanLabelView predictedViewCloneForName = new SpanLabelView(goldViewName, ta);
-            for (Constituent c : ta.getView(predictedBIOView)) {
-                predictedViewCloneForName.addConstituent(c.cloneForNewView(goldViewName));
+            SpanLabelView goldViewWithPredictedName = new SpanLabelView(predictedViewName, ta);
+            for (Constituent c : ta.getView(goldViewName)) {
+                Constituent cloneCons = new Constituent(
+                        c.getLabel(),
+                        predictedViewName,
+                        c.getTextAnnotation(),
+                        c.getStartSpan(),
+                        c.getEndSpan());
+                goldViewWithPredictedName.addConstituent(cloneCons);
             }
 
-            evaluator.setViews(ta.getView(goldViewName), predictedViewCloneForName);
+            evaluator.setViews(goldViewWithPredictedName, ta.getView(predictedViewName));
             evaluator.evaluate(tester);
         }
 
