@@ -133,7 +133,6 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         ConfigSystem.initialize();
 
-
         List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
         Corpus allCorpora = corpora.get(0);
         Corpus trainData = corpora.get(1);
@@ -145,7 +144,5 @@ public class MainClass {
         Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", goldViewName);
         Test.addNERView(testData, goldViewName, "testModel");
         Test.testNER(testData, goldViewName);
-
-
     }
 }

@@ -1,5 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.ir;
 
+import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ACEReader;
@@ -79,7 +80,7 @@ public class DocUtils {
         String viewName = Corpus.NER_GOLD_EXTENT_SPAN;
         List<Constituent> constituentList = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE);
         for (Constituent c : entityView.getConstituents()) {
             Constituent cons = c.cloneForNewView(viewName);
             constituentList.add(cons);
@@ -98,21 +99,10 @@ public class DocUtils {
         String viewName = Corpus.NER_GOLD_HEAD_SPAN;
         List<Constituent> constituentList = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) ta.getView(ACEReader.ENTITYVIEW);
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE);
         for (Constituent c : entityView.getConstituents()) {
-            int startCharOffset = Integer.parseInt(c.getAttribute(ACEReader.EntityHeadStartCharOffset));
-            int endCharOffset = Integer.parseInt(c.getAttribute(ACEReader.EntityHeadEndCharOffset));
-            int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
-            int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
-
-            if (start_token >= 0 && end_token >= 0 && !(end_token - start_token < 0)) {
-                // Be careful with the +1 in end_span below. Regular TextAnnotation likes the end_token number exclusive
-                Constituent cons = new Constituent(c.getLabel(), 1.0, viewName, ta, start_token, end_token + 1);
-
-                for (String attributeKey : c.getAttributeKeys()) {
-                    cons.addAttribute(attributeKey, c.getAttribute(attributeKey));
-                }
-
+            Constituent cons = DocUtils.getHeadConstituentForEntityExtent(c, viewName);
+            if (cons != null) {
                 constituentList.add(cons);
             }
         }
@@ -161,5 +151,27 @@ public class DocUtils {
             neConstituents.remove(e);
 
         return neConstituents;
+    }
+
+    public static Constituent getHeadConstituentForEntityExtent(Constituent extent, String viewName) {
+        TextAnnotation ta = extent.getTextAnnotation();
+
+        int startCharOffset = Integer.parseInt(extent.getAttribute(ACEReader.EntityHeadStartCharOffset));
+        int endCharOffset = Integer.parseInt(extent.getAttribute(ACEReader.EntityHeadEndCharOffset));
+        int start_token = ta.getTokenIdFromCharacterOffset(startCharOffset);
+        int end_token = ta.getTokenIdFromCharacterOffset(endCharOffset);
+
+        if (start_token >= 0 && end_token >= 0 && !(end_token - start_token < 0)) {
+            // Be careful with the +1 in end_span below. Regular TextAnnotation likes the end_token number exclusive
+            Constituent cons = new Constituent(extent.getLabel(), 1.0, viewName, ta, start_token, end_token + 1);
+
+            for (String attributeKey : extent.getAttributeKeys()) {
+                cons.addAttribute(attributeKey, extent.getAttribute(attributeKey));
+            }
+
+            return cons;
+        }
+
+        return null;
     }
 }

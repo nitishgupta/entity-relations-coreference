@@ -1,8 +1,13 @@
 package edu.illinois.cs.cogcomp.erc.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
 
 /**
@@ -11,6 +16,8 @@ import java.util.Properties;
 public class ConfigSystem {
 
     public static String configFile = Parameters.configFile;
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfigSystem.class);
 
     /**
      * THIS FUNCTION ASSUMES THAT THE DATASET HAS BEEN READ
@@ -39,41 +46,21 @@ public class ConfigSystem {
             System.exit(0);
         }
 
-        System.out.println("\t *** Parameters ***");
+        logger.info("\t *** Parameters ***");
 
-        if(props.containsKey("ACE04_DATA_DIR")){
-            Parameters.ACE04_DATA_DIR= props.getProperty("ACE04_DATA_DIR");
-            System.out.println("ACE04_DATA_DIR : " + Parameters.ACE04_DATA_DIR);
-        }
-
-        if(props.containsKey("ACE05_DATA_DIR")){
-            Parameters.ACE05_DATA_DIR= props.getProperty("ACE05_DATA_DIR");
-            System.out.println("ACE05_DATA_DIR : " + Parameters.ACE05_DATA_DIR);
-        }
-
-        if(props.containsKey("ACE05_SECTION_LIST")){
-            Parameters.ACE05_SECTION_LIST = props.getProperty("ACE05_SECTION_LIST");
-            System.out.println("ACE05_SECTION_LIST : " + Parameters.ACE05_SECTION_LIST);
-        }
-
-        if(props.containsKey("ACE04_SECTION_LIST")){
-            Parameters.ACE04_SECTION_LIST = props.getProperty("ACE04_SECTION_LIST");
-            System.out.println("ACE04_SECTION_LIST : " + Parameters.ACE04_SECTION_LIST);
-        }
-
-        if(props.containsKey("ACE04_SERIALIZED_DOCS")){
-            Parameters.ACE04_SERIALIZED_DOCS = props.getProperty("ACE04_SERIALIZED_DOCS");
-            System.out.println("ACE04_SERIALIZED_DOCS : " + Parameters.ACE04_SERIALIZED_DOCS);
-        }
-
-        if(props.containsKey("ACE05_SERIALIZED_DOCS")){
-            Parameters.ACE05_SERIALIZED_DOCS = props.getProperty("ACE05_SERIALIZED_DOCS");
-            System.out.println("ACE05_SERIALIZED_DOCS : " + Parameters.ACE05_SERIALIZED_DOCS);
-        }
-
-        if (props.containsKey("SL_PARAMETER_CONFIG_FILE")) {
-            Parameters.SL_PARAMETER_CONFIG_FILE = props.getProperty("SL_PARAMETER_CONFIG_FILE");
-            System.out.println("SL_PARAMETER_CONFIG_FILE : " + Parameters.SL_PARAMETER_CONFIG_FILE);
+        // Use reflection to populate static items in Parameters
+        Field[] declaredMembers = Parameters.class.getDeclaredFields();
+        for (Field field : declaredMembers) {
+            if (Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers())) {
+                try {
+                    if (props.containsKey(field.getName())) {
+                        field.set(null, props.getProperty(field.getName()));
+                        logger.info(field.getName() + " : " + props.getProperty(field.getName()));
+                    }
+                } catch (IllegalAccessException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 }
