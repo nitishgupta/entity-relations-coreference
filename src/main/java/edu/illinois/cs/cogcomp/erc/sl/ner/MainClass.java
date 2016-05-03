@@ -2,6 +2,9 @@ package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
+import edu.illinois.cs.cogcomp.core.experiments.ClassificationTester;
+import edu.illinois.cs.cogcomp.core.experiments.evaluators.ConstituentLabelingEvaluator;
+import edu.illinois.cs.cogcomp.core.experiments.evaluators.Evaluator;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
@@ -12,8 +15,8 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
-import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.NERAnnotator;
-import edu.illinois.cs.cogcomp.lbjava.nlp.seg.Token;
+import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.BIOAnnotator;
+import edu.illinois.cs.cogcomp.lbjava.Main;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
@@ -168,13 +171,26 @@ public class MainClass {
         Corpus testData = corpora.get(3);
 
         SLModel model = SLModel.loadModel(modelFileName);
-        Annotator nerAnnotator = new NERAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView, predictedEntityView);
+        Annotator annotator = new BIOAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView);
+        Evaluator evaluator = new ConstituentLabelingEvaluator();
+        ClassificationTester tester = new ClassificationTester();
+        tester.ignoreLabelFromSummary("O");
 
         for (Document doc : testData.getDocs()) {
-            nerAnnotator.addView(doc.getTA());
+            TextAnnotation ta = doc.getTA();
+            annotator.addView(ta);
 
-            // TODO: call evaluator here.
+            // Evaluator does an .equals on constituents and expects same view name
+            SpanLabelView predictedViewCloneForName = new SpanLabelView(goldViewName, ta);
+            for (Constituent c : ta.getView(predictedBIOView)) {
+                predictedViewCloneForName.addConstituent(c.cloneForNewView(goldViewName));
+            }
+
+            evaluator.setViews(ta.getView(goldViewName), predictedViewCloneForName);
+            evaluator.evaluate(tester);
         }
+
+        System.out.println(tester.getPerformanceTable().toOrgTable());
     }
 
     /**
