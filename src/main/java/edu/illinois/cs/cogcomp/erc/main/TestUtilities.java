@@ -1,15 +1,13 @@
 package edu.illinois.cs.cogcomp.erc.main;
 
 import edu.illinois.cs.cogcomp.annotation.Annotator;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
-import edu.illinois.cs.cogcomp.erc.sl.ner.NERAnnotator;
+import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.NERAnnotator;
 import edu.illinois.cs.cogcomp.openeval.learner.Server;
 import edu.illinois.cs.cogcomp.openeval.learner.ServerPreferences;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
@@ -48,7 +46,7 @@ public class TestUtilities {
 //
 
         SLModel model = SLModel.loadModel("testModel");
-        Annotator annotator = new NERAnnotator(model);
+        Annotator annotator = new NERAnnotator(model, false, Corpus.NER_PRED_HEAD_BIO_VIEW, "ENTITYVIEW");
         Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
 
         ServerRunner.executeInstance(client);

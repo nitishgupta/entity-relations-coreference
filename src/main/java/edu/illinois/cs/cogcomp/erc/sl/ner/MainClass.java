@@ -1,6 +1,10 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
+import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
+import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
+import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
+import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
 import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
@@ -8,8 +12,10 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
+import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.NERAnnotator;
 import edu.illinois.cs.cogcomp.lbjava.nlp.seg.Token;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
+import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
@@ -22,6 +28,8 @@ import java.util.List;
  * Created by Bhargav Mangipudi on 3/9/16.
  */
 public class MainClass {
+    private static final String DefaultModelName = "testModel";
+
     /**
      * This SLProblem returned by this method has List<Constituents> as IInstance.
      * For test data, the IInstance doesn't encode that a given token is unknown.
@@ -31,6 +39,7 @@ public class MainClass {
      * @param lm : To store the sspace of labels - BIO labels in this case
      * @return  Instance of the SLProblem
      */
+    @CommandIgnore
     public static SLProblem readStructuredData(Corpus corpus, Lexiconer lm, String viewName) {
         SLProblem sp = new SLProblem();
         int num_instances = 0;
@@ -101,6 +110,7 @@ public class MainClass {
         return sp;
     }
 
+    @CommandIgnore
     public static IInstance getIInstanceForSentence(Constituent sentence, Lexiconer lm){
         TextAnnotation ta = sentence.getTextAnnotation();
         TokenLabelView TokensView = (TokenLabelView)ta.getView(Corpus.TOKENS_VIEW);
@@ -126,6 +136,47 @@ public class MainClass {
         return sen;
     }
 
+    @CommandDescription(description = "Train the NER Model.")
+    public static void train() throws Exception {
+        train(DefaultModelName);
+    }
+
+    @CommandDescription(description = "Train the NER Model.")
+    public static void train(String modelFileName) throws Exception {
+        List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
+        Corpus trainData = corpora.get(1);
+
+        String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
+
+        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", goldViewName);
+    }
+
+    @CommandDescription(description = "Test the NER Model.")
+    public static void test() throws Exception {
+        test(DefaultModelName);
+    }
+
+    @CommandDescription(description = "Test the NER Model.")
+    public static void test(String modelFileName) throws Exception {
+        String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
+        String predictedBIOView = Corpus.NER_PRED_HEAD_BIO_VIEW;
+        String predictedEntityView = "ENTITYVIEW";
+
+        CorpusType corpusType = CorpusType.ACE05;
+
+        List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(corpusType);
+        Corpus testData = corpora.get(3);
+
+        SLModel model = SLModel.loadModel(modelFileName);
+        Annotator nerAnnotator = new NERAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView, predictedEntityView);
+
+        for (Document doc : testData.getDocs()) {
+            nerAnnotator.addView(doc.getTA());
+
+            // TODO: call evaluator here.
+        }
+    }
+
     /**
      * Main method.
      * @param args List of command-line argument.
@@ -133,16 +184,12 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         ConfigSystem.initialize();
 
-        List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
-        Corpus allCorpora = corpora.get(0);
-        Corpus trainData = corpora.get(1);
-        Corpus devData = corpora.get(2);
-        Corpus testData = corpora.get(3);
+        InteractiveShell<MainClass> shell = new InteractiveShell<>(MainClass.class);
 
-        String goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
-
-        Train.trainNER(trainData, Parameters.SL_PARAMETER_CONFIG_FILE, "testModel", goldViewName);
-        Test.addNERView(testData, goldViewName, "testModel");
-        Test.testNER(testData, goldViewName);
+        if (args.length == 0) {
+            shell.showDocumentation();
+        } else {
+            shell.runCommand(args);
+        }
     }
 }

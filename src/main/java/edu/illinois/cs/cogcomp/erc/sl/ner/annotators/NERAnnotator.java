@@ -1,28 +1,34 @@
-package edu.illinois.cs.cogcomp.erc.sl.ner;
+package edu.illinois.cs.cogcomp.erc.sl.ner.annotators;
 
 import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
-import edu.illinois.cs.cogcomp.erc.util.Utils;
+import edu.illinois.cs.cogcomp.erc.sl.ner.Test;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 
 /**
+ * Annotates Named Entities given TOKENS and SENTENCES only.
+ * Does not need/use gold mention boundaries.
  * @author Bhargav Mangipudi
  */
 public class NERAnnotator extends Annotator {
     private SLModel model;
+    private boolean is2004;
+    private String predictedBIOEntityViewName;
 
-    public NERAnnotator(SLModel model) {
-        // Change this to "NER_ACE_COARSE"
-        super("ENTITYVIEW", new String[] { ViewNames.TOKENS, ViewNames.SENTENCE });
+    public NERAnnotator(
+            SLModel model,
+            boolean is2004,
+            String predictedBIOEntityViewName,
+            String predictedEntityViewName) {
+
+        super(predictedEntityViewName, new String[] { ViewNames.TOKENS, ViewNames.SENTENCE });
 
         this.model = model;
-    }
-
-    public void setSLModel(SLModel model) {
-        this.model = model;
+        this.is2004 = is2004;
+        this.predictedBIOEntityViewName = predictedBIOEntityViewName;
     }
 
     @Override
@@ -34,16 +40,15 @@ public class NERAnnotator extends Annotator {
         }
 
         try {
-            // Add the POS View
-            Document doc = new Document(textAnnotation, false, textAnnotation.getId());
+            Document doc = new Document(textAnnotation, this.is2004, textAnnotation.getId());
 
-            Test.addNERView(doc, this.viewName + "_BIO", this.model);
+            Test.addNERView(doc, this.predictedBIOEntityViewName, this.model);
 
-            TokenLabelView bioView = (TokenLabelView) textAnnotation.getView(this.viewName + "_BIO");
+            TokenLabelView bioView = (TokenLabelView) textAnnotation.getView(this.predictedBIOEntityViewName);
             SpanLabelView nerView = new SpanLabelView(this.viewName, NERAnnotator.class.getCanonicalName(), textAnnotation, 1.0);
 
             int currentChunkStart = 0;
-            int currentChunkEnd = 0;
+            int currentChunkEnd;
 
             String clabel = "";
             Constituent previous = null;
@@ -62,6 +67,8 @@ public class NERAnnotator extends Annotator {
                         currentLabel = "B" + currentLabel.substring(1);
                     }
                 }
+
+                assert currentLabel != null;
                 if ((currentLabel.charAt(0) == 'B' || currentLabel.charAt(0) == 'O')
                         && clabel != null) {
 
@@ -98,8 +105,6 @@ public class NERAnnotator extends Annotator {
             }
 
             textAnnotation.addView(this.viewName, nerView);
-
-            Utils.printTAConstitutents(nerView.getConstituents());
         } catch(Exception ex) {
             ex.printStackTrace();
             return;
