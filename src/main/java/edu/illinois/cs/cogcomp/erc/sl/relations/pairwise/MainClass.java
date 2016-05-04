@@ -33,8 +33,8 @@ import java.util.List;
  * @author Bhargav Mangipudi
  */
 public class MainClass {
-
-    public static Logger logger = LoggerFactory.getLogger(MainClass.class);
+    private static final String DefaultRelationModel = "DefaultRelationModel";
+    private static final Logger logger = LoggerFactory.getLogger(MainClass.class);
 
     @CommandDescription(usage = "", description = "Read Corpus Only")
     public static Corpus readCorpus(String corpusType) {
@@ -51,7 +51,7 @@ public class MainClass {
     }
 
     @CommandDescription(usage = "", description = "")
-    public static void train(String corpusType) throws Exception { train(corpusType, "DefaultRelationModel"); }
+    public static void train(String corpusType) throws Exception { train(corpusType, DefaultRelationModel); }
 
     @CommandDescription(usage = "", description = "")
     public static void train(String corpusType, String modelFileName) throws Exception {
@@ -119,7 +119,7 @@ public class MainClass {
     }
 
     @CommandDescription(usage = "", description = "")
-    public static void trainAndTest(String corpusType) throws Exception { trainAndTest(corpusType, null); }
+    public static void trainAndTest(String corpusType) throws Exception { trainAndTest(corpusType, DefaultRelationModel); }
 
     @CommandDescription(usage = "", description = "")
     public static void trainAndTest(String corpusType, String modelFileName) throws Exception {
@@ -142,6 +142,7 @@ public class MainClass {
         String relationGoldView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD;
         String relationPredictedView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_PREDICTION;
 
+        // Annotator instance is used to create the predicted view in the textAnnotation.
         Annotator annotator = new GoldPairsAnnotator(
                 relationPredictedView,                                                // Final View
                 new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD },
@@ -149,6 +150,7 @@ public class MainClass {
                 modelInstance,
                 aceCorpus.checkisACE2004());
 
+        // Annotate a TA and evaluate its performance.
         for (Document doc : testCorpus.getDocs()) {
             TextAnnotation ta = doc.getTA();
             annotator.addView(ta);
@@ -157,6 +159,7 @@ public class MainClass {
             evaluator.evaluate(clfTester);
         }
 
+        // Print the performance table.
         Table performanceTable = clfTester.getPerformanceTable(true);
         System.out.println(performanceTable.toOrgTable());
     }

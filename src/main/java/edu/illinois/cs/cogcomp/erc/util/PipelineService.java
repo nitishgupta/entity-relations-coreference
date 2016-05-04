@@ -13,7 +13,7 @@ import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
  */
 public class PipelineService {
 
-    private static AnnotatorService prep = getAnnotatorServiceInstance();
+    private static AnnotatorService prep;
 
     private static AnnotatorService getAnnotatorServiceInstance() {
         if (prep == null) {
@@ -31,9 +31,12 @@ public class PipelineService {
     }
 
     public static void addShallowParse(TextAnnotation ta) {
-        if(ta == null){
+        if (ta == null || ta.hasView(ViewNames.SHALLOW_PARSE)) {
             return;
         }
+
+        AnnotatorService prep = getAnnotatorServiceInstance();
+
         try {
             prep.addView(ta, ViewNames.SHALLOW_PARSE);
         } catch (Exception e) {
@@ -42,14 +45,23 @@ public class PipelineService {
     }
 
     public static void addPOS(TextAnnotation ta) {
-        if(ta == null){
+        if (ta == null || ta.hasView(ViewNames.POS)) {
             return;
         }
+
+        AnnotatorService prep = getAnnotatorServiceInstance();
+
         try {
             prep.addView(ta, ViewNames.POS);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    // Add all required views that we use in the experiments
+    public static void addRequiredViews(TextAnnotation ta) {
+        addPOS(ta);
+        addShallowParse(ta);
     }
 }

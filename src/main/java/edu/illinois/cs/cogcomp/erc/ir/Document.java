@@ -29,8 +29,7 @@ public class Document implements Serializable {
     }
 
     public void addPipeLineViews() {
-        PipelineService.addShallowParse(ta);
-        PipelineService.addPOS(ta);
+        PipelineService.addRequiredViews(ta);
     }
 
     public TextAnnotation getTA() {

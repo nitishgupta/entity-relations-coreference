@@ -24,13 +24,22 @@ import java.util.List;
  * @author Bhargav Mangipudi
  */
 public class GoldPairsAnnotator extends Annotator {
-
     private boolean is2004Document;
     private SLModel trainedModel;
     private String inputRelationView;
 
     private static Logger logger = LoggerFactory.getLogger(GoldPairsAnnotator.class);
 
+    /**
+     * Pairwise Relation Annotator which annotates relation that corresponding to gold relations.
+     * This annotator uses gold mention boundaries and gold relation inputs.
+     *
+     * @param finalViewName Name of the final predicted view.
+     * @param requiredViews List of input view that are required to perform annotation.
+     * @param inputRelationView Name of the gold relation view. Used to get evaluation candidates.
+     * @param model SLModel that is used to classify.
+     * @param is2004Document Boolean denoting if the annotator will work on ACE2004 document or not.
+     */
     public GoldPairsAnnotator(String finalViewName,
                               String[] requiredViews,
                               String inputRelationView,
