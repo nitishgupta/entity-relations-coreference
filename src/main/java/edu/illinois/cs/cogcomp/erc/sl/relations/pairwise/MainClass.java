@@ -16,7 +16,11 @@ import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 
+import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.NERAnnotator;
 import edu.illinois.cs.cogcomp.erc.sl.relations.pairwise.annotators.*;
+import edu.illinois.cs.cogcomp.erc.util.ChainedAnnotator;
+import edu.illinois.cs.cogcomp.openeval.learner.Server;
+import edu.illinois.cs.cogcomp.openeval.learner.ServerPreferences;
 import edu.illinois.cs.cogcomp.sl.core.*;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
 import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
@@ -24,6 +28,7 @@ import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
+import fi.iki.elonen.util.ServerRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +167,47 @@ public class MainClass {
         // Print the performance table.
         Table performanceTable = clfTester.getPerformanceTable(true);
         System.out.println(performanceTable.toOrgTable());
+    }
+
+    @CommandDescription(usage = "", description = "")
+    public static void annotatePipeline(String corpusType, String entityModelFile,
+                                    String relationModelFile) throws Exception {
+        SLModel entityModel = SLModel.loadModel(entityModelFile);
+        SLModel relationModel = SLModel.loadModel(relationModelFile);
+
+        Corpus aceCorpus = MainClass.readCorpus(corpusType);
+
+        List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
+        Corpus testCorpus = allCorpora.get(2);
+
+        Annotator NERAnnotator = new NERAnnotator(
+                entityModel,
+                testCorpus.checkisACE2004(),
+                "NER_BIO",
+                Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD);
+
+        String relationGoldView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD;
+        String relationPredictedView = "RELATION_ACE_COARSE_HEAD";
+
+        // Annotator instance is used to create the predicted view in the textAnnotation.
+        Annotator RelationAnnotator = new SentenceLevelPairwiseAnnotator(
+                relationPredictedView,                                                // Final View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD },
+                relationGoldView,                                                    // Relation Gold View
+                relationModel,
+                aceCorpus.checkisACE2004());
+
+        ChainedAnnotator annotator = new ChainedAnnotator(NERAnnotator, RelationAnnotator);
+
+        // Annotate a TA and evaluate its performance.
+        for (Document doc : testCorpus.getDocs()) {
+            TextAnnotation ta = doc.getTA();
+            annotator.addView(ta);
+        }
+
+        Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
+
+        ServerRunner.executeInstance(client);
     }
 
     @CommandIgnore
