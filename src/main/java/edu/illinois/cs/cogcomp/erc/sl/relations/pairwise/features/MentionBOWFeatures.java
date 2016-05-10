@@ -24,10 +24,12 @@ public class MentionBOWFeatures extends FeatureDefinitionBase {
 
         String[] firstMentionUnordered = instance.getFirstMention().getSurfaceForm().split(" ");
         Arrays.sort(firstMentionUnordered);
+        //noinspection Since15
         bowWordsFeatures[0] = String.join(" ", firstMentionUnordered);
 
         String[] secondMentionUnordered = instance.getSecondMention().getSurfaceForm().split(" ");
         Arrays.sort(secondMentionUnordered);
+        //noinspection Since15
         bowWordsFeatures[1] = String.join(" ", secondMentionUnordered);
 
         if (this.lexiconer.isAllowNewFeatures()) {

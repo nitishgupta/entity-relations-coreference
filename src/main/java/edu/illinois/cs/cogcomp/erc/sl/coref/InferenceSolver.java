@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.erc.sl.relations.pairwise;
+package edu.illinois.cs.cogcomp.erc.sl.coref;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.sl.core.AbstractInferenceSolver;
@@ -8,16 +8,19 @@ import edu.illinois.cs.cogcomp.sl.util.IFeatureVector;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * @author Bhargav Mangipudi
+ * Created by nitishgupta on 5/10/16.
  */
-public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
+public class InferenceSolver extends AbstractInferenceSolver {
     private Lexiconer lm;
     private FeatureGenerator featureGenerator;
 
-    public ArgmaxInferenceSolver(Lexiconer lm, FeatureGenerator fg) {
+    public InferenceSolver(Lexiconer lm, FeatureGenerator fg) {
         this.lm = lm;
         this.featureGenerator = fg;
     }
@@ -34,8 +37,8 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
             IStructure goldStructure) throws Exception {
         assert !this.lm.isAllowNewFeatures();
 
-        RelationMentionPair ins = (RelationMentionPair) instance;
-        RelationLabel gold = (RelationLabel) goldStructure;
+        CorefMentionPair ins = (CorefMentionPair) instance;
+        CorefLabel gold = (CorefLabel) goldStructure;
 
         List<Pair<String, Float>> scores = new ArrayList<>(this.lm.getNumOfLabels());
 
@@ -43,13 +46,12 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
         for (int i = 0; i < numLabels; i++) {
             String currentLabel = this.lm.getLabelString(i);
 
-            IFeatureVector fv = this.featureGenerator.getFeatureVector(instance, new RelationLabel(currentLabel));
+            IFeatureVector fv = this.featureGenerator.getFeatureVector(instance, new CorefLabel(currentLabel));
             scores.add(new Pair<>(currentLabel, weightVector.dotProduct(fv)));
         }
 
         //noinspection Since15
         scores.sort(new Comparator<Pair<String, Float>>() {
-
             // Sort max first.
             @Override
             public int compare(Pair<String, Float> o1, Pair<String, Float> o2) {
@@ -60,23 +62,24 @@ public class ArgmaxInferenceSolver extends AbstractInferenceSolver {
         Pair<String, Float> bestStructure = scores.get(0);
 
         // Skip the best structure during training phase to return the loss augmented structure.
-        if (gold != null && bestStructure.getFirst().equals(gold.getRelationLabel())) {
+        if (gold != null && bestStructure.getFirst().equals(gold.getCorefLink())) {
             bestStructure = scores.get(1);
         }
 
-        return new RelationLabel(bestStructure.getFirst());
+        return new CorefLabel(bestStructure.getFirst());
     }
 
     @Override
     public float getLoss(IInstance iInstance, IStructure goldStructure, IStructure predStructure) {
-        RelationLabel gold = (RelationLabel) goldStructure;
-        RelationLabel pred = (RelationLabel) predStructure;
+        CorefLabel gold = (CorefLabel) goldStructure;
+        CorefLabel pred = (CorefLabel) predStructure;
 
-        return Objects.equals(pred.getRelationLabel(), gold.getRelationLabel()) ? 0.0f : 1.0f;
+        return Objects.equals(pred.getCorefLink(), gold.getCorefLink()) ? 0.0f : 1.0f;
     }
 
     @Override
     public Object clone() {
-        return new ArgmaxInferenceSolver(lm, featureGenerator);
+        return new InferenceSolver(lm, featureGenerator);
     }
 }
+

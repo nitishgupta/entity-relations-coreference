@@ -79,7 +79,6 @@ public class Train {
     }
 
     private static void pre_extract(SLModel model, SLProblem problem) {
-        // there shld be a better way, feature extraction
         for (Pair<IInstance, IStructure> p : problem) {
             model.featureGenerator
                     .getFeatureVector(p.getFirst(), p.getSecond());

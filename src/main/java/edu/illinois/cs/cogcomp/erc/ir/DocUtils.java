@@ -80,7 +80,7 @@ public class DocUtils {
         String viewName = Corpus.NER_GOLD_EXTENT_SPAN;
         List<Constituent> constituentList = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE);
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE_EXTENT);
         for (Constituent c : entityView.getConstituents()) {
             Constituent cons = c.cloneForNewView(viewName);
             constituentList.add(cons);
@@ -99,7 +99,7 @@ public class DocUtils {
         String viewName = Corpus.NER_GOLD_HEAD_SPAN;
         List<Constituent> constituentList = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE);
+        SpanLabelView entityView = (SpanLabelView) ta.getView(ViewNames.NER_ACE_COARSE_HEAD);
         for (Constituent c : entityView.getConstituents()) {
             Constituent cons = DocUtils.getHeadConstituentForEntityExtent(c, viewName);
             if (cons != null) {

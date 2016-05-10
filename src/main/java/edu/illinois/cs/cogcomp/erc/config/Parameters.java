@@ -25,6 +25,8 @@ public class Parameters {
     public static String RELATION_PAIRWISE_RELATION_VIEW_GOLD;
     public static String RELATION_PAIRWISE_RELATION_VIEW_PREDICTION;
 
+    public static String COREF_VIEW;
+
     public static double train_perc = 0.75;
     public static double dev_perc = 0.15;
     public static double test_perc = 0.2;

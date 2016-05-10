@@ -144,7 +144,7 @@ public class MainClass {
         train(DefaultModelName);
     }
 
-    @CommandDescription(description = "Train the NER Model.")
+    @CommandDescription(description = "Train the NER Model. Parameter : ModelName")
     public static void train(String modelFileName) throws Exception {
         List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(CorpusType.ACE05);
         Corpus trainData = corpora.get(1);
@@ -179,7 +179,7 @@ public class MainClass {
         String predictedViewName;
 
         if (annotator instanceof NERAnnotator) {
-            goldViewName = ViewNames.NER_ACE_COARSE;
+            goldViewName = ViewNames.NER_ACE_COARSE_HEAD;
             predictedViewName = predictedEntityView;
         } else if (annotator instanceof BIOAnnotator) {
             goldViewName = Corpus.NER_GOLD_HEAD_BIO_VIEW;
@@ -206,8 +206,8 @@ public class MainClass {
                 goldViewWithPredictedName.addConstituent(cloneCons);
             }
 
-            evaluator.setViews(goldViewWithPredictedName, ta.getView(predictedViewName));
-            evaluator.evaluate(tester);
+            //evaluator.setViews(goldViewWithPredictedName, ta.getView(predictedViewName));
+            evaluator.evaluate(tester, goldViewWithPredictedName, ta.getView(predictedViewName));
         }
 
         System.out.println(tester.getPerformanceTable().toOrgTable());

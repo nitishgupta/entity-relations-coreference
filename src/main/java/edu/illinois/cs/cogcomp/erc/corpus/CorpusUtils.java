@@ -1,7 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.corpus;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-import edu.illinois.cs.cogcomp.erc.config.ConfigSystem;
 import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.ir.DocUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,12 @@ public class CorpusUtils {
 
     private static Logger logger = LoggerFactory.getLogger(CorpusUtils.class);
 
+    /**
+     *
+     * @param corpusType : ACE04 or ACE05
+     * @return  Corpus object with gold views and NER GOLD BIO (head and extent)
+     * @throws Exception
+     */
     public static Corpus readCorpus(CorpusType corpusType) throws Exception {
         Corpus corpus;
         boolean is2004 = (corpusType == CorpusType.ACE04);
@@ -72,11 +76,6 @@ public class CorpusUtils {
             logger.info("Number of documents read - " + corpus.getDocs().size());
             logger.info("Corpus Stats : ");
             Utils.countCorpusTypeDocs(corpus);
-
-            /* TODO : STOPPING ADDING BIO VIEW UNTIL NER_GOLD_VIEW IS ESTABLISHED */
-//            for(Document doc : corpus.getDocs()) {
-//                DocUtils.addNERCoarseBIOView(doc);
-//            }
         }
 
         return corpus;
