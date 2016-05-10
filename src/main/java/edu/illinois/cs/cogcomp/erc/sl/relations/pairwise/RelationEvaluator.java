@@ -18,17 +18,12 @@ public class RelationEvaluator extends Evaluator {
     public PredicateArgumentView goldRelationView;
     public PredicateArgumentView predictedRelationView;
 
-//    @Override
-//    public void setViews(View goldView, View predictedView) {
-//        this.goldRelationView = (PredicateArgumentView) goldView;
-//        this.predictedRelationView = (PredicateArgumentView) predictedView;
-//    }
-
     @Override
     public void evaluate(ClassificationTester classificationTester, View goldView, View predictedView) {
         this.goldRelationView = (PredicateArgumentView) goldView;
         this.predictedRelationView = (PredicateArgumentView) predictedView;
-                // Assumes that relation view has same span as entities.
+
+        // Assumes that relation view has same span as entities.
         Set<Constituent> predicatesInGold = new HashSet<>(this.goldRelationView.getPredicates());
         Set<Constituent> predicatesInPredicted = new HashSet<>(this.predictedRelationView.getPredicates());
 

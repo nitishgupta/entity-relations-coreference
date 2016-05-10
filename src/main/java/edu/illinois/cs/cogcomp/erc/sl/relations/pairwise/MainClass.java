@@ -132,7 +132,9 @@ public class MainClass {
     }
 
     @CommandDescription(usage = "", description = "")
-    public static void trainAndTest(String corpusType) throws Exception { trainAndTest(corpusType, DefaultRelationModel); }
+    public static void trainAndTest(String corpusType) throws Exception {
+        trainAndTest(corpusType, DefaultRelationModel);
+    }
 
     @CommandDescription(usage = "", description = "")
     public static void trainAndTest(String corpusType, String modelFileName) throws Exception {
@@ -168,8 +170,7 @@ public class MainClass {
             TextAnnotation ta = doc.getTA();
             annotator.addView(ta);
 
-            //evaluator.setViews(ta.getView(relationGoldView), ta.getView(relationGoldView));
-            evaluator.evaluate(clfTester, ta.getView(relationGoldView), ta.getView(relationGoldView));
+            evaluator.evaluate(clfTester, ta.getView(relationGoldView), ta.getView(relationPredictedView));
         }
 
         // Print the performance table.
