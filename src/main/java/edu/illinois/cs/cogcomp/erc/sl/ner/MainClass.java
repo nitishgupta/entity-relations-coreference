@@ -206,7 +206,6 @@ public class MainClass {
                 goldViewWithPredictedName.addConstituent(cloneCons);
             }
 
-            //evaluator.setViews(goldViewWithPredictedName, ta.getView(predictedViewName));
             evaluator.evaluate(tester, goldViewWithPredictedName, ta.getView(predictedViewName));
         }
 

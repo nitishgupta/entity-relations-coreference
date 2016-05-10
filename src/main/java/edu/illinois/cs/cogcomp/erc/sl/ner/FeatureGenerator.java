@@ -2,7 +2,13 @@ package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.edison.features.ContextFeatureExtractor;
+import edu.illinois.cs.cogcomp.edison.features.Feature;
+import edu.illinois.cs.cogcomp.edison.features.FeatureExtractor;
+import edu.illinois.cs.cogcomp.edison.features.NgramFeatureExtractor;
+import edu.illinois.cs.cogcomp.edison.features.factory.WordFeatureExtractorFactory;
 import edu.illinois.cs.cogcomp.edison.features.helpers.WordHelpers;
+import edu.illinois.cs.cogcomp.edison.utilities.EdisonException;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.IStructure;
@@ -14,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Bhargav Mangipudi on 3/8/16.
@@ -129,6 +136,7 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         addLocalPOSEmissionFeature(sent, currentLabel, prevLabel, i, featureMap);
         addLocalCapitalizationFeature(sent, currentLabel, prevLabel, i, featureMap);
         addLocalLabelTransitionFeature(sent, currentLabel, prevLabel, i, featureMap);
+        addLocalContextWindowFeature(sent, currentLabel, prevLabel, i, featureMap);
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
         for (String f : featureMap) {
@@ -184,6 +192,30 @@ public class FeatureGenerator extends AbstractFeatureGenerator implements Serial
         boolean isCapitalized = WordHelpers.isCapitalized(ta, ta.getTokenIdFromCharacterOffset(c.getStartCharOffset()));
         if(isCapitalized)
             featureMap.add(currentLabel + "_Capital");
+    }
+
+    private void addLocalContextWindowFeature(SequenceInstance sent,
+                                              String currentLabel,
+                                              String prevLabel,
+                                              int i,
+                                              List<String> featureMap) {
+        Constituent c = sent.getConstituents().get(i);
+        TextAnnotation ta = c.getTextAnnotation();
+        FeatureExtractor contextTokensFex = new ContextFeatureExtractor(2, false, false, WordFeatureExtractorFactory.word);
+
+        String featureValue = "";
+        try {
+            Set<Feature> featureSet = contextTokensFex.getFeatures(c);
+            StringBuilder sb = new StringBuilder();
+            for (Feature f : featureSet) {
+                sb.append(f.getName());
+            }
+            featureValue = sb.toString();
+        } catch (EdisonException ex) {
+            ex.printStackTrace();
+        }
+
+        featureMap.add(featureValue + "_" + currentLabel + "_ContextWindow");
     }
 
     // If i == 0 then prevLabel = "" is input. This case is handled by the prior features
