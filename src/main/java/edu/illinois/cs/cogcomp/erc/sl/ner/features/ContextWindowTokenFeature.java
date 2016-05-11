@@ -31,14 +31,6 @@ public class ContextWindowTokenFeature extends FeatureDefinitionBase {
             String prevLabel,
             int position) {
         Constituent c = sentence.getConstituents().get(position);
-        try {
-            Set<Feature> features = contextTokenFex.getFeatures(c);
-
-            for (Feature f : features) {
-                featureMap.add(new Pair<>(f.getName(), currentLabel));
-            }
-        } catch (EdisonException ex) {
-            ex.printStackTrace();
-        }
+        FeatureDefinitionBase.updateFeatureMapFromFex(featureMap, contextTokenFex, c, currentLabel);
     }
 }

@@ -1,6 +1,10 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner.features;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.edison.features.Feature;
+import edu.illinois.cs.cogcomp.edison.features.FeatureExtractor;
+import edu.illinois.cs.cogcomp.edison.utilities.EdisonException;
 import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceInstance;
 import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceLabel;
 import edu.illinois.cs.cogcomp.sl.core.AbstractFeatureGenerator;
@@ -14,6 +18,7 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Bhargav Mangipudi
@@ -82,5 +87,25 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
         }
 
         return fvb;
+    }
+
+    /**
+     * Utility method to update FeatureMap for a FeatureExtractor.
+     * @param fm
+     * @param fex
+     * @param c
+     * @param currentLabel
+     */
+    protected static void updateFeatureMapFromFex(List<Pair<String, String>> fm, FeatureExtractor fex,
+                                                  Constituent c, String currentLabel) {
+        try {
+            Set<Feature> features = fex.getFeatures(c);
+
+            for (Feature f : features) {
+                fm.add(new Pair<>(f.getName(), currentLabel));
+            }
+        } catch (EdisonException ex) {
+            ex.printStackTrace();
+        }
     }
 }

@@ -25,15 +25,7 @@ public class CurrentWordCapitalizationFeature extends FeatureDefinitionBase {
     @Override
     public void addLocalFeature(List<Pair<String, String>> featureMap, SequenceInstance sentence, String currentLabel, String prevLabel, int position) {
         Constituent c = sentence.getConstituents().get(position);
-        try {
-            Set<Feature> features = capitalizationFex.getFeatures(c);
-
-            for (Feature f : features) {
-                featureMap.add(new Pair<>(f.getName(), currentLabel));
-            }
-        } catch (EdisonException ex) {
-            ex.printStackTrace();
-        }
+        FeatureDefinitionBase.updateFeatureMapFromFex(featureMap, capitalizationFex, c, currentLabel);
     }
 }
 
