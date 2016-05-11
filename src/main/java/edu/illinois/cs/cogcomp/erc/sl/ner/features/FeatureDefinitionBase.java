@@ -64,7 +64,7 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
             if (this.lexiconer.containFeature(f)) {
                 fvb.addFeature(this.lexiconer.getFeatureId(f), 1.0f);
             } else if (this.lexiconer.containFeature(nullFeature)){
-                fvb.addFeature(this.lexiconer.getFeatureId(nullFeature), 1.0f);
+                // fvb.addFeature(this.lexiconer.getFeatureId(nullFeature), 1.0f);
             }
         }
 
