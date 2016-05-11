@@ -1,6 +1,7 @@
 package edu.illinois.cs.cogcomp.erc.sl.coref;
 
 import edu.illinois.cs.cogcomp.erc.sl.coref.features.FeatureDefinitionBase;
+import edu.illinois.cs.cogcomp.erc.sl.coref.features.HeadSurfaceFeature;
 import edu.illinois.cs.cogcomp.erc.sl.coref.features.MentionTypeFeature;
 import edu.illinois.cs.cogcomp.sl.util.FeatureVectorBuffer;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
@@ -22,7 +23,8 @@ public class FeatureGenerator extends FeatureDefinitionBase implements Serializa
         List<FeatureDefinitionBase> activeFeatureList = new ArrayList<>();
 
         // List of active features to be used.
-        activeFeatureList.add(new MentionTypeFeature(lm));
+        //activeFeatureList.add(new MentionTypeFeature(lm));
+        activeFeatureList.add(new HeadSurfaceFeature(lm));
         //activeFeatureList.add(new HeadWordFeatures(lm));
         //activeFeatureList.add(new MentionBOWFeatures(lm));
 

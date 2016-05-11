@@ -7,7 +7,8 @@ import edu.illinois.cs.cogcomp.sl.core.IStructure;
  */
 public class CorefLabel implements IStructure {
     String link;
-
+    public static final String t = "true";
+    public static final String f = "false";
 
     public CorefLabel(String link){
         this.link = link;

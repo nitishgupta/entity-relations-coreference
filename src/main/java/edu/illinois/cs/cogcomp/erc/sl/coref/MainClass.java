@@ -1,11 +1,15 @@
 package edu.illinois.cs.cogcomp.erc.sl.coref;
 
 
+import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.CoreferenceView;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
+import edu.illinois.cs.cogcomp.core.experiments.ClassificationTester;
+import edu.illinois.cs.cogcomp.core.utilities.Table;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
 import edu.illinois.cs.cogcomp.core.utilities.commands.InteractiveShell;
@@ -15,6 +19,7 @@ import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
+import edu.illinois.cs.cogcomp.erc.sl.coref.annotators.GoldMentionAnnotator;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
@@ -26,6 +31,8 @@ import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -72,8 +79,8 @@ public class MainClass {
             List<Pair<CorefMentionPair, CorefLabel>> instances = SLHelper.populateSLProblemForDocument(
                     doc,
                     model.lm,
-                    Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD,
-                    Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD);
+                    Parameters.COREF_MENTION_VIEW_GOLD,
+                    Parameters.COREF_VIEW_GOLD);
 
             for (Pair<CorefMentionPair, CorefLabel> ins : instances) {
                 fg.preExtractFeatures(ins.getFirst());
@@ -113,16 +120,16 @@ public class MainClass {
     }
 
     @CommandDescription(usage = "", description = "")
-//    public static void test(String corpusType) throws Exception {
-//        SLModel slModel = SLModel.loadModel(DefaultCorefModel);
-//        testModel(corpusType, slModel);
-//    }
+    public static void test(String corpusType) throws Exception {
+        SLModel slModel = SLModel.loadModel(DefaultCorefModel);
+        testModel(corpusType, slModel);
+    }
 //
-//    @CommandDescription(usage = "", description = "")
-//    public static void test(String corpusType, String modelFileName) throws Exception {
-//        SLModel slModel = SLModel.loadModel(modelFileName);
-//        testModel(corpusType, slModel);
-//    }
+    @CommandDescription(usage = "", description = "")
+    public static void test(String corpusType, String modelFileName) throws Exception {
+        SLModel slModel = SLModel.loadModel(modelFileName);
+        testModel(corpusType, slModel);
+    }
 //
 //    @CommandDescription(usage = "", description = "")
 //    public static void trainAndTest(String corpusType) throws Exception { trainAndTest(corpusType, DefaultCorefModel); }
@@ -133,42 +140,44 @@ public class MainClass {
 //        test(corpusType, modelFileName);
 //    }
 
-//    @CommandIgnore
-//    public static void testModel(String corpusType, SLModel modelInstance) throws Exception {
-//        Corpus aceCorpus = MainClass.readCorpus(corpusType);
-//
-//        List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
-//        Corpus testCorpus = allCorpora.get(2);
-//
-//        RelationEvaluator evaluator = new RelationEvaluator();
-//
-//        ClassificationTester clfTester = new ClassificationTester();
-//        clfTester.ignoreLabelFromSummary(SLHelper.NO_RELATION_LABEL);
-//
-//        String relationGoldView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD;
-//        String relationPredictedView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_PREDICTION;
-//
-//        // Annotator instance is used to create the predicted view in the textAnnotation.
-//        Annotator annotator = new GoldPairsAnnotator(
-//                relationPredictedView,                                                // Final View
-//                new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD },
-//                relationGoldView,                                                    // Relation Gold View
-//                modelInstance,
-//                aceCorpus.checkisACE2004());
-//
-//        // Annotate a TA and evaluate its performance.
-//        for (Document doc : testCorpus.getDocs()) {
-//            TextAnnotation ta = doc.getTA();
-//            annotator.addView(ta);
-//
-//            evaluator.setViews(ta.getView(relationGoldView), ta.getView(relationPredictedView));
-//            evaluator.evaluate(clfTester);
-//        }
-//
-//        // Print the performance table.
-//        Table performanceTable = clfTester.getPerformanceTable(true);
-//        System.out.println(performanceTable.toOrgTable());
-//    }
+    @CommandIgnore
+    public static void testModel(String corpusType, SLModel modelInstance) throws Exception {
+        Corpus aceCorpus = MainClass.readCorpus(corpusType);
+
+        List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
+        Corpus testCorpus = allCorpora.get(2);
+
+        CorefEvaluator evaluator = new CorefEvaluator();
+
+        ClassificationTester clfTester = new ClassificationTester();
+
+        String corefGoldView = Parameters.COREF_VIEW_GOLD;
+        String corefPredictedView = Parameters.COREF_VIEW_PREDICTION;
+
+        // Annotator instance is used to create the predicted view in the textAnnotation.
+        Annotator annotator = new GoldMentionAnnotator(
+                corefPredictedView,                                                // Final View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.COREF_MENTION_VIEW_GOLD},
+                modelInstance,
+                aceCorpus.checkisACE2004());
+
+        System.out.println("ANNOTATOR IS MADE");
+
+        // Annotate a TA and evaluate its performance.
+        for (Document doc : testCorpus.getDocs()) {
+            TextAnnotation ta = doc.getTA();
+            annotator.addView(ta);
+
+            //evaluator.evaluate(clfTester, ta.getView(corefGoldView), ta.getView(corefPredictedView));
+
+        }
+
+        // Print the performance table.
+        Table performanceTable = clfTester.getPerformanceTable(true);
+        System.out.println(performanceTable.toOrgTable());
+
+        testTesting(testCorpus);
+    }
 
     @CommandIgnore
     public static void main(String[] args) throws Exception {
@@ -182,15 +191,53 @@ public class MainClass {
             shell.runCommand(args);
         }
 
+
+
+        //test();
+    }
+
+    public static void test(){
         Corpus corpus = readCorpus("ACE05");
-        Document doc = corpus.getDoc(0);
+        Document doc = corpus.getDoc(5);
         TextAnnotation ta = doc.getTA();
-        System.out.println(ta.getAvailableViews());
-        View corefView = ta.getView(Parameters.COREF_VIEW);
-        for(Constituent c : corefView.getConstituents()){
+        View corefView = ta.getView(Parameters.COREF_VIEW_GOLD);
+
+        List<Constituent> constituents = corefView.getConstituents();
+        //noinspection Since15
+        constituents.sort(new Comparator<Constituent>(){
+            @Override
+            public int compare(Constituent o1, Constituent o2) {
+                if(o1.getStartSpan() >= o2.getStartSpan() )
+                    return 1;
+                else
+                    return -1;
+            }
+        } );
+
+        for(Constituent c : constituents){
             System.out.println(c.getSurfaceForm() + " " + c.getLabel() + "\t\t\t" + c.getStartSpan());
         }
+        SLModel model = new SLModel();
+        model.lm = new Lexiconer();
+        model.lm.setAllowNewFeatures(true);
 
+        List<Pair<CorefMentionPair, CorefLabel>> instances = SLHelper.populateSLProblemForDocument(doc, model.lm,
+                Parameters.COREF_MENTION_VIEW_GOLD, Parameters.COREF_VIEW_GOLD);
+
+        for(Pair<CorefMentionPair, CorefLabel> instance : instances){
+            System.out.println(instance.getFirst().getFirstConstituent().getSurfaceForm() + "\t" +
+                               instance.getFirst().getSecondConstituent().getSurfaceForm() + "\t\t\t" +
+                               instance.getSecond().getCorefLink());
+        }
+    }
+
+    public static void testTesting(Corpus testCorpus){
+        Document doc = testCorpus.getDoc(0);
+        TextAnnotation ta = doc.getTA();
+        CoreferenceView corefView = (CoreferenceView) ta.getView(Parameters.COREF_VIEW_PREDICTION);
+        for(Constituent c : corefView.getConstituents()){
+            System.out.println(c.getSurfaceForm() + "\t\t\t" + c.getLabel());
+        }
 
     }
 }

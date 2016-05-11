@@ -26,18 +26,9 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
 
     // Assumes lexicon is populated already.
     public void preExtractFeatures(CorefMentionPair instance) {
-        int numOfLabels = this.lexiconer.getNumOfLabels();
-
-        // Assumes are labels are indexed between 0 <= labelId < numLabels
-        for (int i = 0; i < numOfLabels; i++) {
-            String labelString = this.lexiconer.getLabelString(i);
-
-            // Ideally this should be better.
-            this.getFeatureVector(instance, new CorefLabel(labelString));
-        }
+        // Do not need a label : Solving a binary classification problem
+        this.getFeatureVector(instance, new CorefLabel("NULL"));
     }
-
-    public abstract FeatureVectorBuffer getFeatureVector(CorefMentionPair instance, CorefLabel structure);
 
     public IFeatureVector getFeatureVector(IInstance x, IStructure y) {
         CorefMentionPair ins = (CorefMentionPair) x;
@@ -45,4 +36,8 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
 
         return getFeatureVector(ins, str).toFeatureVector();
     }
+
+    public abstract FeatureVectorBuffer getFeatureVector(CorefMentionPair instance, CorefLabel structure);
+
 }
+

@@ -9,8 +9,8 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 /**
  * Created by nitishgupta on 5/10/16.
  */
-public class MentionTypeFeature extends FeatureDefinitionBase {
-    public MentionTypeFeature(Lexiconer lm) {
+public class HeadSurfaceFeature extends FeatureDefinitionBase {
+    public HeadSurfaceFeature(Lexiconer lm) {
         super(lm);
     }
 
@@ -18,20 +18,31 @@ public class MentionTypeFeature extends FeatureDefinitionBase {
     @Override
     public FeatureVectorBuffer getFeatureVector(CorefMentionPair instance, CorefLabel structure) {
         String featurePrefix = this.featurePrefix;
-        String feature = featurePrefix + "_" +
-                instance.getFirstConstituent().getAttribute(ACEReader.EntityMentionTypeAttribute) + "_" +
-                instance.getSecondConstituent().getAttribute(ACEReader.EntityMentionTypeAttribute);
+        String feature1 = featurePrefix + "_"+
+                instance.getFirstConstituent().getSurfaceForm().toLowerCase() + "_" +
+                instance.getSecondConstituent().getSurfaceForm().toLowerCase();
+
+        String feature2 = featurePrefix + "_"+
+                instance.getSecondConstituent().getSurfaceForm().toLowerCase() + "_" +
+                instance.getFirstConstituent().getSurfaceForm().toLowerCase();
 
         if (this.lexiconer.isAllowNewFeatures()) {
             // Add the NULL feature equivalent
             this.lexiconer.addFeature(featurePrefix);
-            this.lexiconer.addFeature(feature);
+            this.lexiconer.addFeature(feature1);
+            this.lexiconer.addFeature(feature2);
         }
 
         FeatureVectorBuffer fvb = new FeatureVectorBuffer();
 
-        if (this.lexiconer.containFeature(feature)) {
-            fvb.addFeature(this.lexiconer.getFeatureId(feature), 1.0f);
+        if (this.lexiconer.containFeature(feature1)) {
+            fvb.addFeature(this.lexiconer.getFeatureId(feature1), 1.0f);
+        } else {
+            fvb.addFeature(this.lexiconer.getFeatureId(featurePrefix), 1.0f);
+        }
+
+        if (this.lexiconer.containFeature(feature2)) {
+            fvb.addFeature(this.lexiconer.getFeatureId(feature2), 1.0f);
         } else {
             fvb.addFeature(this.lexiconer.getFeatureId(featurePrefix), 1.0f);
         }
@@ -39,4 +50,3 @@ public class MentionTypeFeature extends FeatureDefinitionBase {
         return fvb;
     }
 }
-

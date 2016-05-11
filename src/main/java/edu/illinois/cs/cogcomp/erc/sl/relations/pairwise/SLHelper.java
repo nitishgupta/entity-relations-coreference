@@ -54,7 +54,6 @@ public class SLHelper {
 
         for (Pair<RelationMentionPair, RelationLabel> items : sampleNegativeRelations(
                 document,
-                lm,
                 entityViewName,
                 relationViewName,
                 0.2)) {
@@ -66,7 +65,6 @@ public class SLHelper {
 
     public static List<Pair<RelationMentionPair, RelationLabel>> sampleNegativeRelations(
             Document document,
-            Lexiconer lm,
             String entityViewName,
             String relationViewName,
             double fractionOfRelations) {

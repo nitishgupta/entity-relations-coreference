@@ -40,35 +40,30 @@ public class InferenceSolver extends AbstractInferenceSolver {
         CorefMentionPair ins = (CorefMentionPair) instance;
         CorefLabel gold = (CorefLabel) goldStructure;
 
-        List<Pair<String, Float>> scores = new ArrayList<>(this.lm.getNumOfLabels());
+        double linkScore, notLinkScore;
 
-        int numLabels = this.lm.getNumOfLabels();
-        for (int i = 0; i < numLabels; i++) {
-            String currentLabel = this.lm.getLabelString(i);
+        // Solving binary classification. Label is not used for feature vector generation
+        IFeatureVector fv_link = this.featureGenerator.getFeatureVector(instance, new CorefLabel("NULL"));
+        linkScore = weightVector.dotProduct(fv_link);
 
-            IFeatureVector fv = this.featureGenerator.getFeatureVector(instance, new CorefLabel(currentLabel));
-            scores.add(new Pair<>(currentLabel, weightVector.dotProduct(fv)));
+        String bestStructure;
+        if(linkScore > 5.0)
+            bestStructure = CorefLabel.t;
+        else
+            bestStructure = CorefLabel.f;
+
+        // Best loss structure : Invert if prediction is true
+        if (gold != null && bestStructure.equals(gold.getCorefLink())) {
+            if(bestStructure.equals(CorefLabel.t))
+                bestStructure = CorefLabel.f;
+            if(bestStructure.equals(CorefLabel.f))
+                bestStructure = CorefLabel.t;
         }
 
-        //noinspection Since15
-        scores.sort(new Comparator<Pair<String, Float>>() {
-            // Sort max first.
-            @Override
-            public int compare(Pair<String, Float> o1, Pair<String, Float> o2) {
-                return -1 * o1.getSecond().compareTo(o2.getSecond());
-            }
-        });
-
-        Pair<String, Float> bestStructure = scores.get(0);
-
-        // Skip the best structure during training phase to return the loss augmented structure.
-        if (gold != null && bestStructure.getFirst().equals(gold.getCorefLink())) {
-            bestStructure = scores.get(1);
-        }
-
-        return new CorefLabel(bestStructure.getFirst());
+        return new CorefLabel(bestStructure);
     }
 
+    /* TODO : TRY MARGIN INFUSED LOSS */
     @Override
     public float getLoss(IInstance iInstance, IStructure goldStructure, IStructure predStructure) {
         CorefLabel gold = (CorefLabel) goldStructure;

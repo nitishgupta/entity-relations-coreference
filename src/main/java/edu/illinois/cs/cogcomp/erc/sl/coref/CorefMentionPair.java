@@ -22,15 +22,12 @@ public class CorefMentionPair implements IInstance {
         assert c1.getTextAnnotation() == c2.getTextAnnotation();
         int startc1 = c1.getStartSpan(), startc2 = c2.getStartSpan();
 
-        if(startc1 < startc2){
+        if(startc1 >= startc2){
             this.c1 = c1;
             this.c2 = c2;
-        } else if(startc1 > startc2){
+        } else {
             this.c1 = c2;
             this.c2 = c1;
-        } else {
-            System.err.println("Same mention is trivially co-referent");
-            System.exit(0);
         }
 
         int hashCodeVal = 0;
