@@ -91,7 +91,7 @@ public class MainClass {
 
                     labels[token_num - start_token] = c.getLabel();
                     if (lm.isAllowNewFeatures()) {
-                        lm.addLabel(LexiconerConstants.LABEL_PREFIX + c.getLabel());
+                        lm.addLabel(c.getLabel());
                     }
                     //String labelTag = LexiconerConstants.LABEL_PREFIX + c.getLabel();
 //                    if (lm.isAllowNewFeatures()) {
@@ -219,12 +219,18 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         ConfigSystem.initialize();
 
-        InteractiveShell<MainClass> shell = new InteractiveShell<>(MainClass.class);
+        MainClass.train();
+        MainClass.test();
 
-        if (args.length == 0) {
-            shell.showDocumentation();
-        } else {
-            shell.runCommand(args);
-        }
+//        args = new String[] { "train" };
+//        args = new String[] { "test" };
+//
+//        InteractiveShell<MainClass> shell = new InteractiveShell<>(MainClass.class);
+//
+//        if (args.length == 0) {
+//            shell.showDocumentation();
+//        } else {
+//            shell.runCommand(args);
+//        }
     }
 }

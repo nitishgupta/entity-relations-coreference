@@ -2,6 +2,7 @@ package edu.illinois.cs.cogcomp.erc.sl.ner.features;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.edison.features.ContextFeatureExtractor;
 import edu.illinois.cs.cogcomp.edison.features.Feature;
 import edu.illinois.cs.cogcomp.edison.features.FeatureExtractor;
 import edu.illinois.cs.cogcomp.edison.features.factory.WordFeatureExtractorFactory;
@@ -13,20 +14,25 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Bhargav Mangipudi on 4/7/16.
+ * @author Bhargav Mangipudi
  */
-public class CurrentWordCapitalizationFeature extends FeatureDefinitionBase {
-    private static FeatureExtractor capitalizationFex = WordFeatureExtractorFactory.capitalization;
+public class ContextWindowTokenFeature extends FeatureDefinitionBase {
+    private static FeatureExtractor contextTokenFex = new ContextFeatureExtractor(2, false, false, WordFeatureExtractorFactory.word);
 
-    public CurrentWordCapitalizationFeature(Lexiconer lm) {
+    public ContextWindowTokenFeature(Lexiconer lm) {
         super(lm);
     }
 
     @Override
-    public void addLocalFeature(List<Pair<String, String>> featureMap, SequenceInstance sentence, String currentLabel, String prevLabel, int position) {
+    public void addLocalFeature(
+            List<Pair<String, String>> featureMap,
+            SequenceInstance sentence,
+            String currentLabel,
+            String prevLabel,
+            int position) {
         Constituent c = sentence.getConstituents().get(position);
         try {
-            Set<Feature> features = capitalizationFex.getFeatures(c);
+            Set<Feature> features = contextTokenFex.getFeatures(c);
 
             for (Feature f : features) {
                 featureMap.add(new Pair<>(f.getName(), currentLabel));
@@ -36,4 +42,3 @@ public class CurrentWordCapitalizationFeature extends FeatureDefinitionBase {
         }
     }
 }
-

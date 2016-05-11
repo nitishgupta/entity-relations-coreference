@@ -2,7 +2,7 @@ package edu.illinois.cs.cogcomp.erc.sl.ner;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
-//import edu.illinois.cs.cogcomp.erc.sl.ner.features.*;
+import edu.illinois.cs.cogcomp.erc.sl.ner.features.*;
 
 import edu.illinois.cs.cogcomp.sl.core.*;
 import edu.illinois.cs.cogcomp.sl.learner.Learner;
@@ -12,39 +12,35 @@ import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by nitishgupta on 3/9/16.
  */
 public class Train {
 
-//    /**
-//     * Returns the meta-feature generator based on the order of feature definitions.
-//     * @param lexiconer Lexiconer for generating features.
-//     * @return FeatureGenerator instance.
-//     */
-//    public static FeatureGenerator getCurrentFeatureGenerator(Lexiconer lexiconer) {
-//        // Modifying this will require re-training
-//        return new FeatureGenerator(Collections.unmodifiableList(Arrays.asList(
-//                new PriorFeatures(lexiconer),
-//                new EmissionFeatures(lexiconer),
-//                new TransitionFeatures(lexiconer),
-//                new CurrentWordPOSFeature(lexiconer),
-//                new CurrentWordCapitalizationFeature(lexiconer)
-//        )));
-//    }
+    /**
+     * Returns the meta-feature generator based on the order of feature definitions.
+     * @param lexiconer Lexiconer for generating features.
+     * @return FeatureGenerator instance.
+     */
+    public static FeatureGenerator getCurrentFeatureGenerator(Lexiconer lexiconer) {
+        // Modifying this will require re-training
+        return new FeatureGenerator(Arrays.asList(
+                new PriorFeatures(lexiconer),
+                new EmissionFeatures(lexiconer),
+                new TransitionFeatures(lexiconer),
+                new CurrentWordPOSFeature(lexiconer),
+                new ContextWindowTokenFeature(lexiconer),
+                new CurrentWordCapitalizationFeature(lexiconer)),
+                lexiconer);
+    }
 
     public static void trainNER(Corpus trainData, String slConfigPath, String modelPath, String viewName) throws Exception {
         SLModel model = new SLModel();
         model.lm = new Lexiconer();
         model.lm.setAllowNewFeatures(true);
 
-        if (model.lm.isAllowNewFeatures()) {
-            // To act as Unknown feature
-            model.lm.addFeature(LexiconerConstants.WORD_UNKNOWN);
-        }
-        model.featureGenerator = new FeatureGenerator(model.lm);
+        model.featureGenerator = getCurrentFeatureGenerator(model.lm);
 
         // Read the training data into IInstance and IStructure || IStructure=string[] "label" || lm.label=PREFIX+"label"
         SLProblem slProblem = MainClass.readStructuredData(trainData, model.lm, viewName);
@@ -80,8 +76,7 @@ public class Train {
 
     private static void pre_extract(SLModel model, SLProblem problem) {
         for (Pair<IInstance, IStructure> p : problem) {
-            model.featureGenerator
-                    .getFeatureVector(p.getFirst(), p.getSecond());
+            model.featureGenerator.getFeatureVector(p.getFirst(), p.getSecond());
         }
     }
 }

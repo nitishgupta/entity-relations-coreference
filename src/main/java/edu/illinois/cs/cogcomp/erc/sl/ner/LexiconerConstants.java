@@ -8,7 +8,6 @@ package edu.illinois.cs.cogcomp.erc.sl.ner;
 public class LexiconerConstants {
     public static final String  WORD_PREFIX = "word:";
     public static final String WORD_UNKNOWN = "word:unknownword";
-    public static final String LABEL_PREFIX = "label:";
 
     public static final String POS_PREFIX = "pos:";
     public static final String POS_UNKNOWN = "pos:unknown";
