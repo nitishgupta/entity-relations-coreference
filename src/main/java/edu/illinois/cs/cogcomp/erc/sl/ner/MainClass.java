@@ -219,18 +219,12 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         ConfigSystem.initialize();
 
-        MainClass.train();
-        MainClass.test();
+        InteractiveShell<MainClass> shell = new InteractiveShell<>(MainClass.class);
 
-//        args = new String[] { "train" };
-//        args = new String[] { "test" };
-//
-//        InteractiveShell<MainClass> shell = new InteractiveShell<>(MainClass.class);
-//
-//        if (args.length == 0) {
-//            shell.showDocumentation();
-//        } else {
-//            shell.runCommand(args);
-//        }
+        if (args.length == 0) {
+            shell.showDocumentation();
+        } else {
+            shell.runCommand(args);
+        }
     }
 }
