@@ -24,16 +24,9 @@ public class HeadWordFeatures extends FeatureDefinitionBase {
         String nullFeature = this.featurePrefix + "_" + structure.getRelationLabel();
         String[] headWordFeatures = new String[3];
 
-        Constituent firstMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getFirstMention(), "View");
-        Constituent secondMentionHead = DocUtils.getHeadConstituentForEntityExtent(instance.getSecondMention(), "View");
-
-        if (firstMentionHead == null) {
-            logger.warn("Mention Head not found for {}", instance.getFirstMention());
-        }
-
-        if (secondMentionHead == null) {
-            logger.warn("Mention Head not found for {}", instance.getSecondMention());
-        }
+        // Treat constituents as head words
+        Constituent firstMentionHead = instance.getFirstMention();
+        Constituent secondMentionHead = instance.getSecondMention();
 
         headWordFeatures[0] = firstMentionHead == null ? "" : firstMentionHead.getSurfaceForm();
         headWordFeatures[1] = secondMentionHead == null ? "" : secondMentionHead.getSurfaceForm();
