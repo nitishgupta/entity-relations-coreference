@@ -30,7 +30,7 @@ public class OverlapFeatures extends FeatureDefinitionBase {
         Predicate<Constituent> hasOverlap = Queries.hasOverlap(firstMention);
 
         Boolean overlap = hasOverlap.transform(secondMention);
-        String et12 = firstMention.getClass() + "_" + secondMention.getClass();
+        String et12 = firstMention.getLabel() + "_" + secondMention.getLabel();
 
         overlapFeatures.add(overlap.toString());
         overlapFeatures.add(overlap + "_" + et12);
