@@ -1,6 +1,9 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner.features;
 
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.edison.features.FeatureExtractor;
+import edu.illinois.cs.cogcomp.edison.features.factory.WordFeatureExtractorFactory;
 import edu.illinois.cs.cogcomp.erc.sl.ner.LexiconerConstants;
 import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceInstance;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
@@ -23,7 +26,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
             String prevLabel,
             int position) {
         featureMap.add(new Pair<>(
-                LexiconerConstants.WORD_PREFIX + sentence.getTokenAtPosition(position),
+                LexiconerConstants.WORD_PREFIX + sentence.getTokenAtPosition(position).toLowerCase().trim(),
                 currentLabel));
     }
 }
