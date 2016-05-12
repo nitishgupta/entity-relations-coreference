@@ -170,8 +170,8 @@ public class MainClass {
         List<Corpus> corpora  = CorpusUtils.readCompleteTrainDevTestCorpora(corpusType);
         Corpus testData = corpora.get(3);
 
-//        Annotator annotator = new NERAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView, predictedEntityView);
-        Annotator annotator = new BIOAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView);
+        Annotator annotator = new NERAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView, predictedEntityView);
+//        Annotator annotator = new BIOAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView);
         Evaluator evaluator = new ConstituentLabelingEvaluator();
         ClassificationTester tester = new ClassificationTester();
 
