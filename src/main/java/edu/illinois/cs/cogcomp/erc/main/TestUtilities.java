@@ -46,7 +46,7 @@ public class TestUtilities {
 //
 
         SLModel model = SLModel.loadModel("testModel");
-        Annotator annotator = new NERAnnotator(model, false, Corpus.NER_PRED_HEAD_BIO_VIEW, "ENTITYVIEW");
+        Annotator annotator = new NERAnnotator(model, false, Corpus.NER_PRED_HEAD_BIO_VIEW, "NER_ACE_COARSE_HEAD");
         Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
 
         ServerRunner.executeInstance(client);
