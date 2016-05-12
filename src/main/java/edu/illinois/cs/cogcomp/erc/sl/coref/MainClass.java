@@ -37,9 +37,10 @@ import fi.iki.elonen.util.ServerRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static edu.illinois.cs.cogcomp.erc.sl.ner.MainClass.DefaultNERModel;
 
 /**
  * Created by nitishgupta on 3/30/16.
@@ -130,7 +131,14 @@ public class MainClass {
         SLModel slModel = SLModel.loadModel(DefaultCorefModel);
         testModel(corpusType, slModel);
     }
-//
+
+    @CommandDescription(usage = "testP", description = "")
+    public static void testPredicted(String corpusType) throws Exception {
+        SLModel corefModel = SLModel.loadModel(DefaultCorefModel);
+        SLModel nerModel = SLModel.loadModel(DefaultNERModel);
+        testModelPredicted(corpusType, nerModel, corefModel);
+    }
+
     @CommandDescription(usage = "", description = "")
     public static void test(String corpusType, String modelFileName) throws Exception {
         SLModel slModel = SLModel.loadModel(modelFileName);
@@ -179,7 +187,57 @@ public class MainClass {
             bcubed.evaluate(clfTester, ta.getView(corefGoldView), ta.getView(corefPredictedView));
         }
 
+        //CorefEvaluator.writeChainSolutionToFile(testCorpus, corefGoldView, "gold_coref.txt");
+        CorefEvaluator.writeChainSolutionToFile(testCorpus, corefPredictedView, "pred_coref_goldm.txt");
 
+        // Print the performance table.
+        Table performanceTable = clfTester.getPerformanceTable(true);
+        System.out.println(performanceTable.toOrgTable());
+
+        //testTesting(testCorpus);
+    }
+    @CommandIgnore
+    public static void testModelPredicted(String corpusType, SLModel nerModel, SLModel modelInstance) throws Exception {
+        Corpus aceCorpus = MainClass.readCorpus(corpusType);
+
+        List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
+        Corpus testCorpus = allCorpora.get(2);
+        String corefGoldView = Parameters.COREF_VIEW_GOLD;
+        String corefPredictedView = Parameters.COREF_VIEW_PREDICTION;
+        String predMentionView = "ENTITYVIEW";
+
+        Annotator NERAnnotator = new NERAnnotator(
+                nerModel,
+                testCorpus.checkisACE2004(),
+                "NER_BIO",
+                predMentionView);          // POPULATED FINAL VIEW
+
+
+        ClassificationTester clfTester = new ClassificationTester();
+        CorefBCubedEvaluator bcubed = new CorefBCubedEvaluator();
+
+        // Annotator instance is used to create the predicted view in the textAnnotation.
+        Annotator corefannotator = new GoldMentionAnnotator(
+                corefPredictedView,                                                // Populated Final View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, predMentionView },
+                modelInstance,
+                predMentionView,                                                     // Mention View Required
+                aceCorpus.checkisACE2004());
+
+        ChainedAnnotator annotator = new ChainedAnnotator(NERAnnotator, corefannotator);
+
+        System.out.println("CHAINED ANNOTATOR IS MADE");
+
+        // Annotate a TA and evaluate its performance.
+        for (Document doc : testCorpus.getDocs()) {
+            TextAnnotation ta = doc.getTA();
+            annotator.addView(ta);
+
+            bcubed.evaluate(clfTester, ta.getView(corefGoldView), ta.getView(corefPredictedView));
+        }
+
+        //CorefEvaluator.writeChainSolutionToFile(testCorpus, corefGoldView, "gold_coref.txt");
+        CorefEvaluator.writeChainSolutionToFile(testCorpus, corefPredictedView, "pred_coref_predm.txt");
 
         // Print the performance table.
         Table performanceTable = clfTester.getPerformanceTable(true);

@@ -31,7 +31,7 @@ import java.util.List;
  * Created by Bhargav Mangipudi on 3/9/16.
  */
 public class MainClass {
-    private static final String DefaultModelName = "testModel";
+    public static final String DefaultNERModel = "DefaultNERModel.model";
 
     /**
      * This SLProblem returned by this method has List<Constituents> as IInstance.
@@ -141,7 +141,7 @@ public class MainClass {
 
     @CommandDescription(description = "Train the NER Model.")
     public static void train() throws Exception {
-        train(DefaultModelName);
+        train(DefaultNERModel);
     }
 
     @CommandDescription(description = "Train the NER Model. Parameter : ModelName")
@@ -156,7 +156,7 @@ public class MainClass {
 
     @CommandDescription(description = "Test the NER Model.")
     public static void test() throws Exception {
-        test(DefaultModelName);
+        test(DefaultNERModel);
     }
 
     @CommandDescription(description = "Test the NER Model.")
@@ -171,7 +171,6 @@ public class MainClass {
         Corpus testData = corpora.get(3);
 
         Annotator annotator = new NERAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView, predictedEntityView);
-//        Annotator annotator = new BIOAnnotator(model, corpusType == CorpusType.ACE04, predictedBIOView);
         Evaluator evaluator = new ConstituentLabelingEvaluator();
         ClassificationTester tester = new ClassificationTester();
 
@@ -208,6 +207,8 @@ public class MainClass {
 
             evaluator.evaluate(tester, goldViewWithPredictedName, ta.getView(predictedViewName));
         }
+
+        Test.writeNEROutput(testData, predictedEntityView, "pred_ner.txt");
 
         System.out.println(tester.getPerformanceTable().toOrgTable());
     }

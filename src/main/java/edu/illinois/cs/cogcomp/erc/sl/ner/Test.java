@@ -1,9 +1,6 @@
 package edu.illinois.cs.cogcomp.erc.sl.ner;
 
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 
 import edu.illinois.cs.cogcomp.erc.ir.Document;
@@ -12,7 +9,10 @@ import edu.illinois.cs.cogcomp.lbjava.classify.TestDiscrete;
 import edu.illinois.cs.cogcomp.sl.core.IInstance;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,5 +112,36 @@ public class Test {
 
         System.out.println("Filtered Performance Metrics");
         testFiltered.printPerformance(System.out);
+    }
+
+    public static void writeNEROutput(Corpus corpus, String nerViewName, String outputfilepath){
+        StringBuilder output = new StringBuilder();
+
+        for(Document d : corpus.getDocs()){
+            TextAnnotation ta = d.getTA();
+            String id = ta.getId();
+            SpanLabelView view = (SpanLabelView) ta.getView(nerViewName);
+            List<Constituent> constituents = view.getConstituents();
+            for(Constituent c : constituents) {
+                String out = id + "\t";   // DOCID
+                int start = c.getStartSpan();
+                int end = c.getEndSpan();
+                out += start + "\t";         // SPAN START
+                out += end + "\t";         // SPAN END
+                out += "NIL" + id + "-" + c.getLabel()+ "\t";               // CLUSTER ID
+                out += "1.0" + "\t";                            // SCORE
+                out += c.getLabel() + "\n";                     // NER TYPE
+                output.append(out);
+            }
+        }
+
+        String output_string = output.toString();
+        try {
+            FileUtils.writeStringToFile(new File(outputfilepath), output_string);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Solution Written to File - Succesfully");
     }
 }
