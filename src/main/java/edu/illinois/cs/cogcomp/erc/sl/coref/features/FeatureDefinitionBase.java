@@ -27,7 +27,8 @@ public abstract class FeatureDefinitionBase extends AbstractFeatureGenerator imp
     // Assumes lexicon is populated already.
     public void preExtractFeatures(CorefMentionPair instance) {
         // Do not need a label : Solving a binary classification problem
-        this.getFeatureVector(instance, new CorefLabel("NULL"));
+        this.getFeatureVector(instance, new CorefLabel(CorefLabel.t));
+        this.getFeatureVector(instance, new CorefLabel(CorefLabel.f));
     }
 
     public IFeatureVector getFeatureVector(IInstance x, IStructure y) {

@@ -9,6 +9,7 @@ import edu.illinois.cs.cogcomp.core.datastructures.textannotation.CoreferenceVie
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
 import edu.illinois.cs.cogcomp.core.experiments.ClassificationTester;
+import edu.illinois.cs.cogcomp.core.experiments.evaluators.CorefBCubedEvaluator;
 import edu.illinois.cs.cogcomp.core.utilities.Table;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandDescription;
 import edu.illinois.cs.cogcomp.core.utilities.commands.CommandIgnore;
@@ -18,8 +19,12 @@ import edu.illinois.cs.cogcomp.erc.config.Parameters;
 import edu.illinois.cs.cogcomp.erc.corpus.Corpus;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusType;
 import edu.illinois.cs.cogcomp.erc.corpus.CorpusUtils;
+import edu.illinois.cs.cogcomp.erc.sl.ner.annotators.NERAnnotator;
 import edu.illinois.cs.cogcomp.erc.ir.Document;
 import edu.illinois.cs.cogcomp.erc.sl.coref.annotators.GoldMentionAnnotator;
+import edu.illinois.cs.cogcomp.erc.util.ChainedAnnotator;
+import edu.illinois.cs.cogcomp.openeval.learner.Server;
+import edu.illinois.cs.cogcomp.openeval.learner.ServerPreferences;
 import edu.illinois.cs.cogcomp.sl.core.SLModel;
 import edu.illinois.cs.cogcomp.sl.core.SLParameters;
 import edu.illinois.cs.cogcomp.sl.core.SLProblem;
@@ -28,6 +33,7 @@ import edu.illinois.cs.cogcomp.sl.learner.LearnerFactory;
 import edu.illinois.cs.cogcomp.sl.learner.l2_loss_svm.L2LossSSVMLearner;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 import edu.illinois.cs.cogcomp.sl.util.WeightVector;
+import fi.iki.elonen.util.ServerRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,18 +153,20 @@ public class MainClass {
         List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
         Corpus testCorpus = allCorpora.get(2);
 
-        CorefEvaluator evaluator = new CorefEvaluator();
 
         ClassificationTester clfTester = new ClassificationTester();
+        CorefBCubedEvaluator bcubed = new CorefBCubedEvaluator();
 
         String corefGoldView = Parameters.COREF_VIEW_GOLD;
         String corefPredictedView = Parameters.COREF_VIEW_PREDICTION;
+        String mentionView = Parameters.COREF_MENTION_VIEW_GOLD;
 
         // Annotator instance is used to create the predicted view in the textAnnotation.
         Annotator annotator = new GoldMentionAnnotator(
-                corefPredictedView,                                                // Final View
-                new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.COREF_MENTION_VIEW_GOLD},
+                corefPredictedView,                                                // Populated Final View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, mentionView },
                 modelInstance,
+                mentionView,                                                     // Mention View Required
                 aceCorpus.checkisACE2004());
 
         System.out.println("ANNOTATOR IS MADE");
@@ -168,16 +176,54 @@ public class MainClass {
             TextAnnotation ta = doc.getTA();
             annotator.addView(ta);
 
-            //evaluator.evaluate(clfTester, ta.getView(corefGoldView), ta.getView(corefPredictedView));
-
+            bcubed.evaluate(clfTester, ta.getView(corefGoldView), ta.getView(corefPredictedView));
         }
+
+
 
         // Print the performance table.
         Table performanceTable = clfTester.getPerformanceTable(true);
         System.out.println(performanceTable.toOrgTable());
 
-        testTesting(testCorpus);
+        //testTesting(testCorpus);
     }
+
+    @CommandDescription(usage = "", description = "")
+    public static void annotatePipeline(String corpusType, String entityModelFile,
+                                        String corefModelFile) throws Exception {
+        SLModel entityModel = SLModel.loadModel(entityModelFile);
+        SLModel corefModel = SLModel.loadModel(corefModelFile);
+
+        Annotator NERAnnotator = new NERAnnotator(
+                entityModel,
+                false,                  // Check for ACE04
+                "NER_BIO",
+                "ENTITYVIEW");
+
+        String corefPredictedView = Parameters.COREF_VIEW_GOLD;
+
+        // Annotator instance is used to create the predicted view in the textAnnotation.
+        Annotator GoldMentionAnnotator = new GoldMentionAnnotator(
+                corefPredictedView,                                                // Predicted Final View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, "ENTITYVIEW" },
+                corefModel,
+                "ENTITYVIEW",
+                false);                                                             // ACE04 Check
+
+        ChainedAnnotator annotator = new ChainedAnnotator(NERAnnotator, GoldMentionAnnotator);
+
+        // Annotate a TA and evaluate its performance.
+//        for (Document doc : testCorpus.getDocs()) {
+//            TextAnnotation ta = doc.getTA();
+//            annotator.addView(ta);
+//        }
+
+        //Server client = new Server(5757, new ServerPreferences(10000, 1), GoldMentionAnnotator);
+        Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
+
+        ServerRunner.executeInstance(client);
+    }
+
 
     @CommandIgnore
     public static void main(String[] args) throws Exception {
@@ -190,6 +236,8 @@ public class MainClass {
         } else {
             shell.runCommand(args);
         }
+
+        //test("ACE05", DefaultCorefModel);
 
 
 
@@ -232,12 +280,11 @@ public class MainClass {
     }
 
     public static void testTesting(Corpus testCorpus){
-        Document doc = testCorpus.getDoc(0);
+        Document doc = testCorpus.getDoc(10);
         TextAnnotation ta = doc.getTA();
         CoreferenceView corefView = (CoreferenceView) ta.getView(Parameters.COREF_VIEW_PREDICTION);
         for(Constituent c : corefView.getConstituents()){
             System.out.println(c.getSurfaceForm() + "\t\t\t" + c.getLabel());
         }
-
     }
 }

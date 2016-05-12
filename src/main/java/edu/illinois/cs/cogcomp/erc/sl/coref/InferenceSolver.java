@@ -40,14 +40,19 @@ public class InferenceSolver extends AbstractInferenceSolver {
         CorefMentionPair ins = (CorefMentionPair) instance;
         CorefLabel gold = (CorefLabel) goldStructure;
 
-        double linkScore, notLinkScore;
+        double t_linkScore, f_linkScore;
 
         // Solving binary classification. Label is not used for feature vector generation
-        IFeatureVector fv_link = this.featureGenerator.getFeatureVector(instance, new CorefLabel("NULL"));
-        linkScore = weightVector.dotProduct(fv_link);
+        IFeatureVector fv_link_t = this.featureGenerator.getFeatureVector(instance, new CorefLabel(CorefLabel.t));
+        t_linkScore = weightVector.dotProduct(fv_link_t);
+
+        IFeatureVector fv_link_f = this.featureGenerator.getFeatureVector(instance, new CorefLabel(CorefLabel.f));
+        f_linkScore = weightVector.dotProduct(fv_link_t);
+
+
 
         String bestStructure;
-        if(linkScore > 5.0)
+        if(t_linkScore > f_linkScore)
             bestStructure = CorefLabel.t;
         else
             bestStructure = CorefLabel.f;
