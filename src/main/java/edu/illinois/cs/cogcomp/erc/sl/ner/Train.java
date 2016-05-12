@@ -31,6 +31,7 @@ public class Train {
                 new TransitionFeatures(lexiconer),
                 new CurrentWordPOSFeature(lexiconer),
                 new ContextWindowTokenFeature(lexiconer),
+                new ChunkEmbeddingFeature(lexiconer),
                 new CurrentWordCapitalizationFeature(lexiconer)),
                 lexiconer);
     }

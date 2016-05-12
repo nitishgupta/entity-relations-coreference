@@ -3,18 +3,19 @@ package edu.illinois.cs.cogcomp.erc.sl.ner.features;
 import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.edison.features.FeatureExtractor;
-import edu.illinois.cs.cogcomp.edison.features.factory.WordFeatureExtractorFactory;
-import edu.illinois.cs.cogcomp.erc.sl.ner.LexiconerConstants;
+import edu.illinois.cs.cogcomp.edison.features.factory.ChunkEmbedding;
 import edu.illinois.cs.cogcomp.erc.sl.ner.SequenceInstance;
 import edu.illinois.cs.cogcomp.sl.util.Lexiconer;
 
 import java.util.List;
 
 /**
- * Created by Bhargav Mangipudi on 3/8/16.
+ * @author Bhargav Mangipudi
  */
-public class EmissionFeatures extends FeatureDefinitionBase {
-    public EmissionFeatures(Lexiconer lm) {
+public class ChunkEmbeddingFeature extends FeatureDefinitionBase {
+    private static FeatureExtractor fex = ChunkEmbedding.SHALLOW_PARSE;
+
+    public ChunkEmbeddingFeature(Lexiconer lm) {
         super(lm);
     }
 
@@ -25,8 +26,7 @@ public class EmissionFeatures extends FeatureDefinitionBase {
             String currentLabel,
             String prevLabel,
             int position) {
-        featureMap.add(new Pair<>(
-                LexiconerConstants.WORD_PREFIX + sentence.getTokenAtPosition(position).toLowerCase().trim(),
-                currentLabel));
+        Constituent c = sentence.getConstituents().get(position);
+        FeatureDefinitionBase.updateFeatureMapFromFex(featureMap, fex, c, currentLabel);
     }
 }

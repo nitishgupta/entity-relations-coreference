@@ -24,6 +24,8 @@ public class FeatureGenerator extends FeatureDefinitionBase implements Serializa
         activeFeatureList.add(new MentionTypeFeature(lm));
         activeFeatureList.add(new HeadWordFeatures(lm));
         activeFeatureList.add(new MentionBOWFeatures(lm));
+        activeFeatureList.add(new MiscLexicalFeatures(lm));
+        activeFeatureList.add(new OverlapFeatures(lm));
 
         this.activeFeatures = Collections.unmodifiableList(activeFeatureList);
     }

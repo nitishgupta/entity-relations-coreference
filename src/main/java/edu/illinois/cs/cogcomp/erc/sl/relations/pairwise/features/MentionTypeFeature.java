@@ -18,8 +18,8 @@ public class MentionTypeFeature extends FeatureDefinitionBase {
     public FeatureVectorBuffer getFeatureVector(RelationMentionPair instance, RelationLabel structure) {
         String nullFeature = this.featurePrefix + "_" + structure.getRelationLabel();
         String feature = nullFeature + "_" +
-                instance.getFirstMention().getAttribute(ACEReader.EntityMentionTypeAttribute) + "_" +
-                instance.getSecondMention().getAttribute(ACEReader.EntityMentionTypeAttribute);
+                instance.getFirstMention().getClass() + "_" +
+                instance.getSecondMention().getClass();
 
         if (this.lexiconer.isAllowNewFeatures()) {
             // Add the NULL feature equivalent
