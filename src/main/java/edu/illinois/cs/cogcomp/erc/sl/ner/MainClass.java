@@ -208,7 +208,7 @@ public class MainClass {
             evaluator.evaluate(tester, goldViewWithPredictedName, ta.getView(predictedViewName));
         }
 
-        Test.writeNEROutput(testData, predictedEntityView, "pred_ner.txt");
+        Test.writeNEROutput(testData, predictedEntityView, "pred_ner_newloss.txt");
 
         System.out.println(tester.getPerformanceTable().toOrgTable());
     }

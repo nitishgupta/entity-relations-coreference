@@ -28,6 +28,7 @@ public class SentenceLevelPairwiseAnnotator extends Annotator {
 
     private boolean is2004Document;
     private SLModel trainedModel;
+    private String mentionView;
 
     private static Logger logger = LoggerFactory.getLogger(SentenceLevelPairwiseAnnotator.class);
 
@@ -37,19 +38,20 @@ public class SentenceLevelPairwiseAnnotator extends Annotator {
      *
      * @param finalViewName Name of the final predicted view.
      * @param requiredViews List of input view that are required to perform annotation.
-     * @param inputRelationView Name of the gold relation view. (Optional here)
+     * @param inputMentionView Name of the gold relation view. (Optional here)
      * @param model SLModel that is used to classify.
      * @param is2004Document Boolean denoting if the annotator will work on ACE2004 document or not.
      */
     public SentenceLevelPairwiseAnnotator(String finalViewName,
                                           String[] requiredViews,
-                                          String inputRelationView,
+                                          String inputMentionView,
                                           SLModel model,
                                           boolean is2004Document) {
         super(finalViewName, requiredViews);
 
         this.trainedModel = model;
         this.is2004Document = is2004Document;
+        this.mentionView = inputMentionView;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class SentenceLevelPairwiseAnnotator extends Annotator {
 
         List<RelationMentionPair> slItems = new ArrayList<>();
 
-        SpanLabelView entityView = (SpanLabelView) textAnnotation.getView(Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD);
+        SpanLabelView entityView = (SpanLabelView) textAnnotation.getView(mentionView);
         SpanLabelView sentenceView = (SpanLabelView) textAnnotation.getView(ViewNames.SENTENCE);
 
         // All Mentions in the entityView.

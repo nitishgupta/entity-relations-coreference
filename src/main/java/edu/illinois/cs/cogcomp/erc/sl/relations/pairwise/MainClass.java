@@ -173,6 +173,10 @@ public class MainClass {
             evaluator.evaluate(clfTester, ta.getView(relationGoldView), ta.getView(relationPredictedView));
         }
 
+        Test.writeRelOutput(testCorpus, relationGoldView, "gold_rel.txt");
+        Test.writeRelOutput(testCorpus, relationPredictedView, "pred_rel.txt");
+
+
         // Print the performance table.
         Table performanceTable = clfTester.getPerformanceTable(true);
         System.out.println(performanceTable.toOrgTable());
@@ -189,20 +193,25 @@ public class MainClass {
         List<Corpus> allCorpora = CorpusUtils.getTrainDevTestCorpora(aceCorpus);
         Corpus testCorpus = allCorpora.get(2);
 
+        RelationEvaluator evaluator = new RelationEvaluator();
+
+        ClassificationTester clfTester = new ClassificationTester();
+        clfTester.ignoreLabelFromSummary(SLHelper.NO_RELATION_LABEL);
+
         Annotator NERAnnotator = new NERAnnotator(
                 entityModel,
                 testCorpus.checkisACE2004(),
                 "NER_BIO",
-                Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD);
+                "EntityView");
 
         String relationGoldView = Parameters.RELATION_PAIRWISE_RELATION_VIEW_GOLD;
-        String relationPredictedView = "RELATION_ACE_COARSE_HEAD";
+        String relationPredictedView = "RELATION_VIEW";
 
         // Annotator instance is used to create the predicted view in the textAnnotation.
         Annotator RelationAnnotator = new SentenceLevelPairwiseAnnotator(
                 relationPredictedView,                                                // Final View
-                new String[] { ViewNames.POS, ViewNames.TOKENS, Parameters.RELATION_PAIRWISE_MENTION_VIEW_GOLD },
-                relationGoldView,                                                    // Relation Gold View
+                new String[] { ViewNames.POS, ViewNames.TOKENS, ViewNames.NER_ACE_COARSE_HEAD },
+                ViewNames.NER_ACE_COARSE_HEAD,                                                    // Relation Gold View
                 relationModel,
                 aceCorpus.checkisACE2004());
 
@@ -212,11 +221,16 @@ public class MainClass {
         for (Document doc : testCorpus.getDocs()) {
             TextAnnotation ta = doc.getTA();
             annotator.addView(ta);
+
+            evaluator.evaluate(clfTester, ta.getView(relationGoldView), ta.getView(relationPredictedView));
         }
 
-        Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
+        //Server client = new Server(5757, new ServerPreferences(10000, 1), annotator);
 
-        ServerRunner.executeInstance(client);
+        //ServerRunner.executeInstance(client);
+
+        Table performanceTable = clfTester.getPerformanceTable(true);
+        System.out.println(performanceTable.toOrgTable());
     }
 
     @CommandIgnore
